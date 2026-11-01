@@ -6,8 +6,7 @@ import re
 import joblib
 import pandas as pd
 
-# API Keys (GitHub Secrets se uth rahi hain)
-# Note: Highlightly ki key GitHub mein 'SECONDARY_API_KEY' naam se save hai.
+# API Keys
 KEY_MATCHSTAT = os.environ.get("RAPIDAPI_KEY")
 KEY_HIGHLIGHTLY = os.environ.get("SECONDARY_API_KEY") 
 KEY_CRICKETDATA = os.environ.get("CRICKETDATA_API_KEY") 
@@ -23,12 +22,12 @@ try:
     chase_encoders = joblib.load('chase_encoders.pkl')
     pre_match_model = joblib.load('xgb_model.pkl')
     old_encoders = joblib.load('encoders.pkl')
-    print("✅ Saare Models (Live + Upcoming) load ho gaye!")
+    print("✅ Saare Models load ho gaye!")
 except Exception as e:
     print(f"⚠️ Model load error: {e}")
     score_model, team_league_encoders, win_model, chase_encoders, pre_match_model, old_encoders = None, None, None, None, None, None
 
-# 🔥 OVERS NIKALNE KA FUNCTION (Live feed ka hissa)
+# 🔥 OVERS NIKALNE KA FUNCTION
 def extract_overs(info_str):
     if not info_str: return ""
     if '/' in info_str:
@@ -237,13 +236,34 @@ def standardize_data(data, source):
             elif m.get("matchStarted"): match_state = "live"
             else: match_state = "upcoming"
             
+            # 🔥 CRICKETDATA SCORE & OVERS FIX
+            home_score, home_overs, away_score, away_overs = "-", "", "-", ""
+            target = None
+            teams = m.get("teams", ["Home", "Away"])
+            
+            for score in m.get("score", []):
+                if score.get("inning", "").startswith(teams[0]):
+                    home_score = f"{score.get('r', 0)}/{score.get('w', 0)}"
+                    home_overs = f"{score.get('o', 0.0)} ov"
+                elif score.get("inning", "").startswith(teams[1]):
+                    away_score = f"{score.get('r', 0)}/{score.get('w', 0)}"
+                    away_overs = f"{score.get('o', 0.0)} ov"
+
+            win_prob, proj_score = None, None
+            if match_state == "live":
+                # CricketData ko Highlightly format mein convert karke AI mein bhejna
+                c_home_info = {"score": home_score, "info": home_overs}
+                c_away_info = {"score": away_score, "info": away_overs}
+                win_prob, proj_score = get_ai_predictions(c_home_info, c_away_info, m.get("matchType", "T20"), m.get("name", "League"), teams[0], teams[1])
+
             matches.append({
                 "league": m.get("name", "League"), "format": m.get("matchType", "T20"),
                 "start_time_iso": m.get("dateTimeGMT", ""), "match_state": match_state,
-                "home": m.get("teams", ["Home", "Away"])[0], "away": m.get("teams", ["Home", "Away"])[1],
-                "score_home": "-", "overs_home": "", "score_away": "-", "overs_away": "",
+                "home": teams[0], "away": teams[1],
+                "score_home": home_score, "overs_home": home_overs, 
+                "score_away": away_score, "overs_away": away_overs,
                 "status": status_raw, "api_source": source, 
-                "win_probability": None, "projected_score": None, "pre_match_winner": None
+                "win_probability": win_prob, "projected_score": proj_score, "pre_match_winner": None
             })
 
     elif source == "Matchstat" and "results" in data:
@@ -278,16 +298,12 @@ def standardize_data(data, source):
             
     return matches
 
-# ==========================================
-# 🚀 MAIN EXECUTION & API PRIORITY
-# ==========================================
 def main():
-    # 🔴 YAHAN PRIORITY SET HAI 🔴
     apis = [
-        ("Highlightly", fetch_highlightly),    # 1. Primary (Best Data + AI)
-        ("CricketData", fetch_cricketdata),    # 2. Secondary (Has Overs + AI)
-        ("Matchstat", fetch_matchstat),        # 3. Tertiary (RapidAPI)
-        ("Sportscore", fetch_sportscore)       # 4. Last Resort (Unlimited, No AI)
+        ("Highlightly", fetch_highlightly),    
+        ("CricketData", fetch_cricketdata),    
+        ("Matchstat", fetch_matchstat),        
+        ("Sportscore", fetch_sportscore)       
     ]
     
     final_matches, used_api = [], "None"
