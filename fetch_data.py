@@ -22,22 +22,13 @@ def standardize_data(data, source):
     
     if source == "highlightly" and "data" in data:
         for m in data["data"]:
-            raw_datetime = m.get("startTime", "")
-            
-            # Date aur Time alag karna
-            if "T" in raw_datetime:
-                match_date = raw_datetime.split("T")[0]
-                # Time nikalna (jaise 08:30)
-                match_time = raw_datetime.split("T")[1][:5] + " UTC" 
-            else:
-                match_date = "Date TBD"
-                match_time = "Time TBD"
+            # Hum exact time (ISO format) bhej rahe hain, taaki JS isko local time mein badal sake
+            raw_time = m.get("startTime", "") 
             
             matches.append({
                 "league": m.get("league", {}).get("name", "Unknown League"),
                 "format": m.get("format", "N/A"),
-                "date": match_date,
-                "time": match_time, # Naya field add kiya
+                "start_time_iso": raw_time, # Naya field
                 "home": m.get("homeTeam", {}).get("name", "Home Team"),
                 "away": m.get("awayTeam", {}).get("name", "Away Team"),
                 "score_home": m.get("state", {}).get("teams", {}).get("home", {}).get("score", "-"),
@@ -53,7 +44,7 @@ def main():
     output = {"last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "total_matches": len(matches), "matches": matches}
     with open("live_matches.json", "w") as f:
         json.dump(output, f, indent=4)
-    print(f"✅ Success! {len(matches)} matches saved with Date and Time.")
+    print(f"✅ Success! {len(matches)} matches saved with Local Time support.")
 
 if __name__ == "__main__":
     main()
