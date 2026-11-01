@@ -1,9 +1,11 @@
 {
-    "last_updated": "2026-11-01 13:10:18",
+    "last_updated": "2026-11-01 13:36:35",
     "total_matches": 27,
     "matches": [
         {
             "league": "NCL GT20 Canada",
+            "format": "T20",
+            "date": "2026-11-02",
             "home": "Montreal Warriors",
             "away": "Brampton Blazers",
             "score_home": null,
@@ -12,6 +14,8 @@
         },
         {
             "league": "NCL GT20 Canada",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
             "score_home": null,
@@ -20,22 +24,28 @@
         },
         {
             "league": "Pro50 Championship",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Mashonaland Eagles",
             "away": "Matabeleland Tuskers",
-            "score_home": "181/3",
+            "score_home": "206/7",
             "score_away": "205",
             "status": "In play"
         },
         {
             "league": "Pro50 Championship",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Mid West Rhinos",
             "away": "Mountaineers",
             "score_home": "310/8",
-            "score_away": "91/5",
+            "score_away": "127/6",
             "status": "In play"
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Afghanistan",
             "away": "Australia",
             "score_home": "119/2",
@@ -44,6 +54,8 @@
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Oman",
             "away": "Pakistan",
             "score_home": "136/4",
@@ -52,6 +64,8 @@
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "England",
             "away": "South Africa",
             "score_home": "95",
@@ -60,6 +74,8 @@
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Scotland",
             "away": "United Arab Emirates",
             "score_home": "135/1",
@@ -68,6 +84,8 @@
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Hong Kong",
             "away": "Sri Lanka",
             "score_home": "119/0",
@@ -76,6 +94,8 @@
         },
         {
             "league": "Hong Kong International Sixes",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Bangladesh",
             "away": "India",
             "score_home": "116/5",
@@ -84,6 +104,8 @@
         },
         {
             "league": "England Lions in West Indies",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "West Indies A",
             "away": "England Lions",
             "score_home": null,
@@ -92,14 +114,18 @@
         },
         {
             "league": "Nepal Premier League",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Janakpur Bolts",
             "away": "Pokhara Avengers (NPL)",
             "score_home": "147/7",
-            "score_away": "8/0",
+            "score_away": "51/2",
             "status": "In play"
         },
         {
             "league": "Ireland in Namibia",
+            "format": "ODI",
+            "date": "2026-11-01",
             "home": "Namibia",
             "away": "Ireland",
             "score_home": "131/5",
@@ -108,6 +134,8 @@
         },
         {
             "league": "Afghanistan v Zimbabwe",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Afghanistan",
             "away": "Zimbabwe",
             "score_home": null,
@@ -116,14 +144,18 @@
         },
         {
             "league": "CSA T20 Challenge",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Lions",
             "away": "Titans",
-            "score_home": "51/2",
+            "score_home": "105/3",
             "score_away": null,
             "status": "In play"
         },
         {
             "league": "CSA T20 Challenge",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Dolphins",
             "away": "Boland",
             "score_home": "174/4",
@@ -132,6 +164,8 @@
         },
         {
             "league": "The Ford Trophy",
+            "format": "ODI",
+            "date": "2026-10-31",
             "home": "Otago",
             "away": "Central Districts",
             "score_home": "233",
@@ -140,6 +174,8 @@
         },
         {
             "league": "Women's Big Bash League",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Sydney Sixers Women",
             "away": "Hobart Hurricanes Women",
             "score_home": "196/8",
@@ -148,6 +184,8 @@
         },
         {
             "league": "Women's Big Bash League",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "Sydney Thunder Women",
             "away": "Brisbane Heat Women",
             "score_home": "180/4",
@@ -156,6 +194,8 @@
         },
         {
             "league": "India in New Zealand",
+            "format": "T20",
+            "date": "2026-11-01",
             "home": "New Zealand",
             "away": "India",
             "score_home": "195/3",
@@ -164,6 +204,8 @@
         },
         {
             "league": "National Cricket League",
+            "format": "TEST",
+            "date": "2026-10-31",
             "home": "Rangpur Division",
             "away": "Rajshahi Division",
             "score_home": "122/3",
@@ -172,6 +214,8 @@
         },
         {
             "league": "National Cricket League",
+            "format": "TEST",
+            "date": "2026-10-31",
             "home": "Dhaka Division",
             "away": "Barisal Division",
             "score_home": null,
@@ -180,6 +224,8 @@
         },
         {
             "league": "National Cricket League",
+            "format": "TEST",
+            "date": "2026-10-31",
             "home": "Dhaka Metropolis",
             "away": "Khulna Division",
             "score_home": "(fo) 108 & 57/2",
@@ -188,6 +234,8 @@
         },
         {
             "league": "National Cricket League",
+            "format": "TEST",
+            "date": "2026-10-31",
             "home": "Sylhet Division",
             "away": "Chittagong Division",
             "score_home": "218 & 89/2",
@@ -196,6 +244,8 @@
         },
         {
             "league": "India A in New Zealand",
+            "format": "TEST",
+            "date": "2026-10-30",
             "home": "New Zealand A",
             "away": "India A",
             "score_home": "218/3",
@@ -204,6 +254,8 @@
         },
         {
             "league": "Sheffield Shield",
+            "format": "TEST",
+            "date": "2026-10-31",
             "home": "Queensland",
             "away": "Victoria",
             "score_home": "202/5",
@@ -212,6 +264,8 @@
         },
         {
             "league": "Sheffield Shield",
+            "format": "TEST",
+            "date": "2026-10-29",
             "home": "Tasmania",
             "away": "New South Wales",
             "score_home": "427",
