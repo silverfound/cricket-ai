@@ -77,7 +77,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         t2 = safe_encode_team(away_team, team_league_encoders['team'])
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
 
-        if t1 == -1 or t2 == -1: return None # Agar team nahi mili toh skip karein (sachai)
+        if t1 == -1 or t2 == -1: return None
 
         input_data = pd.DataFrame({
             'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2]
@@ -164,9 +164,8 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
                 
                 l_id = safe_encode_league(league_name, team_league_encoders['league'])
-                b_id = safe_encode_team(batting_team, team_league_encoders['team']) # Note: Now using unified 'team'
-                bw_id = safe_encode_team(bowling_team, team_league_encoders['team']) # Note: Now using unified 'team'
-
+                b_id = safe_encode_team(batting_team, team_league_encoders['team'])
+                bw_id = safe_encode_team(bowling_team, team_league_encoders['team'])
                 fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
                 input_data = pd.DataFrame({
@@ -343,6 +342,18 @@ def main():
                 break 
 
     final_matches.sort(key=lambda x: x.get("start_time_iso") or "")
+
+    # 🔥 DUPLICATE MATCHES HATAEN (Yeh naya code hai)
+    seen = set()
+    unique_matches = []
+    for m in final_matches:
+        # Match ki unique pehchan (Home + Away + Time)
+        key = (m.get("home", "").lower(), m.get("away", "").lower(), m.get("start_time_iso", ""))
+        if key not in seen:
+            seen.add(key)
+            unique_matches.append(m)
+    final_matches = unique_matches
+    # 🔥 DUPLICATE LOGIC END
 
     output = {
         "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
