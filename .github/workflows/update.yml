@@ -2,28 +2,36 @@ name: Update Live Data
 
 on:
   schedule:
-    - cron: '0 * * * *' # Har 1 ghante mein chalega
+    # Har 5 minute mein automatically chalega
+    - cron: '*/5 * * * *' 
   workflow_dispatch: # Manual run ke liye
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-    - run: pip install requests
+        
+    - name: Install dependencies
+      run: pip install requests pandas scikit-learn xgboost joblib
+      
     - name: Fetch Data
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         SECONDARY_API_KEY: ${{ secrets.SECONDARY_API_KEY }}
         TERTIARY_API_KEY: ${{ secrets.TERTIARY_API_KEY }}
       run: python fetch_data.py
-    - name: Commit
+      
+    - name: Commit and Push changes
       run: |
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
         git add live_matches.json
-        git commit -m "Auto update data" || echo "No changes"
+        git commit -m "Auto updated live data" || echo "No changes to commit"
         git push
