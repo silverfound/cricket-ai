@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 14:37:23",
+    "last_updated": "2026-11-01 14:54:58",
     "total_matches": 27,
     "matches": [
         {
@@ -21,7 +21,7 @@
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
             "score_home": null,
-            "score_away": "37/0",
+            "score_away": "62/2",
             "status": "In play"
         },
         {
@@ -43,7 +43,7 @@
             "home": "Mid West Rhinos",
             "away": "Mountaineers",
             "score_home": "310/8",
-            "score_away": "241/6",
+            "score_away": "277/6",
             "status": "In play"
         },
         {
@@ -131,7 +131,7 @@
             "home": "Janakpur Bolts",
             "away": "Pokhara Avengers (NPL)",
             "score_home": "147/7",
-            "score_away": "110/8",
+            "score_away": "132/9",
             "status": "In play"
         },
         {
@@ -153,7 +153,7 @@
             "home": "Afghanistan",
             "away": "Zimbabwe",
             "score_home": null,
-            "score_away": "8/0",
+            "score_away": "15/3",
             "status": "In play"
         },
         {
@@ -164,7 +164,7 @@
             "home": "Lions",
             "away": "Titans",
             "score_home": "206/3",
-            "score_away": "4/0",
+            "score_away": "56/0",
             "status": "In play"
         },
         {
