@@ -7,24 +7,26 @@
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; --green: #22c55e; --gold: #fbbf24; --border: #334155; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .header { text-align: center; margin-bottom: 20px; }
+        .header { text-align: center; margin-bottom: 15px; }
         .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
         .header p { color: #94a3b8; font-size: 12px; margin-top: 5px; }
         
-        .match-card { background: var(--card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; }
+        /* Tabs Design */
+        .tabs { display: flex; background: var(--card); border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border); }
+        .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: transparent; color: #94a3b8; border: none; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); color: var(--bg); }
         
-        .card-top { background: rgba(56, 189, 248, 0.1); padding: 8px 15px; font-size: 11px; color: var(--accent); display: flex; justify-content: space-between; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
-        
+        .match-card { background: var(--card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; display: none; /* Default hide */ }
+        .card-top { background: rgba(56, 189, 248, 0.1); padding: 8px 15px; font-size: 11px; color: var(--accent); display: flex; justify-content: space-between; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid var(--border); }
         .card-body { padding: 15px; }
         .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .team-name { font-size: 16px; font-weight: 600; }
         .score { font-size: 18px; font-weight: bold; color: var(--accent); }
-        
         .card-bottom { padding: 0 15px 15px 15px; }
         .status { background: rgba(34, 197, 94, 0.1); color: var(--green); font-size: 12px; text-align: center; padding: 8px; border-radius: 6px; font-weight: bold; }
-        
         .prediction-box { background: rgba(251, 191, 36, 0.1); border-top: 1px solid var(--gold); color: var(--gold); font-size: 13px; text-align: center; padding: 10px; font-weight: bold; }
-        .loading { text-align: center; color: var(--accent); margin-top: 50px; font-size: 18px; }
+        
+        .loading, .no-match { text-align: center; color: var(--accent); margin-top: 30px; font-size: 16px; display: none; }
     </style>
 </head>
 <body>
@@ -34,11 +36,21 @@
         <p id="last-updated">Loading latest matches...</p>
     </div>
 
+    <!-- Tabs Section -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('live')" id="tab-live">🔴 Live</button>
+        <button class="tab-btn" onclick="switchTab('upcoming')" id="tab-upcoming">⏳ Upcoming</button>
+        <button class="tab-btn" onclick="switchTab('finished')" id="tab-finished">✅ Finished</button>
+    </div>
+
     <div id="matches-container">
-        <div class="loading">⏳ Data aa raha hai, thoda intezaar karein...</div>
+        <div class="loading" id="loading-text">⏳ Data aa raha hai...</div>
     </div>
 
     <script>
+        let allMatches = []; // Saara data yahan save hoga
+        let currentTab = 'live'; // Default tab
+
         async function fetchMatches() {
             try {
                 const timestamp = new Date().getTime(); 
@@ -46,69 +58,68 @@
                 const data = await response.json();
                 
                 document.getElementById('last-updated').innerText = `Last Updated: ${data.last_updated}`;
-                const container = document.getElementById('matches-container');
-                container.innerHTML = '';
-
-                if (data.matches.length === 0) {
-                    container.innerHTML = '<div class="loading">Abhi koi live match nahi hai.</div>';
-                    return;
-                }
-
-                data.matches.forEach(match => {
-                    const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
-                    const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
-                    
-                    // 🔥 TIMEZONE MAGIC: Yahan JS automatically mobile ka timezone detect karega
-                    let localDate = "Date TBD";
-                    let localTime = "";
-                    
-                    if (match.start_time_iso) {
-                        const dateObj = new Date(match.start_time_iso);
-                        
-                        // User ke phone ke hisaab se Date (e.g., 13 Jan)
-                        localDate = dateObj.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-                        
-                        // User ke phone ke hisaab se Time (e.g., 02:00 PM)
-                        localTime = dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-                    }
-
-                    let dateTimeString = `${match.format} | ${localDate}, ${localTime}`;
-
-                    let predictionHTML = "";
-                    if (match.predicted_winner) {
-                        predictionHTML = `<div class="prediction-box">🤖 AI Prediction: ${match.predicted_winner}</div>`;
-                    } else {
-                        predictionHTML = `<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available</div>`;
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'match-card';
-                    card.innerHTML = `
-                        <div class="card-top">
-                            <span>${match.league}</span>
-                            <span>${dateTimeString}</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="team-row">
-                                <span class="team-name">${match.home}</span>
-                                <span class="score">${scoreHome}</span>
-                            </div>
-                            <div class="team-row">
-                                <span class="team-name">${match.away}</span>
-                                <span class="score">${scoreAway}</span>
-                            </div>
-                        </div>
-                        <div class="card-bottom">
-                            <div class="status">${match.status}</div>
-                        </div>
-                        ${predictionHTML}
-                    `;
-                    container.appendChild(card);
-                });
+                allMatches = data.matches; 
+                
+                document.getElementById('loading-text').style.display = 'none';
+                renderMatches(); // Data aane ke baad render karein
 
             } catch (error) {
-                document.getElementById('matches-container').innerHTML = `<div class="loading" style="color:red;">Data load nahi ho paya. Internet check karein.</div>`;
+                document.getElementById('loading-text').innerText = "Data load nahi ho paya.";
             }
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            // Button colors change karna
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            renderMatches();
+        }
+
+        function renderMatches() {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = ''; // Clear container
+
+            // Current tab ke hisaab se matches filter karna
+            const filteredMatches = allMatches.filter(m => m.match_state === currentTab);
+
+            if (filteredMatches.length === 0) {
+                container.innerHTML = `<div class="no-match" style="display:block;">Is category mein abhi koi match nahi hai.</div>`;
+                return;
+            }
+
+            filteredMatches.forEach(match => {
+                const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
+                const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
+                
+                let localDate = "Date TBD", localTime = "";
+                if (match.start_time_iso) {
+                    const dateObj = new Date(match.start_time_iso);
+                    localDate = dateObj.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+                    localTime = dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                }
+
+                let predictionHTML = match.predicted_winner 
+                    ? `<div class="prediction-box">🤖 AI Prediction: ${match.predicted_winner}</div>`
+                    : `<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available</div>`;
+
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.style.display = 'block'; // Show card
+                card.innerHTML = `
+                    <div class="card-top">
+                        <span>${match.league}</span>
+                        <span>${match.format} | ${localDate}, ${localTime}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="team-row"><span class="team-name">${match.home}</span><span class="score">${scoreHome}</span></div>
+                        <div class="team-row"><span class="team-name">${match.away}</span><span class="score">${scoreAway}</span></div>
+                    </div>
+                    <div class="card-bottom"><div class="status">${match.status}</div></div>
+                    ${predictionHTML}
+                `;
+                container.appendChild(card);
+            });
         }
 
         fetchMatches();
