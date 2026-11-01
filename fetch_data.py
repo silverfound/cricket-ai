@@ -1,7 +1,7 @@
 import os
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import joblib
 import pandas as pd
@@ -14,19 +14,16 @@ KEY_SPORTSCORE = os.environ.get("SPORTSCORE_API_KEY")
 KEY_CRICKETDATA = os.environ.get("CRICKETDATA_API_KEY") 
 
 today = datetime.now().strftime("%Y-%m-%d")
+tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
 
 # 🧠 SAARE MODELS LOAD KARNA
 try:
-    # V3 Models (Live Matches ke liye)
     score_model = joblib.load('score_pred_model_v3.pkl')
     team_league_encoders = joblib.load('team_league_encoders.pkl')
     win_model = joblib.load('win_prob_model_v3.pkl')
     chase_encoders = joblib.load('chase_encoders.pkl')
-    
-    # Purana Model (Upcoming Matches ke liye)
     pre_match_model = joblib.load('xgb_model.pkl')
     old_encoders = joblib.load('encoders.pkl')
-    
     print("✅ Saare Models (Live + Upcoming) load ho gaye!")
 except Exception as e:
     print(f"⚠️ Model load error: {e}")
@@ -44,8 +41,7 @@ def extract_overs(info_str):
 
 # 🤖 LIVE MATCH AI PREDICTION (V3)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
-    if not all([score_model, team_league_encoders, win_model, chase_encoders]): 
-        return None, None
+    if not all([score_model, team_league_encoders, win_model, chase_encoders]): return None, None
     try:
         total_overs = 20 if match_format.upper() == "T20" else (50 if match_format.upper() == "ODI" else 100)
         h_score = home_info.get("score", "")
@@ -74,7 +70,6 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if "ov" in h_info:
                 chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1))
 
-        # 2nd Innings
         if target:
             runs_needed = target - chasing_score
             wickets_left = 10 - chasing_wickets
@@ -84,7 +79,6 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if balls_remaining > 0 and runs_needed > 0:
                 crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
                 rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
-                
                 try: l_id = chase_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
                 try: c_id = chase_encoders['chasing_team'].transform([chasing_team])[0]
@@ -100,12 +94,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 })
                 prob = win_model.predict_proba(input_data)[0][1] * 100
                 return round(prob, 1), None
-        
-        # 1st Innings
         else:
             batting_score, batting_wickets, batting_overs = 0, 0, 0.0
             batting_team, bowling_team = "", ""
-            
             if h_score and not a_score:
                 batting_score = int(h_score.split("/")[0]) if "/" in h_score else 0
                 batting_wickets = int(h_score.split("/")[1]) if "/" in h_score else 0
@@ -116,21 +107,18 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 batting_wickets = int(a_score.split("/")[1]) if "/" in a_score else 0
                 batting_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', a_info).group(1)) if "ov" in a_info else 0
                 batting_team, bowling_team = away_team, home_team
-            else:
-                return None, None
+            else: return None, None
             
             if batting_overs > 0 and batting_score > 0:
                 balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
                 balls_remaining = (total_overs * 6) - balls_bowled
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
-                
                 try: l_id = team_league_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
                 try: b_id = team_league_encoders['bat_team'].transform([batting_team])[0]
                 except: b_id = -1
                 try: bw_id = team_league_encoders['bowl_team'].transform([bowling_team])[0]
                 except: bw_id = -1
-
                 fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
                 input_data = pd.DataFrame({
@@ -139,53 +127,47 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                     'balls_remaining': [balls_remaining], 'wickets_lost': [batting_wickets], 
                     'current_run_rate': [crr], 'last_3_overs_runs': [10]
                 })
-                
                 pred_score = score_model.predict(input_data)[0]
                 return None, f"{int(pred_score)-5} - {int(pred_score)+5}"
         return None, None
-    except:
-        return None, None
+    except: return None, None
 
-# 🤖 UPCOMING MATCH AI PREDICTION (Pre-match)
+# 🤖 UPCOMING MATCH AI PREDICTION
 def get_pre_match_prediction(home_team, away_team, match_format, league_name):
     if not pre_match_model or not old_encoders: return None
     try:
-        # Purane model ke hisaab se data encode karna
-        # Agar team/format encode nahi hota, toh default value (0) use karein
         try: t1 = old_encoders['team1'].transform([home_team])[0]
-        except: return None # Agar team hi nahi pata toh prediction skip karo
-        
+        except: return None 
         try: t2 = old_encoders['team2'].transform([away_team])[0]
         except: return None
-
         try: fmt = old_encoders['format'].transform([match_format.upper()])[0]
-        except: fmt = 0 # Default T20
+        except: fmt = 0 
 
-        # Live API mein venue aur toss nahi hota, toh default value daal rahe hain
         input_data = pd.DataFrame({
             'format': [fmt], 'venue': [0], 'city': [0],
             'team1': [t1], 'team2': [t2],
             'toss_winner': [t1], 'toss_decision': [0]
         })
-        
         prob = pre_match_model.predict_proba(input_data)[0]
-        # prob[1] matlab team1 jeetegi, prob[0] matlab team2
-        if prob[1] > prob[0]:
-            return f"{home_team} ({prob[1]*100:.1f}%)"
-        else:
-            return f"{away_team} ({prob[0]*100:.1f}%)"
-    except:
-        return None
+        if prob[1] > prob[0]: return f"{home_team} ({prob[1]*100:.1f}%)"
+        else: return f"{away_team} ({prob[0]*100:.1f}%)"
+    except: return None
 
 # --- APIs ---
 def fetch_highlightly():
-    url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={today}"
-    headers = {"x-rapidapi-key": KEY_HIGHLIGHTLY, "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com"}
-    try:
-        res = requests.get(url, headers=headers, timeout=10)
-        if res.status_code == 200: return res.json(), "Highlightly"
-    except: pass
-    return None, None
+    all_data = []
+    # Aaj aur Kal dono ka data fetch karna
+    for d in [today, tomorrow]:
+        url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={d}"
+        headers = {"x-rapidapi-key": KEY_HIGHLIGHTLY, "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com"}
+        try:
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code == 200:
+                data = res.json()
+                if "data" in data:
+                    all_data.extend(data["data"])
+        except: pass
+    return {"data": all_data}, "Highlightly"
 
 def fetch_matchstat():
     url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/v1/live"
@@ -253,11 +235,8 @@ def standardize_data(data, source):
 
             win_prob, proj_score, pre_match_winner = None, None, None
             
-            # Live match AI
             if match_state == "live" and any(x in fmt.upper() for x in ['T20', 'ODI', 'HUNDRED']):
                 win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
-            
-            # Upcoming match AI
             elif match_state == "upcoming" and any(x in fmt.upper() for x in ['T20', 'ODI', 'HUNDRED']):
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league)
 
@@ -271,7 +250,6 @@ def standardize_data(data, source):
                 "win_probability": win_prob, "projected_score": proj_score, "pre_match_winner": pre_match_winner
             })
             
-    # (Matchstat aur CricketData ke liye purana basic logic, inme filhal pre-match add nahi kar rahe)
     elif source == "Matchstat" and "results" in data:
         for m in data["results"]:
             matches.append({
