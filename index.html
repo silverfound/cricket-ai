@@ -41,7 +41,7 @@
     <script>
         async function fetchMatches() {
             try {
-                const timestamp = new Date().getTime(); // Cache buster
+                const timestamp = new Date().getTime(); 
                 const response = await fetch(`live_matches.json?t=${timestamp}`);
                 const data = await response.json();
                 
@@ -58,22 +58,27 @@
                     const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
                     const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
                     
-                    // Date format karna (DD/MM/YYYY)
-                    let displayDate = match.date || "Today";
-                    if(displayDate.includes('-')) {
-                        const parts = displayDate.split('-');
-                        displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`; 
+                    // 🔥 TIMEZONE MAGIC: Yahan JS automatically mobile ka timezone detect karega
+                    let localDate = "Date TBD";
+                    let localTime = "";
+                    
+                    if (match.start_time_iso) {
+                        const dateObj = new Date(match.start_time_iso);
+                        
+                        // User ke phone ke hisaab se Date (e.g., 13 Jan)
+                        localDate = dateObj.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+                        
+                        // User ke phone ke hisaab se Time (e.g., 02:00 PM)
+                        localTime = dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
                     }
 
-                    // Time format
-                    let displayTime = match.time || "";
-                    let dateTimeString = displayTime ? `${match.format} | ${displayDate}, ${displayTime}` : `${match.format} | ${displayDate}`;
+                    let dateTimeString = `${match.format} | ${localDate}, ${localTime}`;
 
                     let predictionHTML = "";
                     if (match.predicted_winner) {
                         predictionHTML = `<div class="prediction-box">🤖 AI Prediction: ${match.predicted_winner}</div>`;
                     } else {
-                        predictionHTML = `<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available for this team</div>`;
+                        predictionHTML = `<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available</div>`;
                     }
 
                     const card = document.createElement('div');
