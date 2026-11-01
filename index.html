@@ -30,7 +30,9 @@
         .status { background: rgba(34, 197, 94, 0.1); color: var(--green); font-size: 12px; text-align: center; padding: 8px; border-radius: 6px; font-weight: bold; }
         .prediction-box { background: rgba(251, 191, 36, 0.1); border-top: 1px solid var(--gold); color: var(--gold); font-size: 13px; text-align: center; padding: 10px; font-weight: bold; }
         
-        .loading, .no-match { text-align: center; color: var(--accent); margin-top: 30px; font-size: 16px; display: none; }
+        .loading, .no-match, .error-msg { text-align: center; margin-top: 30px; font-size: 16px; display: none; }
+        .loading { color: var(--accent); }
+        .error-msg { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -49,28 +51,35 @@
         <button class="tab-btn" onclick="switchTab('finished')" id="tab-finished">✅ Finished</button>
     </div>
 
-    <div id="matches-container">
-        <div class="loading" id="loading-text" style="display: block;">⏳ Data aa raha hai...</div>
-    </div>
+    <!-- Loading aur Error alag se rakhe hain taaki delete na hon -->
+    <div id="loading-text" class="loading" style="display: block;">⏳ Data aa raha hai...</div>
+    <div id="error-text" class="error-msg"></div>
+    
+    <div id="matches-container"></div>
 
     <script>
         let allMatches = []; 
         let currentTab = 'live'; 
-        let isFirstLoad = true;
+
+        // Elements ko pehle hi pakad lete hain
+        const loadingText = document.getElementById('loading-text');
+        const errorText = document.getElementById('error-text');
+        const matchesContainer = document.getElementById('matches-container');
 
         function manualRefresh() {
-            document.getElementById('matches-container').innerHTML = '<div class="loading" id="loading-text" style="display: block;">⏳ Data update ho raha hai...</div>';
+            loadingText.style.display = 'block';
+            errorText.style.display = 'none';
+            matchesContainer.innerHTML = ''; 
             fetchMatches();
         }
 
         async function fetchMatches() {
             try {
-                // Simple fetch with timestamp to avoid cache
                 const timestamp = new Date().getTime(); 
                 const response = await fetch('live_matches.json?v=' + timestamp);
                 
                 if (!response.ok) {
-                    throw new Error("HTTP error " + response.status);
+                    throw new Error("File not found or Network issue");
                 }
                 
                 const data = await response.json();
@@ -78,13 +87,16 @@
                 document.getElementById('last-updated').innerText = "Last Updated: " + data.last_updated;
                 
                 allMatches = data.matches; 
+                
+                // Data aane ke baad loading hide karein
+                loadingText.style.display = 'none';
                 renderMatches(); 
 
-                document.getElementById('loading-text').style.display = 'none';
-
             } catch (error) {
-                // Agar error aaye toh screen par exact error dikhao
-                document.getElementById('matches-container').innerHTML = '<div class="loading" style="display:block; color:red;">Error: ' + error.message + '</div>';
+                // Error aane par loading hide karke error dikhayein
+                loadingText.style.display = 'none';
+                errorText.innerText = "Error: " + error.message;
+                errorText.style.display = 'block';
             }
         }
 
@@ -96,13 +108,12 @@
         }
 
         function renderMatches() {
-            const container = document.getElementById('matches-container');
-            container.innerHTML = ''; 
+            matchesContainer.innerHTML = ''; 
 
             const filteredMatches = allMatches.filter(m => m.match_state === currentTab);
 
             if (filteredMatches.length === 0) {
-                container.innerHTML = '<div class="no-match" style="display:block;">Is category mein abhi koi match nahi hai.</div>';
+                matchesContainer.innerHTML = '<div class="no-match" style="display:block;">Is category mein abhi koi match nahi hai.</div>';
                 return;
             }
 
@@ -136,10 +147,11 @@
                     '<div class="card-bottom"><div class="status">' + match.status + '</div></div>' +
                     predictionHTML;
                 
-                container.appendChild(card);
+                matchesContainer.appendChild(card);
             });
         }
 
+        // Pehli baar data fetch karein
         fetchMatches();
 
         // Auto-refresh every 1 minute
