@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 import re
 
-# Saari API Keys (GitHub Secrets se)
+# GitHub Secrets se saari API Keys uthana
 KEY_MATCHSTAT = os.environ.get("RAPIDAPI_KEY")
 KEY_HIGHLIGHTLY = os.environ.get("SECONDARY_API_KEY")
 KEY_BIGBALLS = os.environ.get("TERTIARY_API_KEY")
@@ -13,13 +13,23 @@ KEY_CRICKETDATA = os.environ.get("CRICKETDATA_API_KEY")
 
 today = datetime.now().strftime("%Y-%m-%d")
 
-# Overs nikalne ka helper function (jaise "17.2/20 ov" se "17.2 ov")
+# ==========================================
+# 🔥 OVERS NIKALNE KA SMART FUNCTION (FIXED)
+# ==========================================
 def extract_overs(info_str):
     if not info_str: return ""
+    # "1.2/20 ov, T:138" -> Hum "1.2 ov" nikalenge
+    if '/' in info_str:
+        part = info_str.split('/')[0].strip()
+        if part.replace('.', '', 1).isdigit():
+            return f"{part} ov"
+    # Agar format alag ho
     ov_match = re.search(r'(\d+\.\d+|\d+)\s*ov', info_str)
     return ov_match.group(0) if ov_match else ""
 
-# --- 1. Highlightly API ---
+# ==========================================
+# 🔌 1. HIGHLIGHTLY API
+# ==========================================
 def fetch_highlightly():
     url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={today}"
     headers = {"x-rapidapi-key": KEY_HIGHLIGHTLY, "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com"}
@@ -29,7 +39,9 @@ def fetch_highlightly():
     except: pass
     return None, None
 
-# --- 2. Matchstat API ---
+# ==========================================
+# 🔌 2. MATCHSTAT API
+# ==========================================
 def fetch_matchstat():
     url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/v1/live"
     headers = {"x-rapidapi-key": KEY_MATCHSTAT, "x-rapidapi-host": "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"}
@@ -39,7 +51,9 @@ def fetch_matchstat():
     except: pass
     return None, None
 
-# --- 3. CricketData API ---
+# ==========================================
+# 🔌 3. CRICKET DATA API (Official)
+# ==========================================
 def fetch_cricketdata():
     if not KEY_CRICKETDATA: return None, None
     url = f"https://api.cricapi.com/v1/currentMatches?apikey={KEY_CRICKETDATA}&offset=0" 
@@ -49,7 +63,9 @@ def fetch_cricketdata():
     except: pass
     return None, None
 
-# --- 4. Big Balls API ---
+# ==========================================
+# 🔌 4. BIG BALLS API (Official)
+# ==========================================
 def fetch_bigballs():
     if not KEY_BIGBALLS: return None, None
     url = "https://api.bigballsdata.com/v1/cricket/matches" 
@@ -60,7 +76,9 @@ def fetch_bigballs():
     except: pass
     return None, None
 
-# --- 5. Sportscore API ---
+# ==========================================
+# 🔌 5. SPORTSCORE API (Official)
+# ==========================================
 def fetch_sportscore():
     if not KEY_SPORTSCORE: return None, None
     url = "https://api.sportscore.com/v1/matches/live" 
@@ -71,7 +89,9 @@ def fetch_sportscore():
     except: pass
     return None, None
 
-# --- Data Formatting ---
+# ==========================================
+# 🧠 DATA FORMATTER (Sabhi APIs ka data ek format mein)
+# ==========================================
 def standardize_data(data, source):
     matches = []
     if not data: return matches
@@ -81,6 +101,7 @@ def standardize_data(data, source):
             status_raw = m.get("state", {}).get("description", "")
             status_lower = status_raw.lower()
             
+            # Smart State Logic
             if "scheduled" in status_lower or "not started" in status_lower:
                 match_state = "upcoming"
             elif "finished" in status_lower or "won by" in status_lower or "abandoned" in status_lower or "result" in status_lower:
@@ -128,6 +149,9 @@ def standardize_data(data, source):
             
     return matches
 
+# ==========================================
+# 🚀 MAIN EXECUTION (Smart Fallback)
+# ==========================================
 def main():
     # APIs ki priority (Agar pehli fail hogi toh dusri try hogi)
     apis = [
