@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- 🔥 MAGIC TAGS: Yeh Android ko force karte hain naya data laane ke liye -->
+    <!-- 🔥 MAGIC TAGS: Android ko force karte hain naya data laane ke liye -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -65,6 +65,7 @@
     <script>
         let allMatches = []; 
         let currentTab = 'live'; 
+        let isFirstLoad = true;
 
         // Manual Refresh Function
         function manualRefresh() {
@@ -75,18 +76,26 @@
 
         async function fetchMatches() {
             try {
-                // Timestamp force karega browser ko fresh data laane ke liye
+                // Timestamp aur cache bypass taaki hamesha naya data aaye
                 const timestamp = new Date().getTime(); 
                 const response = await fetch(`live_matches.json?v=${timestamp}`, {
-                    cache: "no-store" // Yeh line cache ko bypass karti hai
+                    cache: "no-store" 
                 });
                 const data = await response.json();
                 
                 document.getElementById('last-updated').innerText = `Last Updated: ${data.last_updated}`;
-                allMatches = data.matches; 
                 
+                // Data check karein ki kya woh pehle se alag hai
+                const newDataStr = JSON.stringify(data.matches);
+                const oldDataStr = JSON.stringify(allMatches);
+                
+                if (newDataStr !== oldDataStr || isFirstLoad) {
+                    allMatches = data.matches; 
+                    renderMatches(); 
+                    isFirstLoad = false;
+                }
+
                 document.getElementById('loading-text').style.display = 'none';
-                renderMatches(); 
 
             } catch (error) {
                 document.getElementById('matches-container').innerHTML = `<div class="loading" style="display:block; color:red;">Data load nahi ho paya. Internet check karein.</div>`;
@@ -145,7 +154,15 @@
             });
         }
 
+        // Pehli baar chalayen
         fetchMatches();
+
+        // 🔥 AUTO-REFRESH TIMER: Har 1 minute (60,000 ms) mein khud refresh hoga
+        setInterval(() => {
+            console.log("Auto-refreshing data...");
+            fetchMatches();
+        }, 60000); 
+
     </script>
 </body>
 </html>
