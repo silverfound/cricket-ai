@@ -13,7 +13,6 @@
         
         .match-card { background: var(--card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; }
         
-        /* Professional Header inside card */
         .card-top { background: rgba(56, 189, 248, 0.1); padding: 8px 15px; font-size: 11px; color: var(--accent); display: flex; justify-content: space-between; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
         
         .card-body { padding: 15px; }
@@ -42,8 +41,7 @@
     <script>
         async function fetchMatches() {
             try {
-                // CACHE BUSTER: Data ke aage time laga rahe hain taaki purana data na dikhe
-                const timestamp = new Date().getTime();
+                const timestamp = new Date().getTime(); // Cache buster
                 const response = await fetch(`live_matches.json?t=${timestamp}`);
                 const data = await response.json();
                 
@@ -60,16 +58,22 @@
                     const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
                     const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
                     
-                    // Date format karna
+                    // Date format karna (DD/MM/YYYY)
                     let displayDate = match.date || "Today";
                     if(displayDate.includes('-')) {
                         const parts = displayDate.split('-');
-                        displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+                        displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`; 
                     }
+
+                    // Time format
+                    let displayTime = match.time || "";
+                    let dateTimeString = displayTime ? `${match.format} | ${displayDate}, ${displayTime}` : `${match.format} | ${displayDate}`;
 
                     let predictionHTML = "";
                     if (match.predicted_winner) {
                         predictionHTML = `<div class="prediction-box">🤖 AI Prediction: ${match.predicted_winner}</div>`;
+                    } else {
+                        predictionHTML = `<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available for this team</div>`;
                     }
 
                     const card = document.createElement('div');
@@ -77,7 +81,7 @@
                     card.innerHTML = `
                         <div class="card-top">
                             <span>${match.league}</span>
-                            <span>${match.format} | ${displayDate}</span>
+                            <span>${dateTimeString}</span>
                         </div>
                         <div class="card-body">
                             <div class="team-row">
