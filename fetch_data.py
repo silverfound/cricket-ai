@@ -20,10 +20,13 @@ try:
     team_league_encoders = joblib.load('team_league_encoders.pkl')
     win_model = joblib.load('win_prob_model_v3.pkl')
     chase_encoders = joblib.load('chase_encoders.pkl')
+    
+    # 🔥 NAYA PRE-MATCH MODEL
+    pre_match_model = joblib.load('pre_match_model_v3.pkl')
     print("✅ Saare Models load ho gaye!")
 except Exception as e:
     print(f"⚠️ Model load error: {e}")
-    score_model, team_league_encoders, win_model, chase_encoders = None, None, None, None
+    score_model, team_league_encoders, win_model, chase_encoders, pre_match_model = None, None, None, None, None
 
 # 🔥 OVERS NIKALNE KA FUNCTION
 def extract_overs(info_str):
@@ -36,41 +39,27 @@ def extract_overs(info_str):
     return ov_match.group(0) if ov_match else ""
 
 # ==========================================
-# 🛡️ UNIVERSAL SAFE ENCODER (Gender Check)
+# 🛡️ UNIVERSAL SAFE ENCODER
 # ==========================================
 def safe_encode_team(team_name, encoder):
     if not encoder: return -1
     try:
         team_name_clean = str(team_name).strip().lower()
-        
-        # 1. Exact Match
         for cls in encoder.classes_:
             if str(cls).strip().lower() == team_name_clean:
                 return encoder.transform([cls])[0]
         
-        # 2. Strict Fuzzy Match (Men with Men, Women with Women)
         is_women_api = "women" in team_name_clean or "w " in team_name_clean or " (w)" in team_name_clean
-        
         for cls in encoder.classes_:
             cls_clean = str(cls).strip().lower()
             is_women_encoder = "women" in cls_clean or "w " in cls_clean or " (w)" in cls_clean
-            
             if is_women_api == is_women_encoder:
-                remove_words = ["women", "w ", " (w)", "(npl)", "npl ", " w", " women", "(ipl)", "(bbl)"]
-                clean_api = team_name_clean
-                clean_enc = cls_clean
-                for word in remove_words:
-                    clean_api = clean_api.replace(word, "")
-                    clean_enc = clean_enc.replace(word, "")
-                
-                clean_api = clean_api.strip()
-                clean_enc = clean_enc.strip()
-                
+                clean_api = team_name_clean.replace("women", "").replace("w ", "").replace(" (w)", "").strip()
+                clean_enc = cls_clean.replace("women", "").replace("w ", "").replace(" (w)", "").strip()
                 if clean_api == clean_enc or clean_api in clean_enc or clean_enc in clean_api:
                     return encoder.transform([cls])[0]
         return -1
-    except:
-        return -1
+    except: return -1
 
 # 🤖 LIVE MATCH AI PREDICTION (V3)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
@@ -103,17 +92,14 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if "ov" in h_info:
                 chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1))
 
-        # 2nd Innings Win Probability
         if target:
             runs_needed = target - chasing_score
             wickets_left = 10 - chasing_wickets
             balls_bowled = int(chasing_overs) * 6 + int((chasing_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
-            
             if balls_remaining > 0 and runs_needed > 0:
                 crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
                 rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
-                
                 try: l_id = chase_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
                 c_id = safe_encode_team(chasing_team, chase_encoders['chasing_team'])
@@ -127,8 +113,6 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 })
                 prob = win_model.predict_proba(input_data)[0][1] * 100
                 return round(prob, 1), None
-                
-        # 1st Innings Projected Score
         else:
             batting_score, batting_wickets, batting_overs = 0, 0, 0.0
             batting_team, bowling_team = "", ""
@@ -148,12 +132,10 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
                 balls_remaining = (total_overs * 6) - balls_bowled
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
-                
                 try: l_id = team_league_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
                 b_id = safe_encode_team(batting_team, team_league_encoders['bat_team'])
                 bw_id = safe_encode_team(bowling_team, team_league_encoders['bowl_team'])
-                
                 fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
                 input_data = pd.DataFrame({
@@ -167,25 +149,23 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
         return None, None
     except: return None, None
 
-# 🤖 PRE-MATCH AI PREDICTION (Using V3 Model)
+# 🤖 NAYA PRE-MATCH AI PREDICTION
 def get_pre_match_prediction(home_team, away_team, match_format, league_name):
-    if not win_model or not chase_encoders: return None
+    if not pre_match_model or not team_league_encoders: return None
     try:
-        # Home team ko chasing maan kar V3 model se probability nikal rahe hain
-        t1 = safe_encode_team(home_team, chase_encoders['chasing_team'])
-        t2 = safe_encode_team(away_team, chase_encoders['defending_team'])
-        
-        try: l_id = chase_encoders['league'].transform([league_name])[0]
+        t1 = safe_encode_team(home_team, team_league_encoders['bat_team'])
+        t2 = safe_encode_team(away_team, team_league_encoders['bowl_team'])
+        try: l_id = team_league_encoders['league'].transform([league_name])[0]
         except: l_id = -1
 
-        # Assume home team is chasing a target of 160 in 120 balls
-        input_v3 = pd.DataFrame({
-            'league_id': [l_id], 'chasing_team_id': [t1], 'defending_team_id': [t2],
-            'runs_needed': [160], 'balls_remaining': [120],
-            'wickets_left': [10], 'current_run_rate': [0],
-            'required_run_rate': [8.0]
+        if t1 == -1 or t2 == -1: return None
+
+        input_data = pd.DataFrame({
+            'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2]
         })
-        prob = win_model.predict_proba(input_v3)[0]
+        prob = pre_match_model.predict_proba(input_data)[0]
+        
+        # prob[1] = Home Team Wins, prob[0] = Away Team Wins
         home_prob = prob[1] * 100
         away_prob = prob[0] * 100
         
