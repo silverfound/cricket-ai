@@ -2,25 +2,22 @@ name: Update Live Data
 
 on:
   schedule:
-    # Har 5 minute mein automatically chalega
-    - cron: '*/5 * * * *' 
-  workflow_dispatch: # Manual run ke liye
+    - cron: '0 * * * *' # Har 1 ghante mein chalega
+  workflow_dispatch: 
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # History fetch karne ke liye
+
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
         
     - name: Install dependencies
-      # 🔥 YEH SABSE ZAROORI HAI: AI model ke liye libraries install karne ke liye
       run: pip install requests pandas scikit-learn xgboost joblib
       
     - name: Fetch Data
@@ -37,5 +34,8 @@ jobs:
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
         git add live_matches.json
-        git commit -m "Auto updated live data with AI predictions" || echo "No changes to commit"
+        git commit -m "Auto update data" || echo "No changes"
+        
+        # 🔥 YEH LINE ERROR FIX KAREGI (Push se pehle pull karega)
+        git pull --rebase origin main
         git push
