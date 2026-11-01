@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 16:03:09",
+    "last_updated": "2026-11-01 16:13:12",
     "total_matches": 27,
     "data_source_api": "Highlightly",
     "matches": [
@@ -11,7 +11,9 @@
             "home": "Montreal Warriors",
             "away": "Brampton Blazers",
             "score_home": null,
+            "overs_home": "",
             "score_away": null,
+            "overs_away": "",
             "status": "Scheduled",
             "api_source": "Highlightly"
         },
@@ -22,9 +24,11 @@
             "match_state": "live",
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
-            "score_home": null,
+            "score_home": "13/0",
+            "overs_home": "20 ov",
             "score_away": "161/5",
-            "status": "Innings break",
+            "overs_away": "",
+            "status": "In play",
             "api_source": "Highlightly"
         },
         {
@@ -35,7 +39,9 @@
             "home": "Mashonaland Eagles",
             "away": "Matabeleland Tuskers",
             "score_home": "206/7",
+            "overs_home": "50 ov",
             "score_away": "205",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -47,7 +53,9 @@
             "home": "Mid West Rhinos",
             "away": "Mountaineers",
             "score_home": "310/8",
+            "overs_home": "",
             "score_away": "294/8",
+            "overs_away": "50 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -59,7 +67,9 @@
             "home": "Afghanistan",
             "away": "Australia",
             "score_home": "119/2",
+            "overs_home": "6 ov",
             "score_away": "115/5",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -71,7 +81,9 @@
             "home": "Oman",
             "away": "Pakistan",
             "score_home": "136/4",
+            "overs_home": "6 ov",
             "score_away": "154/4",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -83,7 +95,9 @@
             "home": "England",
             "away": "South Africa",
             "score_home": "95",
+            "overs_home": "",
             "score_away": "101/1",
+            "overs_away": "6 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -95,7 +109,9 @@
             "home": "Scotland",
             "away": "United Arab Emirates",
             "score_home": "135/1",
+            "overs_home": "",
             "score_away": "90/3",
+            "overs_away": "6 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -107,7 +123,9 @@
             "home": "Hong Kong",
             "away": "Sri Lanka",
             "score_home": "119/0",
+            "overs_home": "",
             "score_away": "118/4",
+            "overs_away": "6 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -119,7 +137,9 @@
             "home": "Bangladesh",
             "away": "India",
             "score_home": "116/5",
+            "overs_home": "",
             "score_away": "117/1",
+            "overs_away": "6 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -131,7 +151,9 @@
             "home": "West Indies A",
             "away": "England Lions",
             "score_home": null,
+            "overs_home": "",
             "score_away": null,
+            "overs_away": "",
             "status": "Scheduled",
             "api_source": "Highlightly"
         },
@@ -143,7 +165,9 @@
             "home": "Janakpur Bolts",
             "away": "Pokhara Avengers (NPL)",
             "score_home": "147/7",
+            "overs_home": "",
             "score_away": "138/9",
+            "overs_away": "20 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -155,7 +179,9 @@
             "home": "Namibia",
             "away": "Ireland",
             "score_home": "131/5",
+            "overs_home": "50 ov",
             "score_away": "129",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -166,21 +192,25 @@
             "match_state": "live",
             "home": "Afghanistan",
             "away": "Zimbabwe",
-            "score_home": null,
+            "score_home": "15/1",
+            "overs_home": "20 ov",
             "score_away": "79",
-            "status": "Innings break",
+            "overs_away": "",
+            "status": "In play",
             "api_source": "Highlightly"
         },
         {
             "league": "CSA T20 Challenge",
             "format": "T20",
             "start_time_iso": "2026-11-01T12:30:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Lions",
             "away": "Titans",
             "score_home": "206/3",
-            "score_away": "163/6",
-            "status": "In play",
+            "overs_home": "",
+            "score_away": "191/7",
+            "overs_away": "20 ov",
+            "status": "Finished",
             "api_source": "Highlightly"
         },
         {
@@ -191,7 +221,9 @@
             "home": "Dolphins",
             "away": "Boland",
             "score_home": "174/4",
+            "overs_home": "",
             "score_away": "178/3",
+            "overs_away": "20 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -203,7 +235,9 @@
             "home": "Otago",
             "away": "Central Districts",
             "score_home": "233",
+            "overs_home": "",
             "score_away": "204",
+            "overs_away": "50 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -215,7 +249,9 @@
             "home": "Sydney Sixers Women",
             "away": "Hobart Hurricanes Women",
             "score_home": "196/8",
+            "overs_home": "",
             "score_away": "109",
+            "overs_away": "20 ov",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -227,7 +263,9 @@
             "home": "Sydney Thunder Women",
             "away": "Brisbane Heat Women",
             "score_home": "180/4",
+            "overs_home": "20 ov",
             "score_away": "178/5",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -239,7 +277,9 @@
             "home": "New Zealand",
             "away": "India",
             "score_home": "195/3",
+            "overs_home": "20 ov",
             "score_away": "191/8",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         },
@@ -251,7 +291,9 @@
             "home": "Rangpur Division",
             "away": "Rajshahi Division",
             "score_home": "122/3",
+            "overs_home": "39 ov",
             "score_away": "231",
+            "overs_away": "",
             "status": "No live coverage",
             "api_source": "Highlightly"
         },
@@ -263,7 +305,9 @@
             "home": "Dhaka Division",
             "away": "Barisal Division",
             "score_home": null,
+            "overs_home": "",
             "score_away": null,
+            "overs_away": "",
             "status": "No live coverage",
             "api_source": "Highlightly"
         },
@@ -275,7 +319,9 @@
             "home": "Dhaka Metropolis",
             "away": "Khulna Division",
             "score_home": "(fo) 108 & 57/2",
+            "overs_home": "14 ov",
             "score_away": "288",
+            "overs_away": "",
             "status": "No live coverage",
             "api_source": "Highlightly"
         },
@@ -287,7 +333,9 @@
             "home": "Sylhet Division",
             "away": "Chittagong Division",
             "score_home": "218 & 89/2",
+            "overs_home": "38 ov",
             "score_away": "210",
+            "overs_away": "",
             "status": "No live coverage",
             "api_source": "Highlightly"
         },
@@ -299,7 +347,9 @@
             "home": "New Zealand A",
             "away": "India A",
             "score_home": "218/3",
+            "overs_home": "62 ov",
             "score_away": "346",
+            "overs_away": "",
             "status": "Stumps",
             "api_source": "Highlightly"
         },
@@ -311,7 +361,9 @@
             "home": "Queensland",
             "away": "Victoria",
             "score_home": "202/5",
+            "overs_home": "71 ov",
             "score_away": "307",
+            "overs_away": "",
             "status": "Stumps",
             "api_source": "Highlightly"
         },
@@ -323,7 +375,9 @@
             "home": "Tasmania",
             "away": "New South Wales",
             "score_home": "427",
+            "overs_home": "",
             "score_away": "(fo) 202 & 144",
+            "overs_away": "",
             "status": "Finished",
             "api_source": "Highlightly"
         }
