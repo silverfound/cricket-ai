@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 17:00:24",
+    "last_updated": "2026-11-01 17:36:20",
     "total_matches": 27,
     "data_source_api": "Highlightly",
     "matches": [
@@ -21,14 +21,14 @@
             "league": "NCL GT20 Canada",
             "format": "T20",
             "start_time_iso": "2026-11-01T15:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
-            "score_home": "107/1",
-            "overs_home": "11.4 ov",
+            "score_home": "162/1",
+            "overs_home": "16 ov",
             "score_away": "161/5",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly"
         },
         {
