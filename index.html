@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 🔥 MAGIC TAGS: Yeh Android ko force karte hain naya data laane ke liye -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <title>AI Cricket Predictor</title>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; --green: #22c55e; --gold: #fbbf24; --border: #334155; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .header { text-align: center; margin-bottom: 15px; }
-        .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
+        
+        .header { text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; }
+        .header h1 { color: var(--accent); margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+        
+        /* Refresh Button Design */
+        .refresh-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 50%; width: 35px; height: 35px; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .refresh-btn:active { background: var(--accent); color: var(--bg); transform: rotate(180deg); }
+        
         .header p { color: #94a3b8; font-size: 12px; margin-top: 5px; }
         
         /* Tabs Design */
@@ -16,7 +28,7 @@
         .tab-btn { flex: 1; padding: 12px 0; text-align: center; background: transparent; color: #94a3b8; border: none; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: var(--accent); color: var(--bg); }
         
-        .match-card { background: var(--card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; display: none; /* Default hide */ }
+        .match-card { background: var(--card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); overflow: hidden; display: none; }
         .card-top { background: rgba(56, 189, 248, 0.1); padding: 8px 15px; font-size: 11px; color: var(--accent); display: flex; justify-content: space-between; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid var(--border); }
         .card-body { padding: 15px; }
         .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -32,7 +44,10 @@
 <body>
 
     <div class="header">
-        <h1>🏏 AI Cricket Predictor</h1>
+        <h1>
+            🏏 AI Cricket Predictor 
+            <button class="refresh-btn" onclick="manualRefresh()">🔄</button>
+        </h1>
         <p id="last-updated">Loading latest matches...</p>
     </div>
 
@@ -44,33 +59,42 @@
     </div>
 
     <div id="matches-container">
-        <div class="loading" id="loading-text">⏳ Data aa raha hai...</div>
+        <div class="loading" id="loading-text" style="display: block;">⏳ Data aa raha hai...</div>
     </div>
 
     <script>
-        let allMatches = []; // Saara data yahan save hoga
-        let currentTab = 'live'; // Default tab
+        let allMatches = []; 
+        let currentTab = 'live'; 
+
+        // Manual Refresh Function
+        function manualRefresh() {
+            document.getElementById('loading-text').style.display = 'block';
+            document.getElementById('matches-container').innerHTML = '<div class="loading" id="loading-text" style="display: block;">⏳ Data update ho raha hai...</div>';
+            fetchMatches();
+        }
 
         async function fetchMatches() {
             try {
+                // Timestamp force karega browser ko fresh data laane ke liye
                 const timestamp = new Date().getTime(); 
-                const response = await fetch(`live_matches.json?t=${timestamp}`);
+                const response = await fetch(`live_matches.json?v=${timestamp}`, {
+                    cache: "no-store" // Yeh line cache ko bypass karti hai
+                });
                 const data = await response.json();
                 
                 document.getElementById('last-updated').innerText = `Last Updated: ${data.last_updated}`;
                 allMatches = data.matches; 
                 
                 document.getElementById('loading-text').style.display = 'none';
-                renderMatches(); // Data aane ke baad render karein
+                renderMatches(); 
 
             } catch (error) {
-                document.getElementById('loading-text').innerText = "Data load nahi ho paya.";
+                document.getElementById('matches-container').innerHTML = `<div class="loading" style="display:block; color:red;">Data load nahi ho paya. Internet check karein.</div>`;
             }
         }
 
         function switchTab(tabName) {
             currentTab = tabName;
-            // Button colors change karna
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`tab-${tabName}`).classList.add('active');
             renderMatches();
@@ -78,9 +102,8 @@
 
         function renderMatches() {
             const container = document.getElementById('matches-container');
-            container.innerHTML = ''; // Clear container
+            container.innerHTML = ''; 
 
-            // Current tab ke hisaab se matches filter karna
             const filteredMatches = allMatches.filter(m => m.match_state === currentTab);
 
             if (filteredMatches.length === 0) {
@@ -105,7 +128,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'match-card';
-                card.style.display = 'block'; // Show card
+                card.style.display = 'block'; 
                 card.innerHTML = `
                     <div class="card-top">
                         <span>${match.league}</span>
