@@ -37,6 +37,33 @@ def extract_overs(info_str):
     ov_match = re.search(r'(\d+\.\d+|\d+)\s*ov', info_str)
     return ov_match.group(0) if ov_match else ""
 
+# ==========================================
+# 🛡️ UNIVERSAL SAFE ENCODER (Gender Check)
+# ==========================================
+def safe_encode_team(team_name, encoder):
+    if not encoder: return -1
+    try:
+        # 1. Exact Match
+        if team_name in encoder.classes_:
+            return encoder.transform([team_name])[0]
+        
+        # 2. Strict Fuzzy Match (Men with Men, Women with Women)
+        is_women_api = "women" in team_name.lower() or "w " in team_name.lower() or " (w)" in team_name.lower()
+        
+        for cls in encoder.classes_:
+            is_women_encoder = "women" in cls.lower() or "w " in cls.lower() or " (w)" in cls.lower()
+            
+            # Only compare if both are women or both are men
+            if is_women_api == is_women_encoder:
+                clean_api = team_name.lower().replace("women", "").replace("w ", "").replace(" (w)", "").strip()
+                clean_enc = cls.lower().replace("women", "").replace("w ", "").replace(" (w)", "").strip()
+                
+                if clean_api == clean_enc or clean_api in clean_enc or clean_enc in clean_api:
+                    return encoder.transform([cls])[0]
+        return -1
+    except:
+        return -1
+
 # 🤖 LIVE MATCH AI PREDICTION (V3)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
     if not all([score_model, team_league_encoders, win_model, chase_encoders]): return None, None
@@ -68,6 +95,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if "ov" in h_info:
                 chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1))
 
+        # 2nd Innings Win Probability
         if target:
             runs_needed = target - chasing_score
             wickets_left = 10 - chasing_wickets
@@ -77,12 +105,12 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if balls_remaining > 0 and runs_needed > 0:
                 crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
                 rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
+                
+                # 🔥 SAFE ENCODING USE KIYA HAI
                 try: l_id = chase_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
-                try: c_id = chase_encoders['chasing_team'].transform([chasing_team])[0]
-                except: c_id = -1
-                try: d_id = chase_encoders['defending_team'].transform([defending_team])[0]
-                except: d_id = -1
+                c_id = safe_encode_team(chasing_team, chase_encoders['chasing_team'])
+                d_id = safe_encode_team(defending_team, chase_encoders['defending_team'])
                 
                 input_data = pd.DataFrame({
                     'league_id': [l_id], 'chasing_team_id': [c_id], 'defending_team_id': [d_id],
@@ -92,6 +120,8 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 })
                 prob = win_model.predict_proba(input_data)[0][1] * 100
                 return round(prob, 1), None
+                
+        # 1st Innings Projected Score
         else:
             batting_score, batting_wickets, batting_overs = 0, 0, 0.0
             batting_team, bowling_team = "", ""
@@ -111,12 +141,13 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
                 balls_remaining = (total_overs * 6) - balls_bowled
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
+                
+                # 🔥 SAFE ENCODING USE KIYA HAI
                 try: l_id = team_league_encoders['league'].transform([league_name])[0]
                 except: l_id = -1
-                try: b_id = team_league_encoders['bat_team'].transform([batting_team])[0]
-                except: b_id = -1
-                try: bw_id = team_league_encoders['bowl_team'].transform([bowling_team])[0]
-                except: bw_id = -1
+                b_id = safe_encode_team(batting_team, team_league_encoders['bat_team'])
+                bw_id = safe_encode_team(bowling_team, team_league_encoders['bowl_team'])
+                
                 fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
                 input_data = pd.DataFrame({
@@ -130,14 +161,16 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
         return None, None
     except: return None, None
 
-# 🤖 UPCOMING MATCH AI PREDICTION
+# 🤖 PRE-MATCH AI PREDICTION (Upcoming)
 def get_pre_match_prediction(home_team, away_team, match_format, league_name):
     if not pre_match_model or not old_encoders: return None
     try:
-        try: t1 = old_encoders['team1'].transform([home_team])[0]
-        except: return None 
-        try: t2 = old_encoders['team2'].transform([away_team])[0]
-        except: return None
+        # 🔥 SAFE ENCODING USE KIYA HAI
+        t1 = safe_encode_team(home_team, old_encoders['team1'])
+        t2 = safe_encode_team(away_team, old_encoders['team2'])
+        
+        if t1 == -1 or t2 == -1: return None
+
         try: fmt = old_encoders['format'].transform([match_format.upper()])[0]
         except: fmt = 0 
 
@@ -147,6 +180,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
             'toss_winner': [t1], 'toss_decision': [0]
         })
         prob = pre_match_model.predict_proba(input_data)[0]
+        
         if prob[1] > prob[0]: return f"{home_team} ({prob[1]*100:.1f}%)"
         else: return f"{away_team} ({prob[0]*100:.1f}%)"
     except: return None
@@ -236,9 +270,7 @@ def standardize_data(data, source):
             elif m.get("matchStarted"): match_state = "live"
             else: match_state = "upcoming"
             
-            # 🔥 CRICKETDATA SCORE & OVERS FIX
             home_score, home_overs, away_score, away_overs = "-", "", "-", ""
-            target = None
             teams = m.get("teams", ["Home", "Away"])
             
             for score in m.get("score", []):
@@ -251,7 +283,6 @@ def standardize_data(data, source):
 
             win_prob, proj_score = None, None
             if match_state == "live":
-                # CricketData ko Highlightly format mein convert karke AI mein bhejna
                 c_home_info = {"score": home_score, "info": home_overs}
                 c_away_info = {"score": away_score, "info": away_overs}
                 win_prob, proj_score = get_ai_predictions(c_home_info, c_away_info, m.get("matchType", "T20"), m.get("name", "League"), teams[0], teams[1])
@@ -317,6 +348,8 @@ def main():
                 final_matches, used_api = matches, source
                 print(f"✅ Success with {api_name}!")
                 break 
+
+    final_matches.sort(key=lambda x: x.get("start_time_iso") or "")
 
     output = {
         "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
