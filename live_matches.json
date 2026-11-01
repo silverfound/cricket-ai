@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 14:23:57",
+    "last_updated": "2026-11-01 14:30:22",
     "total_matches": 27,
     "matches": [
         {
@@ -21,7 +21,7 @@
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
             "score_home": null,
-            "score_away": "13/0",
+            "score_away": "21/0",
             "status": "In play"
         },
         {
@@ -43,7 +43,7 @@
             "home": "Mid West Rhinos",
             "away": "Mountaineers",
             "score_home": "310/8",
-            "score_away": "214/6",
+            "score_away": "229/6",
             "status": "In play"
         },
         {
@@ -131,7 +131,7 @@
             "home": "Janakpur Bolts",
             "away": "Pokhara Avengers (NPL)",
             "score_home": "147/7",
-            "score_away": "96/7",
+            "score_away": "106/7",
             "status": "In play"
         },
         {
@@ -149,12 +149,12 @@
             "league": "Afghanistan v Zimbabwe",
             "format": "T20",
             "start_time_iso": "2026-11-01T14:30:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Afghanistan",
             "away": "Zimbabwe",
             "score_home": null,
             "score_away": null,
-            "status": "Scheduled"
+            "status": "In play"
         },
         {
             "league": "CSA T20 Challenge",
