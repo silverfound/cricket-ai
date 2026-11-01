@@ -4,18 +4,22 @@ import json
 from datetime import datetime
 import re
 
+# Saari API Keys (GitHub Secrets se)
 KEY_MATCHSTAT = os.environ.get("RAPIDAPI_KEY")
 KEY_HIGHLIGHTLY = os.environ.get("SECONDARY_API_KEY")
+KEY_BIGBALLS = os.environ.get("TERTIARY_API_KEY")
+KEY_SPORTSCORE = os.environ.get("SPORTSCORE_API_KEY") 
 KEY_CRICKETDATA = os.environ.get("CRICKETDATA_API_KEY") 
 
 today = datetime.now().strftime("%Y-%m-%d")
 
-# Overs nikalne ka helper function (jaise "17.2/20 ov" se "17.2 ov" nikalna)
+# Overs nikalne ka helper function (jaise "17.2/20 ov" se "17.2 ov")
 def extract_overs(info_str):
     if not info_str: return ""
     ov_match = re.search(r'(\d+\.\d+|\d+)\s*ov', info_str)
     return ov_match.group(0) if ov_match else ""
 
+# --- 1. Highlightly API ---
 def fetch_highlightly():
     url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={today}"
     headers = {"x-rapidapi-key": KEY_HIGHLIGHTLY, "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com"}
@@ -25,6 +29,49 @@ def fetch_highlightly():
     except: pass
     return None, None
 
+# --- 2. Matchstat API ---
+def fetch_matchstat():
+    url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/v1/live"
+    headers = {"x-rapidapi-key": KEY_MATCHSTAT, "x-rapidapi-host": "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"}
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200: return res.json(), "Matchstat"
+    except: pass
+    return None, None
+
+# --- 3. CricketData API ---
+def fetch_cricketdata():
+    if not KEY_CRICKETDATA: return None, None
+    url = f"https://api.cricapi.com/v1/currentMatches?apikey={KEY_CRICKETDATA}&offset=0" 
+    try:
+        res = requests.get(url, timeout=10)
+        if res.status_code == 200: return res.json(), "CricketData"
+    except: pass
+    return None, None
+
+# --- 4. Big Balls API ---
+def fetch_bigballs():
+    if not KEY_BIGBALLS: return None, None
+    url = "https://api.bigballsdata.com/v1/cricket/matches" 
+    headers = {"Authorization": f"Bearer {KEY_BIGBALLS}"} 
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200: return res.json(), "BigBalls"
+    except: pass
+    return None, None
+
+# --- 5. Sportscore API ---
+def fetch_sportscore():
+    if not KEY_SPORTSCORE: return None, None
+    url = "https://api.sportscore.com/v1/matches/live" 
+    headers = {"X-API-Key": KEY_SPORTSCORE} 
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        if res.status_code == 200: return res.json(), "Sportscore"
+    except: pass
+    return None, None
+
+# --- Data Formatting ---
 def standardize_data(data, source):
     matches = []
     if not data: return matches
@@ -41,29 +88,56 @@ def standardize_data(data, source):
             else:
                 match_state = "live"
 
-            # Teams ka info nikalna (jahan overs likhe hote hain)
             home_info = m.get("state", {}).get("teams", {}).get("home", {})
             away_info = m.get("state", {}).get("teams", {}).get("away", {})
 
             matches.append({
-                "league": m.get("league", {}).get("name", "League"), 
-                "format": m.get("format", "T20"),
-                "start_time_iso": m.get("startTime", ""), 
-                "match_state": match_state,
-                "home": m.get("homeTeam", {}).get("name", "Home"), 
-                "away": m.get("awayTeam", {}).get("name", "Away"),
-                "score_home": home_info.get("score", "-"), 
-                "overs_home": extract_overs(home_info.get("info", "")), # Overs yahan se aa rahe hain
-                "score_away": away_info.get("score", "-"), 
-                "overs_away": extract_overs(away_info.get("info", "")), # Overs yahan se aa rahe hain
-                "status": status_raw, 
-                "api_source": source
+                "league": m.get("league", {}).get("name", "League"), "format": m.get("format", "T20"),
+                "start_time_iso": m.get("startTime", ""), "match_state": match_state,
+                "home": m.get("homeTeam", {}).get("name", "Home"), "away": m.get("awayTeam", {}).get("name", "Away"),
+                "score_home": home_info.get("score", "-"), "overs_home": extract_overs(home_info.get("info", "")),
+                "score_away": away_info.get("score", "-"), "overs_away": extract_overs(away_info.get("info", "")),
+                "status": status_raw, "api_source": source
+            })
+            
+    elif source == "Matchstat" and "results" in data:
+        for m in data["results"]:
+            matches.append({
+                "league": m.get("tournament", {}).get("name", "League"), "format": "T20",
+                "start_time_iso": "", "match_state": "live",
+                "home": m.get("homeTeam", {}).get("name", "Home"), "away": m.get("awayTeam", {}).get("name", "Away"),
+                "score_home": m.get("homeScore", {}).get("display", "-"), "overs_home": "",
+                "score_away": m.get("awayScore", {}).get("display", "-"), "overs_away": "",
+                "status": m.get("status", {}).get("description", "In Play"), "api_source": source
+            })
+            
+    elif source == "CricketData" and "data" in data:
+        for m in data["data"]:
+            status_raw = m.get("status", "Unknown")
+            if m.get("matchEnded"): match_state = "finished"
+            elif m.get("matchStarted"): match_state = "live"
+            else: match_state = "upcoming"
+            
+            matches.append({
+                "league": m.get("name", "League"), "format": m.get("matchType", "T20"),
+                "start_time_iso": m.get("dateTimeGMT", ""), "match_state": match_state,
+                "home": m.get("teams", ["Home", "Away"])[0], "away": m.get("teams", ["Home", "Away"])[1],
+                "score_home": "-", "overs_home": "", "score_away": "-", "overs_away": "",
+                "status": status_raw, "api_source": source
             })
             
     return matches
 
 def main():
-    apis = [("Highlightly", fetch_highlightly)]
+    # APIs ki priority (Agar pehli fail hogi toh dusri try hogi)
+    apis = [
+        ("Highlightly", fetch_highlightly),
+        ("CricketData", fetch_cricketdata),
+        ("Matchstat", fetch_matchstat),
+        ("BigBalls", fetch_bigballs),
+        ("Sportscore", fetch_sportscore)
+    ]
+    
     final_matches, used_api = [], "None"
     
     for api_name, fetch_func in apis:
@@ -73,8 +147,12 @@ def main():
             matches = standardize_data(data, source)
             if len(matches) > 0:
                 final_matches, used_api = matches, source
-                print(f"✅ Success with {api_name}!")
+                print(f"✅ Success with {api_name}! Found {len(matches)} matches.")
                 break 
+            else:
+                print(f"⚠️ {api_name} returned empty data.")
+        else:
+            print(f"❌ {api_name} failed or limit reached, trying next...")
 
     output = {
         "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
@@ -85,7 +163,7 @@ def main():
     
     with open("live_matches.json", "w") as f:
         json.dump(output, f, indent=4)
-    print("💾 File Saved.")
+    print(f"💾 Saved! Data came from: {used_api}")
 
 if __name__ == "__main__":
     main()
