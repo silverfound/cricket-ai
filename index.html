@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Cricket Live</title>
+    <title>Cricket AI Prediction</title>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; --green: #22c55e; }
+        :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; --green: #22c55e; --gold: #fbbf24; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .header { text-align: center; margin-bottom: 20px; }
         .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
@@ -16,13 +16,14 @@
         .team-name { font-size: 16px; font-weight: 600; }
         .score { font-size: 18px; font-weight: bold; color: var(--accent); }
         .status { background: rgba(34, 197, 94, 0.1); color: var(--green); font-size: 12px; text-align: center; padding: 6px; border-radius: 6px; margin-top: 12px; font-weight: bold; }
+        .prediction-box { background: rgba(251, 191, 36, 0.1); border: 1px solid var(--gold); color: var(--gold); font-size: 14px; text-align: center; padding: 8px; border-radius: 6px; margin-top: 10px; font-weight: bold; }
         .loading { text-align: center; color: var(--accent); margin-top: 50px; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>🏏 Live Cricket AI</h1>
+        <h1>🏏 AI Cricket Predictor</h1>
         <p id="last-updated">Loading latest matches...</p>
     </div>
 
@@ -33,7 +34,6 @@
     <script>
         async function fetchMatches() {
             try {
-                // GitHub se live_matches.json fetch kar rahe hain
                 const response = await fetch('live_matches.json');
                 const data = await response.json();
                 
@@ -47,19 +47,30 @@
                 }
 
                 data.matches.forEach(match => {
+                    // Null scores ko '-' se replace karna
+                    const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
+                    const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
+                    
+                    // AI Prediction Box (Agar data mein prediction hai toh dikhega)
+                    let predictionHTML = "";
+                    if (match.predicted_winner) {
+                        predictionHTML = `<div class="prediction-box">🤖 AI Prediction: ${match.predicted_winner} jeetega</div>`;
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'match-card';
                     card.innerHTML = `
                         <div class="league">${match.league}</div>
                         <div class="team-row">
                             <span class="team-name">${match.home}</span>
-                            <span class="score">${match.score_home}</span>
+                            <span class="score">${scoreHome}</span>
                         </div>
                         <div class="team-row">
                             <span class="team-name">${match.away}</span>
-                            <span class="score">${match.score_away}</span>
+                            <span class="score">${scoreAway}</span>
                         </div>
                         <div class="status">${match.status}</div>
+                        ${predictionHTML}
                     `;
                     container.appendChild(card);
                 });
@@ -69,7 +80,6 @@
             }
         }
 
-        // Page load hote hi data fetch karega
         fetchMatches();
     </script>
 </body>
