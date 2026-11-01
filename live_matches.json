@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 21:53:17",
+    "last_updated": "2026-11-01 22:22:03",
     "total_matches": 48,
     "data_source_api": "Highlightly",
     "matches": [
@@ -27,11 +27,11 @@
             "match_state": "live",
             "home": "New Zealand A",
             "away": "India A",
-            "score_home": "218/3",
-            "overs_home": "62 ov",
+            "score_home": "223/4",
+            "overs_home": "65.5 ov",
             "score_away": "346",
             "overs_away": "",
-            "status": "Stumps",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -44,11 +44,11 @@
             "match_state": "live",
             "home": "New Zealand A",
             "away": "India A",
-            "score_home": "218/3",
-            "overs_home": "62 ov",
+            "score_home": "223/4",
+            "overs_home": "65.5 ov",
             "score_away": "346",
             "overs_away": "",
-            "status": "Stumps",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -409,7 +409,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Brampton Blazers (98.9%)"
+            "pre_match_winner": null
         },
         {
             "league": "NCL GT20 Canada",
@@ -426,7 +426,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Brampton Blazers (98.9%)"
+            "pre_match_winner": null
         },
         {
             "league": "Ranji Trophy",
@@ -766,7 +766,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Oman (62.4%)"
+            "pre_match_winner": "Oman (51.2%)"
         },
         {
             "league": "Nepal Premier League",
@@ -783,7 +783,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Kathmandu Gurkhas (NPL) (98.9%)"
+            "pre_match_winner": null
         },
         {
             "league": "Women's Big Bash League",
@@ -800,7 +800,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Perth Scorchers Women (98.9%)"
+            "pre_match_winner": null
         },
         {
             "league": "Nepal Premier League",
@@ -817,7 +817,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Sudur Paschim Royals (NPL) (98.9%)"
+            "pre_match_winner": null
         }
     ]
 }
