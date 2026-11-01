@@ -2,7 +2,7 @@ name: Update Live Data
 
 on:
   schedule:
-    - cron: '0 * * * *' # Har 1 ghante mein chalega
+    - cron: '*/15 * * * *' # Har 15 minute mein chalega
   workflow_dispatch: 
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 0 # History fetch karne ke liye
+        fetch-depth: 0 
 
     - uses: actions/setup-python@v4
       with:
@@ -24,7 +24,7 @@ jobs:
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         SECONDARY_API_KEY: ${{ secrets.SECONDARY_API_KEY }}
-        TERTIARY_API_KEY: ${{ secrets.TERTIARY_API_KEY }}
+        # TERTIARY_API_KEY ko hata diya gaya hai
         SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
       run: python fetch_data.py
@@ -35,7 +35,5 @@ jobs:
         git config --global user.email 'action@github.com'
         git add live_matches.json
         git commit -m "Auto update data" || echo "No changes"
-        
-        # 🔥 YEH LINE ERROR FIX KAREGI (Push se pehle pull karega)
         git pull --rebase origin main
         git push
