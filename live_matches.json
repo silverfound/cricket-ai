@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 22:35:40",
+    "last_updated": "2026-11-01 22:58:25",
     "total_matches": 48,
     "data_source_api": "Highlightly",
     "matches": [
@@ -27,8 +27,8 @@
             "match_state": "live",
             "home": "New Zealand A",
             "away": "India A",
-            "score_home": "229/4",
-            "overs_home": "68.5 ov",
+            "score_home": "245/4",
+            "overs_home": "73.6 ov",
             "score_away": "346",
             "overs_away": "",
             "status": "In play",
@@ -44,8 +44,8 @@
             "match_state": "live",
             "home": "New Zealand A",
             "away": "India A",
-            "score_home": "229/4",
-            "overs_home": "68.5 ov",
+            "score_home": "245/4",
+            "overs_home": "73.6 ov",
             "score_away": "346",
             "overs_away": "",
             "status": "In play",
@@ -766,7 +766,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Oman (51.2%)"
+            "pre_match_winner": "Netherlands (53.6%)"
         },
         {
             "league": "Nepal Premier League",
