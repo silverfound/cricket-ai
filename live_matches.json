@@ -1,5 +1,222 @@
 {
-    "last_updated": "2026-11-01 12:53:57",
-    "total_matches": 0,
-    "matches": []
+    "last_updated": "2026-11-01 13:10:18",
+    "total_matches": 27,
+    "matches": [
+        {
+            "league": "NCL GT20 Canada",
+            "home": "Montreal Warriors",
+            "away": "Brampton Blazers",
+            "score_home": null,
+            "score_away": null,
+            "status": "Scheduled"
+        },
+        {
+            "league": "NCL GT20 Canada",
+            "home": "Toronto Kings",
+            "away": "Mississauga Skyhawks",
+            "score_home": null,
+            "score_away": null,
+            "status": "Scheduled"
+        },
+        {
+            "league": "Pro50 Championship",
+            "home": "Mashonaland Eagles",
+            "away": "Matabeleland Tuskers",
+            "score_home": "181/3",
+            "score_away": "205",
+            "status": "In play"
+        },
+        {
+            "league": "Pro50 Championship",
+            "home": "Mid West Rhinos",
+            "away": "Mountaineers",
+            "score_home": "310/8",
+            "score_away": "91/5",
+            "status": "In play"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "Afghanistan",
+            "away": "Australia",
+            "score_home": "119/2",
+            "score_away": "115/5",
+            "status": "Finished"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "Oman",
+            "away": "Pakistan",
+            "score_home": "136/4",
+            "score_away": "154/4",
+            "status": "Finished"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "England",
+            "away": "South Africa",
+            "score_home": "95",
+            "score_away": "101/1",
+            "status": "Finished"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "Scotland",
+            "away": "United Arab Emirates",
+            "score_home": "135/1",
+            "score_away": "90/3",
+            "status": "Finished"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "Hong Kong",
+            "away": "Sri Lanka",
+            "score_home": "119/0",
+            "score_away": "118/4",
+            "status": "Finished"
+        },
+        {
+            "league": "Hong Kong International Sixes",
+            "home": "Bangladesh",
+            "away": "India",
+            "score_home": "116/5",
+            "score_away": "117/1",
+            "status": "Finished"
+        },
+        {
+            "league": "England Lions in West Indies",
+            "home": "West Indies A",
+            "away": "England Lions",
+            "score_home": null,
+            "score_away": null,
+            "status": "Scheduled"
+        },
+        {
+            "league": "Nepal Premier League",
+            "home": "Janakpur Bolts",
+            "away": "Pokhara Avengers (NPL)",
+            "score_home": "147/7",
+            "score_away": "8/0",
+            "status": "In play"
+        },
+        {
+            "league": "Ireland in Namibia",
+            "home": "Namibia",
+            "away": "Ireland",
+            "score_home": "131/5",
+            "score_away": "129",
+            "status": "Finished"
+        },
+        {
+            "league": "Afghanistan v Zimbabwe",
+            "home": "Afghanistan",
+            "away": "Zimbabwe",
+            "score_home": null,
+            "score_away": null,
+            "status": "Scheduled"
+        },
+        {
+            "league": "CSA T20 Challenge",
+            "home": "Lions",
+            "away": "Titans",
+            "score_home": "51/2",
+            "score_away": null,
+            "status": "In play"
+        },
+        {
+            "league": "CSA T20 Challenge",
+            "home": "Dolphins",
+            "away": "Boland",
+            "score_home": "174/4",
+            "score_away": "178/3",
+            "status": "Finished"
+        },
+        {
+            "league": "The Ford Trophy",
+            "home": "Otago",
+            "away": "Central Districts",
+            "score_home": "233",
+            "score_away": "204",
+            "status": "Finished"
+        },
+        {
+            "league": "Women's Big Bash League",
+            "home": "Sydney Sixers Women",
+            "away": "Hobart Hurricanes Women",
+            "score_home": "196/8",
+            "score_away": "109",
+            "status": "Finished"
+        },
+        {
+            "league": "Women's Big Bash League",
+            "home": "Sydney Thunder Women",
+            "away": "Brisbane Heat Women",
+            "score_home": "180/4",
+            "score_away": "178/5",
+            "status": "Finished"
+        },
+        {
+            "league": "India in New Zealand",
+            "home": "New Zealand",
+            "away": "India",
+            "score_home": "195/3",
+            "score_away": "191/8",
+            "status": "Finished"
+        },
+        {
+            "league": "National Cricket League",
+            "home": "Rangpur Division",
+            "away": "Rajshahi Division",
+            "score_home": "122/3",
+            "score_away": "231",
+            "status": "No live coverage"
+        },
+        {
+            "league": "National Cricket League",
+            "home": "Dhaka Division",
+            "away": "Barisal Division",
+            "score_home": null,
+            "score_away": null,
+            "status": "No live coverage"
+        },
+        {
+            "league": "National Cricket League",
+            "home": "Dhaka Metropolis",
+            "away": "Khulna Division",
+            "score_home": "(fo) 108 & 57/2",
+            "score_away": "288",
+            "status": "No live coverage"
+        },
+        {
+            "league": "National Cricket League",
+            "home": "Sylhet Division",
+            "away": "Chittagong Division",
+            "score_home": "218 & 89/2",
+            "score_away": "210",
+            "status": "No live coverage"
+        },
+        {
+            "league": "India A in New Zealand",
+            "home": "New Zealand A",
+            "away": "India A",
+            "score_home": "218/3",
+            "score_away": "346",
+            "status": "Stumps"
+        },
+        {
+            "league": "Sheffield Shield",
+            "home": "Queensland",
+            "away": "Victoria",
+            "score_home": "202/5",
+            "score_away": "307",
+            "status": "Stumps"
+        },
+        {
+            "league": "Sheffield Shield",
+            "home": "Tasmania",
+            "away": "New South Wales",
+            "score_home": "427",
+            "score_away": "(fo) 202 & 144",
+            "status": "Finished"
+        }
+    ]
 }
