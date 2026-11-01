@@ -20,8 +20,6 @@ try:
     team_league_encoders = joblib.load('team_league_encoders.pkl')
     win_model = joblib.load('win_prob_model_v3.pkl')
     chase_encoders = joblib.load('chase_encoders.pkl')
-    
-    # 🔥 NAYA PRE-MATCH MODEL
     pre_match_model = joblib.load('pre_match_model_v3.pkl')
     print("✅ Saare Models load ho gaye!")
 except Exception as e:
@@ -38,28 +36,60 @@ def extract_overs(info_str):
     ov_match = re.search(r'(\d+\.\d+|\d+)\s*ov', info_str)
     return ov_match.group(0) if ov_match else ""
 
-# ==========================================
-# 🛡️ UNIVERSAL SAFE ENCODER
-# ==========================================
+# 🛡️ SMART ENCODERS
+def safe_encode_league(league_name, encoder):
+    if not encoder: return -1
+    try:
+        league_clean = str(league_name).strip().lower()
+        for cls in encoder.classes_:
+            if str(cls).strip().lower() == league_clean:
+                return encoder.transform([cls])[0]
+        return -1
+    except: return -1
+
 def safe_encode_team(team_name, encoder):
     if not encoder: return -1
     try:
         team_name_clean = str(team_name).strip().lower()
+        # Exact match
         for cls in encoder.classes_:
             if str(cls).strip().lower() == team_name_clean:
                 return encoder.transform([cls])[0]
+        # Bracket aur Women hata kar match
+        clean_api = re.sub(r'\(.*?\)', '', team_name_clean).replace("women", "").strip()
+        is_women_api = "women" in team_name_clean
         
-        is_women_api = "women" in team_name_clean or "w " in team_name_clean or " (w)" in team_name_clean
         for cls in encoder.classes_:
             cls_clean = str(cls).strip().lower()
-            is_women_encoder = "women" in cls_clean or "w " in cls_clean or " (w)" in cls_clean
-            if is_women_api == is_women_encoder:
-                clean_api = team_name_clean.replace("women", "").replace("w ", "").replace(" (w)", "").strip()
-                clean_enc = cls_clean.replace("women", "").replace("w ", "").replace(" (w)", "").strip()
-                if clean_api == clean_enc or clean_api in clean_enc or clean_enc in clean_api:
-                    return encoder.transform([cls])[0]
+            clean_enc = re.sub(r'\(.*?\)', '', cls_clean).replace("women", "").strip()
+            is_women_encoder = "women" in cls_clean
+            
+            if is_women_api == is_women_encoder and (clean_api == clean_enc or clean_api in clean_enc or clean_enc in clean_api):
+                return encoder.transform([cls])[0]
         return -1
     except: return -1
+
+# 🤖 PRE-MATCH AI PREDICTION
+def get_pre_match_prediction(home_team, away_team, match_format, league_name):
+    if not pre_match_model or not team_league_encoders: return None
+    try:
+        t1 = safe_encode_team(home_team, team_league_encoders['team'])
+        t2 = safe_encode_team(away_team, team_league_encoders['team'])
+        l_id = safe_encode_league(league_name, team_league_encoders['league'])
+
+        if t1 == -1 or t2 == -1: return None # Agar team nahi mili toh skip karein (sachai)
+
+        input_data = pd.DataFrame({
+            'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2]
+        })
+        prob = pre_match_model.predict_proba(input_data)[0]
+        
+        home_prob = prob[1] * 100
+        away_prob = prob[0] * 100
+        
+        if home_prob > away_prob: return f"{home_team} ({home_prob:.1f}%)"
+        else: return f"{away_team} ({away_prob:.1f}%)"
+    except: return None
 
 # 🤖 LIVE MATCH AI PREDICTION (V3)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
@@ -100,11 +130,11 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             if balls_remaining > 0 and runs_needed > 0:
                 crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
                 rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
-                try: l_id = chase_encoders['league'].transform([league_name])[0]
-                except: l_id = -1
+                
+                l_id = safe_encode_league(league_name, chase_encoders['league'])
                 c_id = safe_encode_team(chasing_team, chase_encoders['chasing_team'])
                 d_id = safe_encode_team(defending_team, chase_encoders['defending_team'])
-                
+
                 input_data = pd.DataFrame({
                     'league_id': [l_id], 'chasing_team_id': [c_id], 'defending_team_id': [d_id],
                     'runs_needed': [runs_needed], 'balls_remaining': [balls_remaining],
@@ -132,10 +162,11 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
                 balls_remaining = (total_overs * 6) - balls_bowled
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
-                try: l_id = team_league_encoders['league'].transform([league_name])[0]
-                except: l_id = -1
-                b_id = safe_encode_team(batting_team, team_league_encoders['bat_team'])
-                bw_id = safe_encode_team(bowling_team, team_league_encoders['bowl_team'])
+                
+                l_id = safe_encode_league(league_name, team_league_encoders['league'])
+                b_id = safe_encode_team(batting_team, team_league_encoders['team']) # Note: Now using unified 'team'
+                bw_id = safe_encode_team(bowling_team, team_league_encoders['team']) # Note: Now using unified 'team'
+
                 fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
                 input_data = pd.DataFrame({
@@ -149,33 +180,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
         return None, None
     except: return None, None
 
-# 🤖 NAYA PRE-MATCH AI PREDICTION
-def get_pre_match_prediction(home_team, away_team, match_format, league_name):
-    if not pre_match_model or not team_league_encoders: return None
-    try:
-        t1 = safe_encode_team(home_team, team_league_encoders['bat_team'])
-        t2 = safe_encode_team(away_team, team_league_encoders['bowl_team'])
-        try: l_id = team_league_encoders['league'].transform([league_name])[0]
-        except: l_id = -1
-
-        if t1 == -1 or t2 == -1: return None
-
-        input_data = pd.DataFrame({
-            'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2]
-        })
-        prob = pre_match_model.predict_proba(input_data)[0]
-        
-        # prob[1] = Home Team Wins, prob[0] = Away Team Wins
-        home_prob = prob[1] * 100
-        away_prob = prob[0] * 100
-        
-        if home_prob > away_prob: return f"{home_team} ({home_prob:.1f}%)"
-        else: return f"{away_team} ({away_prob:.1f}%)"
-    except: return None
-
-# ==========================================
-# 🔌 APIs FUNCTIONS
-# ==========================================
+# --- APIs FUNCTIONS ---
 def fetch_highlightly():
     all_data = []
     for d in [today, tomorrow]:
