@@ -2,18 +2,20 @@ name: Update Live Data
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Har 15 minute mein chalega
+    - cron: '*/30 * * * *' # Har 30 minute mein chalega
   workflow_dispatch: 
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0 
 
-    - uses: actions/setup-python@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
         
@@ -24,7 +26,6 @@ jobs:
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         SECONDARY_API_KEY: ${{ secrets.SECONDARY_API_KEY }}
-        # TERTIARY_API_KEY ko hata diya gaya hai
         SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
       run: python fetch_data.py
@@ -34,6 +35,6 @@ jobs:
         git config --global user.name 'GitHub Action'
         git config --global user.email 'action@github.com'
         git add live_matches.json
-        git commit -m "Auto update data" || echo "No changes"
-        git pull --rebase origin main
-        git push
+        git commit -m "Auto update data" || echo "No changes to commit"
+        # 🔥 YEH LINE FORCE UPDATE KAREGI
+        git push origin main --force
