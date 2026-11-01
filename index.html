@@ -37,7 +37,10 @@
         
         .card-bottom { padding: 0 15px 15px 15px; }
         .status { background: rgba(34, 197, 94, 0.1); color: var(--green); font-size: 12px; text-align: center; padding: 8px; border-radius: 6px; font-weight: bold; }
-        .prediction-box { background: rgba(251, 191, 36, 0.1); border-top: 1px solid var(--gold); color: var(--gold); font-size: 13px; text-align: center; padding: 10px; font-weight: bold; }
+        
+        /* AI Win Probability Box */
+        .ai-prediction-box { background: rgba(251, 191, 36, 0.1); border-top: 1px solid var(--gold); color: var(--gold); text-align: center; padding: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .ai-prob-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 20px; font-size: 14px; }
         
         .msg-box { text-align: center; margin-top: 30px; font-size: 16px; display: none; }
         .loading { color: var(--accent); }
@@ -48,10 +51,7 @@
 <body>
 
     <div class="header">
-        <h1>
-            🏏 AI Cricket Predictor 
-            <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()">🔄</button>
-        </h1>
+        <h1>🏏 AI Predictor <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()">🔄</button></h1>
         <p id="last-updated">Loading latest matches...</p>
         <p id="api-source"></p>
     </div>
@@ -87,23 +87,16 @@
         async function fetchMatches(isManual = false) {
             if (isFetching) return; 
             isFetching = true;
-
-            if (isManual) {
-                refreshBtn.classList.add('spin'); 
-                matchesContainer.innerHTML = ''; 
-            }
+            if (isManual) { refreshBtn.classList.add('spin'); matchesContainer.innerHTML = ''; }
 
             try {
                 const timestamp = new Date().getTime(); 
                 const response = await fetch('live_matches.json?v=' + timestamp);
-                
                 if (!response.ok) throw new Error("File not found");
-                
                 const data = await response.json();
                 
                 document.getElementById('last-updated').innerText = "Last Updated: " + data.last_updated;
                 document.getElementById('api-source').innerText = "⚡ Powered by: " + (data.data_source_api || "Unknown API");
-                
                 allMatches = data.matches; 
                 
                 loadingText.style.display = 'none';
@@ -117,7 +110,6 @@
             } finally {
                 isFetching = false;
                 refreshBtn.classList.remove('spin');
-                
                 clearTimeout(autoRefreshTimer);
                 autoRefreshTimer = setTimeout(() => { fetchMatches(false); }, 60000); 
             }
@@ -140,6 +132,7 @@
             }
 
             filteredMatches.forEach(match => {
+                // 🔒 Purana Safe Logic
                 const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
                 const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
                 
@@ -153,9 +146,13 @@
                     localTime = dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
                 }
 
-                let predictionHTML = match.predicted_winner 
-                    ? '<div class="prediction-box">🤖 AI Prediction: ' + match.predicted_winner + '</div>'
-                    : '<div class="prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Data Not Available</div>';
+                // 🤖 Safe AI Check: Agar AI prediction hai toh dikhao, warna "Waiting"
+                let predictionHTML = "";
+                if (match.win_probability !== null && match.win_probability !== undefined) {
+                    predictionHTML = `<div class="ai-prediction-box">🤖 AI Win Probability: <span class="ai-prob-badge">${match.win_probability}%</span></div>`;
+                } else {
+                    predictionHTML = `<div class="ai-prediction-box" style="color: #94a3b8; border-color: #334155; background: rgba(255,255,255,0.05);">🤖 AI: Waiting for Target</div>`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'match-card';
@@ -171,18 +168,14 @@
                                 '<span class="team-name">' + (match.home || "Home") + '</span>' +
                                 '<span class="team-overs">' + oversHomeText + '</span>' +
                             '</div>' +
-                            '<div class="score-box">' +
-                                '<div class="score">' + scoreHome + '</div>' +
-                            '</div>' +
+                            '<div class="score-box"><div class="score">' + scoreHome + '</div></div>' +
                         '</div>' +
                         '<div class="team-row">' +
                             '<div class="team-info">' +
                                 '<span class="team-name">' + (match.away || "Away") + '</span>' +
                                 '<span class="team-overs">' + oversAwayText + '</span>' +
                             '</div>' +
-                            '<div class="score-box">' +
-                                '<div class="score">' + scoreAway + '</div>' +
-                            '</div>' +
+                            '<div class="score-box"><div class="score">' + scoreAway + '</div></div>' +
                         '</div>' +
                     '</div>' +
                     '<div class="card-bottom"><div class="status">' + (match.status || "Status Unknown") + '</div></div>' +
