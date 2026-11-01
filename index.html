@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cricket Live</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; --green: #22c55e; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: var(--accent); margin: 0; font-size: 24px; }
+        .header p { color: #94a3b8; font-size: 12px; margin-top: 5px; }
+        .match-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-left: 4px solid var(--accent); }
+        .league { font-size: 12px; color: #94a3b8; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .team-name { font-size: 16px; font-weight: 600; }
+        .score { font-size: 18px; font-weight: bold; color: var(--accent); }
+        .status { background: rgba(34, 197, 94, 0.1); color: var(--green); font-size: 12px; text-align: center; padding: 6px; border-radius: 6px; margin-top: 12px; font-weight: bold; }
+        .loading { text-align: center; color: var(--accent); margin-top: 50px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🏏 Live Cricket AI</h1>
+        <p id="last-updated">Loading latest matches...</p>
+    </div>
+
+    <div id="matches-container">
+        <div class="loading">⏳ Data aa raha hai, thoda intezaar karein...</div>
+    </div>
+
+    <script>
+        async function fetchMatches() {
+            try {
+                // GitHub se live_matches.json fetch kar rahe hain
+                const response = await fetch('live_matches.json');
+                const data = await response.json();
+                
+                document.getElementById('last-updated').innerText = `Last Updated: ${data.last_updated}`;
+                const container = document.getElementById('matches-container');
+                container.innerHTML = '';
+
+                if (data.matches.length === 0) {
+                    container.innerHTML = '<div class="loading">Abhi koi live match nahi hai.</div>';
+                    return;
+                }
+
+                data.matches.forEach(match => {
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    card.innerHTML = `
+                        <div class="league">${match.league}</div>
+                        <div class="team-row">
+                            <span class="team-name">${match.home}</span>
+                            <span class="score">${match.score_home}</span>
+                        </div>
+                        <div class="team-row">
+                            <span class="team-name">${match.away}</span>
+                            <span class="score">${match.score_away}</span>
+                        </div>
+                        <div class="status">${match.status}</div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                document.getElementById('matches-container').innerHTML = `<div class="loading" style="color:red;">Error: Data nahi mila. (${error})</div>`;
+            }
+        }
+
+        // Page load hote hi data fetch karega
+        fetchMatches();
+    </script>
+</body>
+</html>
