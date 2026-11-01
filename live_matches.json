@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 16:13:12",
+    "last_updated": "2026-11-01 16:20:52",
     "total_matches": 27,
     "data_source_api": "Highlightly",
     "matches": [
@@ -24,7 +24,7 @@
             "match_state": "live",
             "home": "Toronto Kings",
             "away": "Mississauga Skyhawks",
-            "score_home": "13/0",
+            "score_home": "33/1",
             "overs_home": "20 ov",
             "score_away": "161/5",
             "overs_away": "",
@@ -192,7 +192,7 @@
             "match_state": "live",
             "home": "Afghanistan",
             "away": "Zimbabwe",
-            "score_home": "15/1",
+            "score_home": "22/1",
             "overs_home": "20 ov",
             "score_away": "79",
             "overs_away": "",
