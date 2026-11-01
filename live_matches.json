@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-01 19:09:26",
+    "last_updated": "2026-11-01 19:30:54",
     "total_matches": 22,
     "data_source_api": "Highlightly",
     "matches": [
@@ -17,7 +17,8 @@
             "status": "Scheduled",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "NCL GT20 Canada",
@@ -33,7 +34,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Pro50 Championship",
@@ -49,7 +51,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Pro50 Championship",
@@ -65,7 +68,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -81,7 +85,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -97,7 +102,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -113,7 +119,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -129,7 +136,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -145,7 +153,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Hong Kong International Sixes",
@@ -161,7 +170,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Nepal Premier League",
@@ -177,7 +187,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Ireland in Namibia",
@@ -193,7 +204,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Afghanistan v Zimbabwe",
@@ -209,7 +221,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "CSA T20 Challenge",
@@ -225,7 +238,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "CSA T20 Challenge",
@@ -241,7 +255,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "The Ford Trophy",
@@ -257,7 +272,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Women's Big Bash League",
@@ -273,7 +289,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Women's Big Bash League",
@@ -289,7 +306,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "India in New Zealand",
@@ -305,7 +323,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "India A in New Zealand",
@@ -321,7 +340,8 @@
             "status": "Stumps",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Sheffield Shield",
@@ -337,7 +357,8 @@
             "status": "Stumps",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         },
         {
             "league": "Sheffield Shield",
@@ -353,7 +374,8 @@
             "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
-            "projected_score": null
+            "projected_score": null,
+            "pre_match_winner": null
         }
     ]
 }
