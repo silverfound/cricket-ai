@@ -148,9 +148,15 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 chasing_score, chasing_wickets, chasing_overs = h_runs, h_wkts, h_overs
                 chasing_team, defending_team = home_team, away_team
             else:
-                target = h_runs + 1
-                chasing_score, chasing_wickets, chasing_overs = a_runs, a_wkts, a_overs
-                chasing_team, defending_team = away_team, home_team
+                # Fallback: Jo jyada score hai woh 1st innings
+                if h_runs > a_runs:
+                    target = h_runs + 1
+                    chasing_score, chasing_wickets, chasing_overs = a_runs, a_wkts, a_overs
+                    chasing_team, defending_team = away_team, home_team
+                else:
+                    target = a_runs + 1
+                    chasing_score, chasing_wickets, chasing_overs = h_runs, h_wkts, h_overs
+                    chasing_team, defending_team = home_team, away_team
 
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
 
@@ -218,6 +224,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             })
             pred_score = float(score_model.predict(input_data)[0])
             
+            # 🔥 FIX: Prediction current score se kam nahi ho sakti
             if pred_score < batting_score:
                 pred_score = batting_score
                 
