@@ -42,7 +42,7 @@ def safe_encode_league(league_name, encoder):
         league_clean = str(league_name).strip().lower()
         for cls in encoder.classes_:
             if str(cls).strip().lower() == league_clean:
-                return encoder.transform([cls])[0]
+                return int(encoder.transform([cls])[0])
         return -1
     except: return -1
 
@@ -52,7 +52,7 @@ def safe_encode_team(team_name, encoder):
         team_name_clean = str(team_name).strip().lower()
         for cls in encoder.classes_:
             if str(cls).strip().lower() == team_name_clean:
-                return encoder.transform([cls])[0]
+                return int(encoder.transform([cls])[0])
         clean_api = re.sub(r'\(.*?\)', '', team_name_clean).replace("women", "").strip()
         is_women_api = "women" in team_name_clean
         for cls in encoder.classes_:
@@ -60,7 +60,7 @@ def safe_encode_team(team_name, encoder):
             clean_enc = re.sub(r'\(.*?\)', '', cls_clean).replace("women", "").strip()
             is_women_encoder = "women" in cls_clean
             if is_women_api == is_women_encoder and (clean_api == clean_enc or clean_api in clean_enc or clean_enc in clean_api):
-                return encoder.transform([cls])[0]
+                return int(encoder.transform([cls])[0])
         return -1
     except: return -1
 
@@ -80,8 +80,9 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         })
 
         prob = pre_match_model.predict_proba(input_data)[0]
-        home_prob = prob[1] * 100
-        away_prob = prob[0] * 100
+        # 🔥 FLOAT FIX YAHAN HAI
+        home_prob = float(prob[1] * 100)
+        away_prob = float(prob[0] * 100)
         
         if home_prob > away_prob: return f"{home_team} ({home_prob:.1f}%)"
         else: return f"{away_team} ({away_prob:.1f}%)"
@@ -93,24 +94,21 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
     try:
         total_overs = 20 if match_format.upper() == "T20" else (50 if match_format.upper() == "ODI" else 100)
         
-        # Scores extract karna (aur '-' ko handle karna)
         h_score = str(home_info.get("score", "-"))
         h_info = str(home_info.get("info", ""))
         a_score = str(away_info.get("score", "-"))
         a_info = str(away_info.get("info", ""))
 
-        # Check karna ki score valid hai ya nahi
         h_valid = h_score != "-" and "/" in h_score and h_score.lower() != "null"
         a_valid = a_score != "-" and "/" in a_score and a_score.lower() != "null"
 
         if not h_valid and not a_valid:
-            return None, None # Koi score hi nahi hai
+            return None, None
 
         target = None
         chasing_score, chasing_wickets, chasing_overs = 0, 0, 0.0
         chasing_team, defending_team = "", ""
 
-        # Target Check (Agar API mein 'T:' mila)
         if "T:" in h_info and a_valid:
             target = int(re.search(r'T:(\d+)', h_info).group(1))
             chasing_score = int(a_score.split("/")[0])
@@ -123,9 +121,8 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             chasing_wickets = int(h_score.split("/")[1])
             chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1)) if "ov" in h_info else 0
             chasing_team, defending_team = home_team, away_team
-        # Agar 'T:' nahi hai, par dono teams ka score hai (matlab 2nd innings)
         elif h_valid and a_valid:
-            target = int(h_score.split("/")[0]) + 1 # Assume home batted first
+            target = int(h_score.split("/")[0]) + 1 
             chasing_score = int(a_score.split("/")[0])
             chasing_wickets = int(a_score.split("/")[1])
             chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', a_info).group(1)) if "ov" in a_info else 0
@@ -155,14 +152,14 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                     'required_run_rate': [rrr]
                 })
                 prob = win_model.predict_proba(input_data)[0][1] * 100
-                return round(prob, 1), None
+                # 🔥 FLOAT FIX YAHAN HAI
+                return float(round(prob, 1)), None
                 
-        # 1st Innings (Projected Score) - Agar target nahi hai
+        # 1st Innings (Projected Score)
         else:
             batting_score, batting_wickets, batting_overs = 0, 0, 0.0
             batting_team, bowling_team = "", ""
             
-            # Jo team khel rahi hai (jiska score valid hai)
             if h_valid:
                 batting_score = int(h_score.split("/")[0])
                 batting_wickets = int(h_score.split("/")[1])
@@ -194,6 +191,8 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                     'current_run_rate': [crr], 'last_3_overs_runs': [10]
                 })
                 pred_score = score_model.predict(input_data)[0]
+                # 🔥 FLOAT FIX YAHAN HAI
+                pred_score = float(pred_score)
                 return None, f"{int(pred_score)-5} - {int(pred_score)+5}"
         return None, None
     except Exception as e:
