@@ -149,11 +149,11 @@ document.getElementById('last-updated').innerText = "Last Updated: " + localTime
             }
 
             filteredMatches.forEach(match => {
-                const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
-                const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
+                const escapeHTML(scoreHome) = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
+                const escapeHTML(scoreAway) = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
                 
-                let oversHomeText = match.overs_home ? `(${match.overs_home})` : "";
-                let oversAwayText = match.overs_away ? `(${match.overs_away})` : "";
+                let escapeHTML(oversHomeText) = match.overs_home ? `(${match.overs_home})` : "";
+                let escapeHTML(oversAwayText) = match.overs_away ? `(${match.overs_away})` : "";
 
                 let localDate = "Date TBD", localTime = "";
                 if (match.start_time_iso) {
@@ -184,26 +184,26 @@ document.getElementById('last-updated').innerText = "Last Updated: " + localTime
                 card.style.display = 'block'; 
                 card.innerHTML = 
                     '<div class="card-top">' +
-                        '<span>' + (match.league || "Unknown") + '</span>' +
-                        '<span>' + (match.format || "T20") + ' | ' + localDate + ', ' + localTime + '</span>' +
+                        '<span>' + escapeHTML(match.league || "Unknown") + '</span>' +
+                        '<span>' + escapeHTML(match.format || "Unknown") + ' | ' + localDate + ', ' + localTime + '</span>' +
                     '</div>' +
                     '<div class="card-body">' +
                         '<div class="team-row">' +
                             '<div class="team-info">' +
-                                '<span class="team-name">' + (match.home || "Home") + '</span>' +
-                                '<span class="team-overs">' + oversHomeText + '</span>' +
+                                '<span class="team-name">' + escapeHTML(match.home || "Home") + '</span>' +
+                                '<span class="team-overs">' + escapeHTML(oversHomeText) + '</span>' +
                             '</div>' +
-                            '<div class="score-box"><div class="score">' + scoreHome + '</div></div>' +
+                            '<div class="score-box"><div class="score">' + escapeHTML(scoreHome) + '</div></div>' +
                         '</div>' +
                         '<div class="team-row">' +
                             '<div class="team-info">' +
-                                '<span class="team-name">' + (match.away || "Away") + '</span>' +
-                                '<span class="team-overs">' + oversAwayText + '</span>' +
+                                '<span class="team-name">' + escapeHTML(match.away || "Away") + '</span>' +
+                                '<span class="team-overs">' + escapeHTML(oversAwayText) + '</span>' +
                             '</div>' +
-                            '<div class="score-box"><div class="score">' + scoreAway + '</div></div>' +
+                            '<div class="score-box"><div class="score">' + escapeHTML(scoreAway) + '</div></div>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="card-bottom"><div class="status">' + (match.status || "Status Unknown") + '</div></div>' +
+                    '<div class="card-bottom"><div class="status">' + escapeHTML(match.status || "Status Unknown") + '</div></div>' +
                     predictionHTML;
                 
                 matchesContainer.appendChild(card);
