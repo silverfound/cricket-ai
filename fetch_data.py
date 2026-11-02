@@ -50,10 +50,21 @@ try:
             raise ValueError("Final pre-match artifact has an unexpected format.")
         pre_match_model = pre_match_artifact["model"]
         pre_match_threshold = float(pre_match_artifact.get("threshold", 0.5))
-        expected_features = pre_match_artifact.get("features")
         required_features = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
-        if expected_features and list(expected_features) != required_features:
+        expected_features = pre_match_artifact.get("features")
+        label_mapping = pre_match_artifact.get("label_mapping", {})
+        if list(expected_features or []) != required_features:
             raise ValueError("Final pre-match model feature order does not match production.")
+        if label_mapping != {1: "Team 1 wins", 0: "Team 2 wins"}:
+            raise ValueError("Final pre-match model label mapping is missing or incompatible.")
+        model_classes = list(getattr(pre_match_model, "classes_", []))
+        if model_classes != [0, 1]:
+            raise ValueError(f"Unexpected final pre-match model classes: {model_classes}")
+        model_features = list(getattr(pre_match_model, "feature_names_in_", []))
+        if model_features and model_features != required_features:
+            raise ValueError("Final pre-match estimator feature names do not match production.")
+        if not 0.0 <= pre_match_threshold <= 1.0:
+            raise ValueError("Final pre-match model threshold must be between 0 and 1.")
         print(f"Final pre-match model loaded (threshold={pre_match_threshold:.2f}).")
     else:
         pre_match_model = joblib.load("pre_match_model_v3.pkl")
