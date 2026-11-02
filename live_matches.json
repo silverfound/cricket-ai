@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-02 13:26:04",
-    "total_matches": 85,
+    "last_updated": "2026-11-02 13:46:41",
+    "total_matches": 83,
     "data_source_api": "Highlightly, CricketData, Sportscore",
     "matches": [
         {
@@ -992,23 +992,6 @@
         {
             "league": "Nepal Premier League",
             "format": "T20",
-            "start_time_iso": "2026-11-02T06:45:00+00:00",
-            "match_state": "finished",
-            "home": "Kathmandu Gurkhas",
-            "away": "Karnali Yaks",
-            "score_home": "181/6",
-            "overs_home": "",
-            "score_away": "180/6",
-            "overs_away": "",
-            "status": "Finished",
-            "api_source": "Sportscore",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
-        {
-            "league": "Nepal Premier League",
-            "format": "T20",
             "start_time_iso": "2026-11-02T06:45:00.000Z",
             "match_state": "finished",
             "home": "Karnali Yaks (NPL)",
@@ -1109,23 +1092,6 @@
             "pre_match_winner": null
         },
         {
-            "league": "Chitwan Rhinos vs Sudur Paschim Royals, 11th Match, Nepal Premier League 2026",
-            "format": "t20",
-            "start_time_iso": "2026-11-02T10:45:00",
-            "match_state": "live",
-            "home": "Chitwan Rhinos",
-            "away": "Sudur Paschim Royals",
-            "score_home": "129/6",
-            "overs_home": "20 ov",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Innings Break",
-            "api_source": "CricketData",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
-        {
             "league": "Nepal Premier League",
             "format": "T20",
             "start_time_iso": "2026-11-02T10:45:00.000Z",
@@ -1134,7 +1100,7 @@
             "away": "Sudur Paschim Royals (NPL)",
             "score_home": "129/6",
             "overs_home": "",
-            "score_away": "1/0",
+            "score_away": "43/2",
             "overs_away": "20 ov",
             "status": "In play",
             "api_source": "Highlightly",
