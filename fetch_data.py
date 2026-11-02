@@ -28,6 +28,8 @@ ALLOWED_KEYWORDS = [
     "WBBL", "WOMEN'S BIG BASH LEAGUE",
     "WPL", "WOMEN'S PREMIER LEAGUE",
     "ICC T20 WORLD CUP", "ICC CRICKET WORLD CUP",
+    "ICC MEN'S CRICKET WORLD CUP LEAGUE 2",
+    "INDIA IN NEW ZEALAND",
     "THE HUNDRED"
 ]
 
@@ -79,14 +81,17 @@ def is_ai_supported(match):
     fmt = str(match.get("format", "")).upper()
     league = str(match.get("league", "")).upper()
     
+    if "THE FORD TROPHY" in league:
+        return False
+
     if not any(x in fmt for x in ["T20", "ODI", "HUNDRED"]):
         return False
-        
-    for keyword in ALLOWED_KEYWORDS:
-        if keyword in league:
-            return True
-            
-    return False
+
+    # ODI is a supported model format; explicitly exclude The Ford Trophy above.
+    if "ODI" in fmt:
+        return True
+
+    return any(keyword in league for keyword in ALLOWED_KEYWORDS)
 
 # =========================================================
 # SMART ENCODERS
@@ -340,7 +345,6 @@ def fetch_highlightly():
                 headers=headers,
                 params={
                     "date": match_date,
-                    "timezone": "Asia/Karachi",
                     "limit": 100,
                     "offset": 0
                 },
