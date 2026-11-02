@@ -98,7 +98,7 @@ except Exception as history_error:
     historical_features = {}
 
 def normalize_history_team(team_name):
-    return re.sub(r"\\s+", " ", safe_text(team_name)).strip().casefold()
+    return re.sub(r"\s+", " ", safe_text(team_name)).strip().casefold()
 
 def get_historical_form(team_name, gender):
     gender_key = "female" if str(gender).lower() == "female" else "male"
@@ -135,7 +135,7 @@ def infer_match_gender(match_data, league_name, home_team, away_team):
         if value in ("male", "men", "mens"):
             return "male"
     labels = " ".join([safe_text(league_name), safe_text(home_team), safe_text(away_team)]).lower()
-    if re.search(r"women|woman|wbb|wpl|\\(w\\)", labels):
+    if re.search(r"women|woman|wbb|wpl|\(w\)", labels):
         return "female"
     return "male"
 
