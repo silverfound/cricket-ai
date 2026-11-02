@@ -39,5 +39,5 @@ jobs:
         git add live_matches.json
         git commit -m "Auto update data" || echo "No changes to commit"
         # 🔥 Safe Pull instead of Force Push
-        git pull --rebase origin main
-        git push origin main
+        git pull --rebase origin "${GITHUB_REF_NAME}"
+        git push origin "${GITHUB_REF_NAME}"
