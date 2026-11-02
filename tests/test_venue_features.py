@@ -38,3 +38,15 @@ def test_shuffling_rows_does_not_change_chronological_features():
     second = build_venue_features(shuffled).sort_values("match_date").reset_index(drop=True)
     cols = ["venue_format_prior_matches","venue_format_prior_avg_first_innings_runs","team1_venue_prior_win_rate","team2_venue_prior_win_rate"]
     pd.testing.assert_frame_equal(first[cols], second[cols])
+
+def test_same_day_matches_do_not_leak_into_each_other():
+    frame = pd.DataFrame([
+        {"match_date":"2024-02-01","venue":"Ground C","format":"T20","team1":"Alpha","team2":"Beta","winner":"Alpha","first_innings_runs":190},
+        {"match_date":"2024-02-01","venue":"Ground C","format":"T20","team1":"Gamma","team2":"Delta","winner":"Gamma","first_innings_runs":170},
+        {"match_date":"2024-02-02","venue":"Ground C","format":"T20","team1":"Alpha","team2":"Gamma","winner":"Alpha","first_innings_runs":180},
+    ])
+    result = build_venue_features(frame)
+    assert result.loc[0,"venue_format_prior_matches"] == 0
+    assert result.loc[1,"venue_format_prior_matches"] == 0
+    assert result.loc[2,"venue_format_prior_matches"] == 2
+    assert result.loc[2,"venue_format_prior_avg_first_innings_runs"] == 180
