@@ -48,3 +48,28 @@ def test_prediction_runs_with_known_encoder_classes():
     )
     assert prediction is not None, "Prediction returned None for encoder-known inputs"
     assert "%" in prediction
+
+
+def test_duplicate_gender_helper_is_removed():
+    import inspect
+    assert inspect.getsource(app).count("def infer_match_gender(") == 1
+
+
+def test_live_highlightly_prediction_passes_inferred_gender(monkeypatch):
+    captured = {}
+    def fake_prediction(home_info, away_info, match_format, league_name, home_team, away_team, gender=None):
+        captured["gender"] = gender
+        return 61.0, None
+    monkeypatch.setattr(app, "get_ai_predictions", fake_prediction)
+    payload = {"data": [{
+        "id": "women-live-1",
+        "state": {"description": "In Play", "teams": {
+            "home": {"score": "45/2", "info": "6.0 overs"},
+            "away": {"score": "-", "info": ""}}},
+        "format": "T20", "league": {"name": "Domestic League"},
+        "homeTeam": {"name": "Team A"}, "awayTeam": {"name": "Team B"},
+        "gender": "female"}]}
+    matches = app.standardize_data(payload, "Highlightly")
+    assert len(matches) == 1
+    assert captured["gender"] == "female"
+    assert matches[0]["win_probability"] == 61.0
