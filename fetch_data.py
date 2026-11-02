@@ -154,7 +154,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         league_encoder = team_league_encoders.get("league")
         if team_encoder is None or league_encoder is None: return None
 
-        gender = "female" if is_womens_competition(league_name) else "male"
+        gender = "female" if is_womens_competition(league_name) else None
         t1 = safe_encode_team(home_team, team_encoder, gender)
         t2 = safe_encode_team(away_team, team_encoder, gender)
         l_id = safe_encode_league(league_name, league_encoder)
@@ -281,7 +281,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             crr = chasing_score / overs_bowled if overs_bowled > 0 else 0
             rrr = runs_needed / (balls_remaining / 6) if balls_remaining > 0 else 0
 
-            gender = "female" if is_womens_competition(league_name) else "male"
+            gender = "female" if is_womens_competition(league_name) else None
             c_id = safe_encode_team(chasing_team, team_encoder, gender)
             d_id = safe_encode_team(defending_team, team_encoder, gender)
             if c_id == -1 or d_id == -1: return None, None
@@ -313,7 +313,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             overs_bowled = batting_balls_bowled / 6
             crr = batting_score / overs_bowled if overs_bowled > 0 else 0
 
-            gender = "female" if is_womens_competition(league_name) else "male"
+            gender = "female" if is_womens_competition(league_name) else None
             b_id = safe_encode_team(batting_team, team_encoder, gender)
             bw_id = safe_encode_team(bowling_team, team_encoder, gender)
             if b_id == -1 or bw_id == -1: return None, None
