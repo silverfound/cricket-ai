@@ -335,11 +335,27 @@ def fetch_highlightly():
     for match_date in [today, tomorrow]:
         url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={match_date}"
         try:
-            response = requests.get(url, headers=headers, timeout=15)
+            response = requests.get(
+                "https://cricket-highlights-api.p.rapidapi.com/matches",
+                headers=headers,
+                params={
+                    "date": match_date,
+                    "timezone": "Asia/Karachi",
+                    "limit": 100,
+                    "offset": 0
+                },
+                timeout=20
+            )
             if response.status_code == 200:
                 data = response.json()
-                if isinstance(data, dict): all_data.extend(safe_list(data.get("data")))
-        except: pass
+                if isinstance(data, dict):
+                    all_data.extend(safe_list(data.get("data")))
+                elif isinstance(data, list):
+                    all_data.extend(data)
+            else:
+                print(f"Highlightly API error for {match_date}: HTTP {response.status_code} - {response.text[:300]}")
+        except Exception as e:
+            print(f"Highlightly request failed for {match_date}: {e}")
     return {"data": all_data}, "Highlightly"
 
 def fetch_cricketdata():
@@ -403,11 +419,13 @@ def standardize_data(data, source):
             away_team = safe_text(away_data.get("name"), "Away")
 
             win_prob, proj_score, pre_match_winner = None, None, None
-            supported_format = any(x in fmt.upper() for x in ["T20", "ODI", "HUNDRED"])
+            # The Hundred fixtures may be displayed, but prediction models are
+            # not enabled until Hundred-specific ball-rate features are validated.
+            prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
 
-            if match_state == "live" and supported_format:
+            if match_state == "live" and prediction_supported_format:
                 win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
-            elif match_state == "upcoming" and supported_format:
+            elif match_state == "upcoming" and prediction_supported_format:
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league)
 
             matches.append({
