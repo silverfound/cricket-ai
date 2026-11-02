@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-02 13:46:41",
+    "last_updated": "2026-11-02 14:09:59",
     "total_matches": 83,
     "data_source_api": "Highlightly, CricketData, Sportscore",
     "matches": [
@@ -1100,7 +1100,7 @@
             "away": "Sudur Paschim Royals (NPL)",
             "score_home": "129/6",
             "overs_home": "",
-            "score_away": "43/2",
+            "score_away": "78/4",
             "overs_away": "20 ov",
             "status": "In play",
             "api_source": "Highlightly",
