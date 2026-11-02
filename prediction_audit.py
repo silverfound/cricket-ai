@@ -29,5 +29,5 @@ def log_pre_match_prediction(record, log_path=DEFAULT_LOG_PATH):
     row = dict(record)
     row["logged_at"] = datetime.now(timezone.utc).isoformat()
     with open(log_path, "a", encoding="utf-8") as handle:
-        handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\\n")
+        handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + chr(10))
     return True
