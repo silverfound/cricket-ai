@@ -8,14 +8,16 @@ on:
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Safe write permission
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0 
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
         
@@ -36,5 +38,6 @@ jobs:
         git config --global user.email 'action@github.com'
         git add live_matches.json
         git commit -m "Auto update data" || echo "No changes to commit"
-        # 🔥 YEH LINE FORCE UPDATE KAREGI
-        git push origin main --force
+        # 🔥 Safe Pull instead of Force Push
+        git pull --rebase origin main
+        git push origin main
