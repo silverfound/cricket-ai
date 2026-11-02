@@ -108,42 +108,40 @@ def safe_encode_league(league_name, encoder):
         return -1
     except: return -1
 
-def safe_encode_team(team_name, encoder):
-    if encoder is None or not team_name: return -1
-    try:
-        team_name_clean = str(team_name).strip().lower()
-        for cls in encoder.classes_:
-            if str(cls).strip().lower() == team_name_clean:
-                return int(encoder.transform([cls])[0])
+def is_womens_competition(league_name):
+    league = str(league_name or "").strip().lower()
+    return "women" in league or "wpl" in league or "wbbl" in league
 
-        def is_women_team(name):
-            name = str(name).strip().lower()
-            return bool(re.search(r"\bwomen\b", name) or re.search(r"\bw\b", name) or re.search(r"\(w\)", name))
+
+def safe_encode_team(team_name, encoder, gender=None):
+    """Encode a team without crossing the men's/women's class boundary."""
+    if encoder is None or not team_name:
+        return -1
+    try:
+        requested = str(team_name).strip()
+        requested_lower = requested.lower()
+
+        def is_women(name):
+            return bool(re.search(r"\\bwomen\\b|\\bw\\b|\\(w\\)", str(name).strip().lower()))
 
         def normalize(name):
-            name = str(name).strip().lower()
-            name = re.sub(r"\(.*?\)", "", name)
-            name = re.sub(r"\bwomen\b", "", name)
-            name = re.sub(r"\(w\)", "", name)
-            name = re.sub(r"\bw\b", "", name)
-            name = re.sub(r"\s+", " ", name)
-            return name.strip()
+            value = re.sub(r"\\(.*?\\)", "", str(name).strip().lower())
+            value = re.sub(r"\\bwomen\\b|\\(w\\)|\\bw\\b", "", value)
+            return re.sub(r"\\s+", " ", value).strip()
 
-        api_is_women = is_women_team(team_name_clean)
-        normalized_api = normalize(team_name_clean)
-        matches = []
-
-        for cls in encoder.classes_:
-            cls_clean = str(cls).strip().lower()
-            encoder_is_women = is_women_team(cls_clean)
-            if api_is_women != encoder_is_women: continue
-            if normalize(cls_clean) == normalized_api:
-                matches.append(cls)
-
-        if len(matches) == 1:
-            return int(encoder.transform([matches[0]])[0])
+        wanted_women = (gender == "female") if gender in ("female", "male") else is_women(requested)
+        candidates = [str(cls) for cls in encoder.classes_
+                      if is_women(cls) == wanted_women and normalize(cls) == normalize(requested)]
+        if len(candidates) == 1:
+            return int(encoder.transform([candidates[0]])[0])
+        exact = [str(cls) for cls in encoder.classes_
+                 if str(cls).strip().lower() == requested_lower and is_women(cls) == wanted_women]
+        if len(exact) == 1:
+            return int(encoder.transform([exact[0]])[0])
         return -1
-    except: return -1
+    except Exception as exc:
+        print(f"Team encoding failed for {team_name!r}: {exc}")
+        return -1
 
 # =========================================================
 # PREDICTION FUNCTIONS
@@ -156,8 +154,9 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         league_encoder = team_league_encoders.get("league")
         if team_encoder is None or league_encoder is None: return None
 
-        t1 = safe_encode_team(home_team, team_encoder)
-        t2 = safe_encode_team(away_team, team_encoder)
+        gender = "female" if is_womens_competition(league_name) else "male"
+        t1 = safe_encode_team(home_team, team_encoder, gender)
+        t2 = safe_encode_team(away_team, team_encoder, gender)
         l_id = safe_encode_league(league_name, league_encoder)
 
         if t1 == -1 or t2 == -1 or l_id == -1: return None
@@ -282,8 +281,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             crr = chasing_score / overs_bowled if overs_bowled > 0 else 0
             rrr = runs_needed / (balls_remaining / 6) if balls_remaining > 0 else 0
 
-            c_id = safe_encode_team(chasing_team, team_encoder)
-            d_id = safe_encode_team(defending_team, team_encoder)
+            gender = "female" if is_womens_competition(league_name) else "male"
+            c_id = safe_encode_team(chasing_team, team_encoder, gender)
+            d_id = safe_encode_team(defending_team, team_encoder, gender)
             if c_id == -1 or d_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -313,8 +313,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             overs_bowled = batting_balls_bowled / 6
             crr = batting_score / overs_bowled if overs_bowled > 0 else 0
 
-            b_id = safe_encode_team(batting_team, team_encoder)
-            bw_id = safe_encode_team(bowling_team, team_encoder)
+            gender = "female" if is_womens_competition(league_name) else "male"
+            b_id = safe_encode_team(batting_team, team_encoder, gender)
+            bw_id = safe_encode_team(bowling_team, team_encoder, gender)
             if b_id == -1 or bw_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -434,6 +435,7 @@ def standardize_data(data, source):
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league)
 
             matches.append({
+                "source_match_id": safe_text(m.get("id") or m.get("matchId")),
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("startTime")), "match_state": match_state,
                 "home": home_team, "away": away_team, "score_home": safe_text(home_info.get("score"), "-"),
                 "overs_home": extract_overs(home_info.get("info", "")), "score_away": safe_text(away_info.get("score"), "-"),
@@ -466,7 +468,8 @@ def standardize_data(data, source):
             league = safe_text(m.get("name"), "League")
             win_prob, proj_score = None, None
 
-            if match_state == "live":
+            prediction_supported_format = any(x in fmt.upper() for x in ("T20", "ODI"))
+            if match_state == "live" and prediction_supported_format:
                 win_prob, proj_score = get_ai_predictions(
                     {"score": home_score, "info": home_overs}, {"score": away_score, "info": away_overs},
                     fmt, league, home_team, away_team
@@ -525,34 +528,26 @@ def standardize_data(data, source):
 # =========================================================
 
 def deduplicate_matches(matches):
+    """Deduplicate only with a reliable ID or exact fixture timestamp."""
     seen = set()
     unique_matches = []
-
     for match in matches:
+        source_id = safe_text(match.get("source_match_id"))
         home = clean_team_name(match.get("home"))
         away = clean_team_name(match.get("away"))
-
-        if not home or not away:
-            unique_matches.append(match)
-            continue
-
         start_time = safe_text(match.get("start_time_iso"))
-        date_key = start_time[:10] if start_time else ""
-
-        # Date missing ho to match preserve karein
-        if not date_key:
+        league = safe_text(match.get("league")).casefold()
+        fmt = safe_text(match.get("format")).casefold()
+        if source_id:
+            key = ("id", source_id)
+        elif home and away and start_time:
+            key = ("fixture", tuple(sorted((home, away))), league, fmt, start_time)
+        else:
             unique_matches.append(match)
             continue
-
-        teams_key = tuple(sorted([home, away]))
-        key = (teams_key, date_key)
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-        unique_matches.append(match)
-
+        if key not in seen:
+            seen.add(key)
+            unique_matches.append(match)
     return unique_matches
 
 # =========================================================
