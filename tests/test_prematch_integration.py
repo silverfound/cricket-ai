@@ -55,14 +55,15 @@ def test_duplicate_gender_helper_is_removed():
     assert inspect.getsource(app).count("def infer_match_gender(") == 1
 
 
-def test_live_highlightly_prediction_passes_inferred_gender(monkeypatch):
-    captured = {}
-    def fake_prediction(home_info, away_info, match_format, league_name, home_team, away_team, gender=None):
-        captured["gender"] = gender
-        return 61.0, None
-    monkeypatch.setattr(app, "get_ai_predictions", fake_prediction)
+def test_legacy_live_models_are_disabled():
+    assert app.score_model is None
+    assert app.win_model is None
+    assert app.get_ai_predictions({}, {}, "T20", "League", "Team A", "Team B") == (None, None)
+
+
+def test_live_match_has_no_legacy_model_predictions():
     payload = {"data": [{
-        "id": "women-live-1",
+        "id": "live-1",
         "state": {"description": "In Play", "teams": {
             "home": {"score": "45/2", "info": "6.0 overs"},
             "away": {"score": "-", "info": ""}}},
@@ -71,9 +72,9 @@ def test_live_highlightly_prediction_passes_inferred_gender(monkeypatch):
         "gender": "female"}]}
     matches = app.standardize_data(payload, "Highlightly")
     assert len(matches) == 1
-    assert captured["gender"] == "female"
-    assert matches[0]["win_probability"] == 61.0
-
+    assert matches[0]["win_probability"] is None
+    assert matches[0]["projected_score"] is None
+    assert matches[0]["pre_match_winner"] is None
 
 
 def test_final_artifact_label_mapping_and_feature_schema():
