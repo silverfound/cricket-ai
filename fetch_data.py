@@ -79,9 +79,11 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
 
         if t1 == -1 or t2 == -1: return None
 
-        input_data = pd.DataFrame({
-            'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2]
-        })
+        # 🔥 FIX: Model ko 6 features chahiye (Form aur H2H 50% default de rahe hain)
+input_data = pd.DataFrame({
+    'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2],
+    't1_form': [0.5], 't2_form': [0.5], 'h2h_win_rate': [0.5]
+})
         prob = pre_match_model.predict_proba(input_data)[0]
         
         home_prob = prob[1] * 100
