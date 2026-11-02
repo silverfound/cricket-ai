@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-02 01:56:35",
+    "last_updated": "2026-11-02 02:30:03",
     "total_matches": 37,
     "data_source_api": "Highlightly",
     "matches": [
@@ -10,8 +10,8 @@
             "match_state": "live",
             "home": "New Zealand A",
             "away": "India A",
-            "score_home": "338/8",
-            "overs_home": "102.6 ov",
+            "score_home": "369/8",
+            "overs_home": "107.5 ov",
             "score_away": "346",
             "overs_away": "",
             "status": "In play",
@@ -28,10 +28,10 @@
             "home": "Queensland",
             "away": "Victoria",
             "score_home": "280",
-            "overs_home": "103.5 ov",
-            "score_away": "307",
-            "overs_away": "",
-            "status": "Innings break",
+            "overs_home": "",
+            "score_away": "307 & 0/0",
+            "overs_away": "1 ov",
+            "status": "Lunch",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -44,8 +44,8 @@
             "match_state": "live",
             "home": "Montreal Warriors",
             "away": "Brampton Blazers",
-            "score_home": "57/3",
-            "overs_home": "6.5 ov",
+            "score_home": "88/5",
+            "overs_home": "13 ov",
             "score_away": "119",
             "overs_away": "",
             "status": "In play",
@@ -392,7 +392,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Netherlands (60.0%)"
+            "pre_match_winner": null
         },
         {
             "league": "Nepal Premier League",
@@ -409,7 +409,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Karnali Yaks (NPL) (59.0%)"
+            "pre_match_winner": null
         },
         {
             "league": "Women's Big Bash League",
@@ -426,7 +426,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Perth Scorchers Women (99.6%)"
+            "pre_match_winner": null
         },
         {
             "league": "Nepal Premier League",
@@ -443,7 +443,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Chitwan Rhinos (NPL) (58.8%)"
+            "pre_match_winner": null
         },
         {
             "league": "Quaid-e-Azam Trophy Gold",
@@ -528,7 +528,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Janakpur Bolts (51.0%)"
+            "pre_match_winner": null
         },
         {
             "league": "Nepal Premier League",
@@ -545,7 +545,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Lumbini Lions (NPL) (57.5%)"
+            "pre_match_winner": null
         },
         {
             "league": "England Lions in West Indies",
@@ -562,7 +562,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "West Indies A (78.8%)"
+            "pre_match_winner": null
         },
         {
             "league": "CSA T20 Challenge",
@@ -579,7 +579,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Western Province (52.6%)"
+            "pre_match_winner": null
         },
         {
             "league": "The Ford Trophy",
@@ -596,7 +596,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Otago (86.2%)"
+            "pre_match_winner": null
         },
         {
             "league": "The Ford Trophy",
@@ -613,7 +613,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Wellington (84.9%)"
+            "pre_match_winner": null
         },
         {
             "league": "The Ford Trophy",
@@ -630,7 +630,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Central Districts (82.0%)"
+            "pre_match_winner": null
         }
     ]
 }
