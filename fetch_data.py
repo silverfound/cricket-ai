@@ -25,7 +25,8 @@ ALLOWED_KEYWORDS = [
     "PSL", "PAKISTAN SUPER LEAGUE",
     "CPL", "CARIBBEAN PREMIER LEAGUE",
     "SA20", "ILT20", "T20 BLAST", "LPL", "BPL", "SUPER SMASH",
-    "CSA T20 CHALLENGE", "CSA T20",
+    "CSA T20 CHALLENGE", "CSA T20", "CSA PRO20",
+    "GT20", "GLOBAL T20", "GLOBAL T20 CANADA",
     "WBBL", "WOMEN'S BIG BASH LEAGUE",
     "WPL", "WOMEN'S PREMIER LEAGUE",
     "ICC T20 WORLD CUP", "ICC CRICKET WORLD CUP",
@@ -65,6 +66,10 @@ def safe_text(value, default=""):
 def extract_overs(info_str):
     if not info_str: return ""
     text = str(info_str).strip()
+    # The Hundred is reported in balls, not six-ball overs.
+    balls_match = re.search(r"\b(\d+)\s*balls?\b", text, re.I)
+    if balls_match:
+        return f"{balls_match.group(1)} balls"
     match = re.search(r"(\d+\.\d+|\d+)\s*ov(?:er)?s?\b", text, re.I)
     if match: return f"{match.group(1)} ov"
     match = re.search(r"^\s*(\d+\.\d+|\d+)\s*/", text)
