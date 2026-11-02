@@ -66,6 +66,25 @@ The current runtime does not expose a separate chase-score projection artifact. 
 - During the first innings: toss is known, but the existing score artifact has no toss columns. Add only with matching training data and retraining.
 - During the chase: toss is known, but target, score, wickets, and balls remaining are the immediate state. Test toss as an incremental feature only with a stage-correct dataset and temporal validation.
 
+## First-innings total experiment (historical dataset)
+
+A separate experiment was run for a **pre-first-ball innings-total estimate**, not the existing live score projection artifact. Target: `first_innings_runs`. Training/test rows used the dataset's supplied chronological split (10,992 train; 5,591 test). Predictors included format, gender, teams, competition, venue, pre-match rolling/Elo/strength/rest features and venue historical average. The toss variant added `toss_winner` and `toss_decision`.
+
+| Model inputs | Test MAE | Test RMSE | Test R² |
+|---|---:|---:|---:|
+| Without toss | 31.517 | 40.426 | 0.4679 |
+| With toss | 31.559 | 40.434 | 0.4677 |
+
+Toss fields did not improve this overall test result in this feature setup. This does **not** prove toss is useless: effect can vary by format, venue, team and decision; the current experiment uses one aggregate target and existing feature dataset. Format sample sizes: T20 5,102; ODI 488; IT20 1 (not enough for a meaningful IT20 conclusion). This is a pre-innings total experiment and must not be presented as a result for the live score projection or chase-win models.
+
+## Audit findings requiring attention
+
+1. The existing live first-innings score inference currently hard-codes `last_3_overs_runs=10`. Replace only when real recent-over runs are available and the model is trained with the same definition.
+2. Existing chase inference returns chase win probability, not a separate chase score projection.
+3. Existing pre-toss model accepts a format argument but its artifact has no format feature.
+4. Toss is available after the toss; it is valid for post-toss/innings stages but must be tested per stage, not globally added to every artifact.
+5. Historical rolling features still require source-level verification that each value uses only matches completed before the prediction timestamp.
+
 ## Audit constraints before model replacement
 
 1. Verify every historical rolling feature is calculated strictly from matches completed before the prediction timestamp.
