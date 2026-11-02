@@ -80,12 +80,11 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         })
 
         prob = pre_match_model.predict_proba(input_data)[0]
-        # 🔥 FLOAT FIX YAHAN HAI
         home_prob = float(prob[1] * 100)
         away_prob = float(prob[0] * 100)
         
-        if home_prob > away_prob: return f"{home_team} ({home_prob:.1f}%)"
-        else: return f"{away_team} ({away_prob:.1f}%)"
+        if home_prob > away_prob: return f"{home_team} ({round(home_prob, 1)}%)"
+        else: return f"{away_team} ({round(away_prob, 1)}%)"
     except: return None
 
 # 🤖 LIVE MATCH AI PREDICTION (PERFECTED)
@@ -136,24 +135,27 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             wickets_left = 10 - chasing_wickets
             balls_bowled = int(chasing_overs) * 6 + int((chasing_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
-            if balls_remaining > 0 and runs_needed > 0:
-                crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
-                rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
-                
-                c_id = safe_encode_team(chasing_team, team_league_encoders['team'])
-                d_id = safe_encode_team(defending_team, team_league_encoders['team'])
-                if c_id == -1: c_id = 0
-                if d_id == -1: d_id = 0
+            
+            # Agar match khatam ho chuka hai (all out ya balls khatam)
+            if balls_remaining <= 0 or runs_needed <= 0 or wickets_left <= 0:
+                return None, None
 
-                input_data = pd.DataFrame({
-                    'league_id': [l_id], 'chasing_team_id': [c_id], 'defending_team_id': [d_id],
-                    'runs_needed': [runs_needed], 'balls_remaining': [balls_remaining],
-                    'wickets_left': [wickets_left], 'current_run_rate': [crr],
-                    'required_run_rate': [rrr]
-                })
-                prob = win_model.predict_proba(input_data)[0][1] * 100
-                # 🔥 FLOAT FIX YAHAN HAI
-                return float(round(prob, 1)), None
+            crr = (chasing_score / (balls_bowled / 6)) if balls_bowled > 0 else 0
+            rrr = (runs_needed / (balls_remaining / 6)) if balls_remaining > 0 else 0
+            
+            c_id = safe_encode_team(chasing_team, team_league_encoders['team'])
+            d_id = safe_encode_team(defending_team, team_league_encoders['team'])
+            if c_id == -1: c_id = 0
+            if d_id == -1: d_id = 0
+
+            input_data = pd.DataFrame({
+                'league_id': [l_id], 'chasing_team_id': [c_id], 'defending_team_id': [d_id],
+                'runs_needed': [runs_needed], 'balls_remaining': [balls_remaining],
+                'wickets_left': [wickets_left], 'current_run_rate': [crr],
+                'required_run_rate': [rrr]
+            })
+            prob = win_model.predict_proba(input_data)[0][1] * 100
+            return round(float(prob), 1), None
                 
         # 1st Innings (Projected Score)
         else:
@@ -172,9 +174,14 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                 batting_team, bowling_team = away_team, home_team
             else: return None, None
             
+            balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
+            balls_remaining = (total_overs * 6) - balls_bowled
+
+            # Agar innings khatam ho chuki hai (All Out ya Overs khatam)
+            if batting_wickets >= 10 or balls_remaining <= 0:
+                return None, None
+
             if batting_overs > 0 and batting_score > 0:
-                balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
-                balls_remaining = (total_overs * 6) - balls_bowled
                 crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
                 
                 b_id = safe_encode_team(batting_team, team_league_encoders['team'])
@@ -190,9 +197,12 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                     'balls_remaining': [balls_remaining], 'wickets_lost': [batting_wickets], 
                     'current_run_rate': [crr], 'last_3_overs_runs': [10]
                 })
-                pred_score = score_model.predict(input_data)[0]
-                # 🔥 FLOAT FIX YAHAN HAI
-                pred_score = float(pred_score)
+                pred_score = float(score_model.predict(input_data)[0])
+                
+                # 🔥 LOGIC FIX: AI kabhi bhi current score se kam predict nahi kar sakta
+                if pred_score < batting_score:
+                    pred_score = batting_score
+                
                 return None, f"{int(pred_score)-5} - {int(pred_score)+5}"
         return None, None
     except Exception as e:
