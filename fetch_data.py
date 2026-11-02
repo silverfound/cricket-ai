@@ -40,41 +40,40 @@ ALLOWED_KEYWORDS = [
 # =========================================================
 
 try:
-    score_model = joblib.load("score_pred_model_v3.pkl")
+    # Only the final pre-match winner model is active.
+    # Legacy live score/chase model files remain in the repository as backups.
+    score_model = None
+    win_model = None
     team_league_encoders = joblib.load("team_league_encoders.pkl")
-    win_model = joblib.load("win_prob_model_v3.pkl")
     final_pre_match_path = os.path.join("models", "final_pre_match_model_v3.pkl")
-    if os.path.exists(final_pre_match_path):
-        pre_match_artifact = joblib.load(final_pre_match_path)
-        if not isinstance(pre_match_artifact, dict) or "model" not in pre_match_artifact:
-            raise ValueError("Final pre-match artifact has an unexpected format.")
-        pre_match_model = pre_match_artifact["model"]
-        pre_match_threshold = float(pre_match_artifact.get("threshold", 0.5))
-        required_features = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
-        expected_features = pre_match_artifact.get("features")
-        label_mapping = pre_match_artifact.get("label_mapping", {})
-        if list(expected_features or []) != required_features:
-            raise ValueError("Final pre-match model feature order does not match production.")
-        if label_mapping != {1: "Team 1 wins", 0: "Team 2 wins"}:
-            raise ValueError("Final pre-match model label mapping is missing or incompatible.")
-        model_classes = list(getattr(pre_match_model, "classes_", []))
-        if model_classes != [0, 1]:
-            raise ValueError(f"Unexpected final pre-match model classes: {model_classes}")
-        model_features = list(getattr(pre_match_model, "feature_names_in_", []))
-        if model_features and model_features != required_features:
-            raise ValueError("Final pre-match estimator feature names do not match production.")
-        if not 0.0 <= pre_match_threshold <= 1.0:
-            raise ValueError("Final pre-match model threshold must be between 0 and 1.")
-        print(f"Final pre-match model loaded (threshold={pre_match_threshold:.2f}).")
-    else:
-        pre_match_model = joblib.load("pre_match_model_v3.pkl")
-        pre_match_threshold = 0.5
-        print("Legacy pre-match model loaded; final artifact not found.")
+    if not os.path.exists(final_pre_match_path):
+        raise FileNotFoundError("Final pre-match model artifact is required; legacy fallback is disabled.")
 
-    print("Models successfully loaded.")
+    pre_match_artifact = joblib.load(final_pre_match_path)
+    if not isinstance(pre_match_artifact, dict) or "model" not in pre_match_artifact:
+        raise ValueError("Final pre-match artifact has an unexpected format.")
+    pre_match_model = pre_match_artifact["model"]
+    pre_match_threshold = float(pre_match_artifact.get("threshold", 0.5))
+    required_features = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
+    expected_features = pre_match_artifact.get("features")
+    label_mapping = pre_match_artifact.get("label_mapping", {})
+    if list(expected_features or []) != required_features:
+        raise ValueError("Final pre-match model feature order does not match production.")
+    if label_mapping != {1: "Team 1 wins", 0: "Team 2 wins"}:
+        raise ValueError("Final pre-match model label mapping is missing or incompatible.")
+    model_classes = list(getattr(pre_match_model, "classes_", []))
+    if model_classes != [0, 1]:
+        raise ValueError(f"Unexpected final pre-match model classes: {model_classes}")
+    model_features = list(getattr(pre_match_model, "feature_names_in_", []))
+    if model_features and model_features != required_features:
+        raise ValueError("Final pre-match estimator feature names do not match production.")
+    if not 0.0 <= pre_match_threshold <= 1.0:
+        raise ValueError("Final pre-match model threshold must be between 0 and 1.")
+    print(f"Final pre-match model loaded (threshold={pre_match_threshold:.2f}).")
+    print("Legacy live score/chase models are disabled.")
 except Exception as e:
     print(f"Model loading error: {e}")
-    score_model = team_league_encoders = win_model = pre_match_model = None
+    score_model = win_model = team_league_encoders = pre_match_model = None
     pre_match_threshold = 0.5
 
 # =========================================================
