@@ -120,6 +120,37 @@ def test_completed_new_zealand_india_match_retrospective(capsys):
             f"India in New Zealand league={bool(league)}"
         )
 
+    # Log the exact pre-match inputs and raw class probabilities so a
+    # retrospective miss can be audited without changing model behavior.
+    import pandas as pd
+    nz_id = app.safe_encode_team(nz, team_encoder, "male")
+    india_id = app.safe_encode_team(india, team_encoder, "male")
+    league_id = app.safe_encode_league(league, league_encoder)
+    nz_form = app.get_historical_form(nz, "male")
+    india_form = app.get_historical_form(india, "male")
+    nz_h2h = app.get_historical_h2h(nz, india, "male")
+    india_h2h = app.get_historical_h2h(india, nz, "male")
+    assert nz_id >= 0 and india_id >= 0 and league_id >= 0
+    assert abs((nz_h2h + india_h2h) - 1.0) < 1e-9, "Directional H2H rates must be complementary"
+    audit_input = pd.DataFrame([{
+        "league_id": league_id,
+        "team1_id": nz_id,
+        "team2_id": india_id,
+        "t1_form": nz_form,
+        "t2_form": india_form,
+        "h2h_win_rate": nz_h2h,
+    }], columns=app.pre_match_artifact["features"])
+    raw_probabilities = app.pre_match_model.predict_proba(audit_input)[0]
+    print(
+        "RETROSPECTIVE_FEATURE_AUDIT "
+        f"team1=New Zealand team1_id={nz_id} form={nz_form:.4f} "
+        f"team2=India team2_id={india_id} form={india_form:.4f} "
+        f"league_id={league_id} h2h_team1_rate={nz_h2h:.6f} "
+        f"h2h_team2_rate={india_h2h:.6f} "
+        f"class0_team2_probability={float(raw_probabilities[list(app.pre_match_model.classes_).index(0)]):.6f} "
+        f"class1_team1_probability={float(raw_probabilities[list(app.pre_match_model.classes_).index(1)]):.6f}"
+    )
+
     prediction = app.get_pre_match_prediction(nz, india, "T20", league, "male")
     assert prediction is not None, "Production prediction pipeline returned None"
     predicted_team = prediction.rsplit(" (", 1)[0]
