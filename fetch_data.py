@@ -39,11 +39,36 @@ try:
     score_model = joblib.load("score_pred_model_v3.pkl")
     team_league_encoders = joblib.load("team_league_encoders.pkl")
     win_model = joblib.load("win_prob_model_v3.pkl")
-    pre_match_model = joblib.load("pre_match_model_v3.pkl")
+
+    # Prefer the newly trained artifact. It stores the estimator and its
+    # validation-selected decision threshold together in a dictionary.
+    final_pre_match_path = os.path.join("models", "final_pre_match_model_v3.pkl")
+    if os.path.exists(final_pre_match_path):
+        pre_match_artifact = joblib.load(final_pre_match_path)
+        if not isinstance(pre_match_artifact, dict) or "model" not in pre_match_artifact:
+            raise ValueError("Final pre-match artifact has an unexpected format.")
+        pre_match_model = pre_match_artifact["model"]
+        pre_match_threshold = float(pre_match_artifact.get("threshold", 0.5))
+        expected_features = pre_match_artifact.get("features")
+        required_features = [
+            "league_id", "team1_id", "team2_id",
+            "t1_form", "t2_form", "h2h_win_rate"
+        ]
+        if expected_features and list(expected_features) != required_features:
+            raise ValueError("Final pre-match model feature order does not match production.")
+        print(f"Final pre-match model loaded (threshold={pre_match_threshold:.2f}).")
+    else:
+        # Backward-compatible legacy estimator; used only if the new artifact
+        # has not been deployed to this runtime.
+        pre_match_model = joblib.load("pre_match_model_v3.pkl")
+        pre_match_threshold = 0.5
+        print("Legacy pre-match model loaded; final artifact not found.")
+
     print("Models successfully loaded.")
 except Exception as e:
     print(f"Model loading error: {e}")
     score_model = team_league_encoders = win_model = pre_match_model = None
+    pre_match_threshold = 0.5
 
 # =========================================================
 # COMMON HELPERS
@@ -163,15 +188,20 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         probabilities = pre_match_model.predict_proba(input_data)
         if probabilities is None or len(probabilities) == 0 or len(probabilities[0]) < 2: return None
 
-        classes = getattr(pre_match_model, "classes_", [0, 1])
+        classes = list(getattr(pre_match_model, "classes_", [0, 1]))
         if 0 not in classes or 1 not in classes: return None
 
-        home_index = list(classes).index(1)
-        away_index = list(classes).index(0)
-        home_prob = float(probabilities[0][home_index]) * 100
-        away_prob = float(probabilities[0][away_index]) * 100
+        home_index = classes.index(1)
+        away_index = classes.index(0)
+        home_probability = float(probabilities[0][home_index])
+        away_probability = float(probabilities[0][away_index])
+        home_prob = home_probability * 100
+        away_prob = away_probability * 100
 
-        if home_prob > away_prob: return f"{home_team} ({round(home_prob, 1)}%)"
+        # The model's threshold was selected on validation data. Apply it to
+        # class-1 (team1/home) probability rather than assuming 0.50.
+        if home_probability >= pre_match_threshold:
+            return f"{home_team} ({round(home_prob, 1)}%)"
         return f"{away_team} ({round(away_prob, 1)}%)"
     except: return None
 
