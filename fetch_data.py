@@ -5,7 +5,7 @@ import requests
 import joblib
 import pandas as pd
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # =========================================================
 # CONFIGURATION
@@ -596,7 +596,7 @@ def main():
     used_api = ", ".join(successful_sources) if successful_sources else "None"
     
     output = {
-        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
         "total_matches": len(final_matches),
         "data_source_api": used_api,
         "matches": final_matches
