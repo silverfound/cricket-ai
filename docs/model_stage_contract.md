@@ -16,6 +16,10 @@ Current production input schema:
 
 Current runtime receives `match_format` but does not use it in the six-column model input. Toss winner/decision must not be included in a prediction made before the toss.
 
+Venue is an eligible pre-toss feature because the scheduled ground is normally known before the toss. The current production artifact does not yet use venue: it has no venue columns and must not be given extra columns at inference. The fixture adapter now captures an explicitly provider-supplied venue name in match output and the prediction audit record. Retraining requires historical match-level rows with venue, match date, teams, result, format and gender. Derive venue rolling averages and venue-team performance strictly from matches completed before each fixture timestamp, with minimum-sample smoothing and chronological validation. Do not infer missing venues or use future matches.
+
+Recommended next-artifact venue features: stable venue ID; prior format-aware average first-innings runs; smoothed prior venue win rates for each team; and pace/spin or boundary indicators only where reliable historical sources exist. Ground identity and historical ground behaviour are distinct from today’s pitch condition, which belongs only in a separate post-toss model.
+
 Persist this prediction as its own immutable record, including match identifier, prediction timestamp, model version, both team probabilities, and stage=`pre_toss`.
 
 ## Stage 2 — Post-toss, pre-match winner prediction
@@ -23,6 +27,10 @@ Persist this prediction as its own immutable record, including match identifier,
 This is a separate prediction made after the toss but before the first ball. It uses the same eligible pre-match information plus:
 - `toss_winner`
 - `toss_decision` (bat/field)
+- today’s observed pitch condition (batting-friendly, pace assistance, spin assistance, two-paced), only from a reliable match-day source or verified input
+- optionally weather/dew observations available at prediction time.
+
+Do not substitute a generic venue profile for today’s pitch report. Store pitch source and observation time; if unknown, keep it unknown rather than guessing.
 
 Train and validate a dedicated post-toss artifact with this exact stage-appropriate schema. Do not silently add toss columns to the existing pre-toss artifact or reuse it with an incompatible input schema.
 
