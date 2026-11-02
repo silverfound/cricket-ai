@@ -149,11 +149,11 @@ document.getElementById('last-updated').innerText = "Last Updated: " + localTime
             }
 
             filteredMatches.forEach(match => {
-                const escapeHTML(scoreHome) = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
-                const escapeHTML(scoreAway) = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
+                const scoreHome = (match.score_home === "null" || !match.score_home) ? "-" : match.score_home;
+                const scoreAway = (match.score_away === "null" || !match.score_away) ? "-" : match.score_away;
                 
-                let escapeHTML(oversHomeText) = match.overs_home ? `(${match.overs_home})` : "";
-                let escapeHTML(oversAwayText) = match.overs_away ? `(${match.overs_away})` : "";
+                let oversHomeText = match.overs_home ? `(${match.overs_home})` : "";
+                let oversAwayText = match.overs_away ? `(${match.overs_away})` : "";
 
                 let localDate = "Date TBD", localTime = "";
                 if (match.start_time_iso) {
