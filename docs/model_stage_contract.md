@@ -1,8 +1,8 @@
 # Cricket prediction model stage contract
 
-This repository has distinct prediction stages. Features must be gated by the information available at the moment each prediction is made.
+This repository has distinct prediction stages. Features must be gated by the information available at the moment each prediction is made. Pre-toss and post-toss winner predictions are both retained; the later prediction must never overwrite the earlier one.
 
-## Stage 1 — Pre-match winner (before toss)
+## Stage 1 — Pre-toss match winner prediction
 
 Runtime: `get_pre_match_prediction()` in `fetch_data.py`.
 
@@ -16,9 +16,30 @@ Current production input schema:
 
 Current runtime receives `match_format` but does not use it in the six-column model input. Toss winner/decision must not be included in a prediction made before the toss.
 
-Potential future extension: a separate post-toss pre-match prediction, with toss winner and bat/field decision. Do not silently add those fields to the existing pre-toss artifact.
+Persist this prediction as its own immutable record, including match identifier, prediction timestamp, model version, both team probabilities, and stage=`pre_toss`.
 
-## Stage 2 — First-innings live score projection
+## Stage 2 — Post-toss, pre-match winner prediction
+
+This is a separate prediction made after the toss but before the first ball. It uses the same eligible pre-match information plus:
+- `toss_winner`
+- `toss_decision` (bat/field)
+
+Train and validate a dedicated post-toss artifact with this exact stage-appropriate schema. Do not silently add toss columns to the existing pre-toss artifact or reuse it with an incompatible input schema.
+
+Persist this as a second immutable record for the same match, with stage=`post_toss`, prediction timestamp, model version, and both team probabilities. Keep the pre-toss record unchanged so the two predictions can be compared later.
+
+## Measuring the incremental value of the toss
+
+Compare pre-toss and post-toss predictions on the same held-out matches:
+- Report accuracy, ROC-AUC, log loss, Brier score and calibration for each stage, with sample counts.
+- Report the paired change in probability for each team's winning chance from pre-toss to post-toss.
+- Also compare the post-toss model against a post-toss ablation trained without toss fields. This isolates the incremental predictive value of toss information from other pipeline differences.
+- Break results down by format, venue, toss decision and toss winner where sample sizes support it.
+- Use chronological splits and ensure every feature is available at its prediction timestamp.
+
+A probability shift after the toss shows how the model updated its view; by itself it does not prove the toss caused that change or improved predictive accuracy. The paired held-out evaluation and toss-feature ablation are needed to assess predictive importance.
+
+## Stage 3 — First-innings live score projection
 
 Runtime: the non-chase branch of `get_ai_predictions()`.
 
@@ -39,7 +60,7 @@ Audit finding: `last_3_overs_runs` is currently hard-coded to 10 in runtime feat
 
 Toss context (winner and decision) can be useful for a separate pre-innings score model or as historical context, but must not be inserted into this existing artifact without matching training schema and retraining.
 
-## Stage 3 — Match winner after the first innings / during chase
+## Stage 4 — Match winner after the first innings / during chase
 
 Runtime: the chase branch of `get_ai_predictions()`.
 
@@ -55,14 +76,14 @@ Current production input schema:
 
 The target and chase state already encode much of the first-innings outcome. Toss is not currently an explicit model input. Do not append toss fields to this artifact without retraining and checking whether they add signal after target and match state are known.
 
-## Stage 4 — Chase-innings / live chase state
+## Stage 5 — Chase-innings / live chase state
 
-The current runtime does not expose a separate chase-score projection artifact. It exposes chase win probability via the Stage 3 branch. If a distinct chase-innings score prediction is intended, it needs its own target, training dataset, artifact, and inference function; do not conflate it with win probability.
+The current runtime does not expose a separate chase-score projection artifact. It exposes chase win probability via the Stage 4 branch. If a distinct chase-innings score prediction is intended, it needs its own target, training dataset, artifact, and inference function; do not conflate it with win probability.
 
 ## Toss feature policy
 
 - Before toss: toss fields are unavailable and must not be used.
-- After toss but before first ball: toss winner and decision are valid features for a dedicated post-toss prediction.
+- After toss but before first ball: toss winner and decision are valid features for the dedicated post-toss winner prediction.
 - During the first innings: toss is known, but the existing score artifact has no toss columns. Add only with matching training data and retraining.
 - During the chase: toss is known, but target, score, wickets, and balls remaining are the immediate state. Test toss as an incremental feature only with a stage-correct dataset and temporal validation.
 
@@ -82,7 +103,7 @@ Toss fields did not improve this overall test result in this feature setup. This
 1. The existing live first-innings score inference currently hard-codes `last_3_overs_runs=10`. Replace only when real recent-over runs are available and the model is trained with the same definition.
 2. Existing chase inference returns chase win probability, not a separate chase score projection.
 3. Existing pre-toss model accepts a format argument but its artifact has no format feature.
-4. Toss is available after the toss; it is valid for post-toss/innings stages but must be tested per stage, not globally added to every artifact.
+4. Pre-toss and post-toss winner predictions must be stored as separate records; the post-toss record must not overwrite the pre-toss record.
 5. Historical rolling features still require source-level verification that each value uses only matches completed before the prediction timestamp.
 
 ## Audit constraints before model replacement
