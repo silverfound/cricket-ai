@@ -529,7 +529,8 @@ def standardize_data(data, source):
             if match_state == "live" and prediction_supported_format:
                 win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
             elif match_state == "upcoming" and prediction_supported_format:
-                match_gender = infer_match_gender(m, league, home_team, away_team)\n                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
+                match_gender = infer_match_gender(m, league, home_team, away_team)
+                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
 
             matches.append({
                 "source_match_id": safe_text(m.get("id") or m.get("matchId")),
