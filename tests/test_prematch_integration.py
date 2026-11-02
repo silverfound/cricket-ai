@@ -73,3 +73,13 @@ def test_live_highlightly_prediction_passes_inferred_gender(monkeypatch):
     assert len(matches) == 1
     assert captured["gender"] == "female"
     assert matches[0]["win_probability"] == 61.0
+
+
+
+def test_final_artifact_label_mapping_and_feature_schema():
+    artifact = app.pre_match_artifact
+    assert artifact["label_mapping"] == {1: "Team 1 wins", 0: "Team 2 wins"}
+    assert list(app.pre_match_model.classes_) == [0, 1]
+    expected = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
+    assert artifact["features"] == expected
+    assert list(app.pre_match_model.feature_names_in_) == expected
