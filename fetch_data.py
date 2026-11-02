@@ -136,20 +136,6 @@ def infer_match_gender(match_data, league_name, home_team, away_team):
     return "male"
 
 
-def infer_match_gender(match_data, league_name, home_team, away_team):
-    match_data = safe_dict(match_data)
-    for key in ("gender", "sex"):
-        value = safe_text(match_data.get(key)).lower()
-        if value in ("female", "women", "woman", "womens"):
-            return "female"
-        if value in ("male", "men", "mens"):
-            return "male"
-    labels = " ".join([safe_text(league_name), safe_text(home_team), safe_text(away_team)]).lower()
-    if re.search(r"women|woman|wbb|wpl|\(w\)", labels):
-        return "female"
-    return "male"
-
-
 def extract_overs(info_str):
     if not info_str: return ""
     text = str(info_str).strip()
@@ -277,7 +263,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name, ge
         print(f"Pre-match prediction error: {prediction_error}")
         return None
 
-def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
+def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team, gender=None):
     if (score_model is None or team_league_encoders is None or win_model is None): return None, None
     try:
         home_info = safe_dict(home_info)
@@ -378,9 +364,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             crr = chasing_score / overs_bowled if overs_bowled > 0 else 0
             rrr = runs_needed / (balls_remaining / 6) if balls_remaining > 0 else 0
 
-            gender = "female" if is_womens_competition(league_name) else None
-            c_id = safe_encode_team(chasing_team, team_encoder, gender)
-            d_id = safe_encode_team(defending_team, team_encoder, gender)
+            match_gender = gender or ("female" if is_womens_competition(league_name) else "male")
+            c_id = safe_encode_team(chasing_team, team_encoder, match_gender)
+            d_id = safe_encode_team(defending_team, team_encoder, match_gender)
             if c_id == -1 or d_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -410,9 +396,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             overs_bowled = batting_balls_bowled / 6
             crr = batting_score / overs_bowled if overs_bowled > 0 else 0
 
-            gender = "female" if is_womens_competition(league_name) else None
-            b_id = safe_encode_team(batting_team, team_encoder, gender)
-            bw_id = safe_encode_team(bowling_team, team_encoder, gender)
+            match_gender = gender or ("female" if is_womens_competition(league_name) else "male")
+            b_id = safe_encode_team(batting_team, team_encoder, match_gender)
+            bw_id = safe_encode_team(bowling_team, team_encoder, match_gender)
             if b_id == -1 or bw_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -526,10 +512,10 @@ def standardize_data(data, source):
             # not enabled until Hundred-specific ball-rate features are validated.
             prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
 
+            match_gender = infer_match_gender(m, league, home_team, away_team)
             if match_state == "live" and prediction_supported_format:
-                win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
+                win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team, match_gender)
             elif match_state == "upcoming" and prediction_supported_format:
-                match_gender = infer_match_gender(m, league, home_team, away_team)
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
 
             matches.append({
@@ -568,9 +554,10 @@ def standardize_data(data, source):
 
             prediction_supported_format = any(x in fmt.upper() for x in ("T20", "ODI"))
             if match_state == "live" and prediction_supported_format:
+                match_gender = infer_match_gender(m, league, home_team, away_team)
                 win_prob, proj_score = get_ai_predictions(
                     {"score": home_score, "info": home_overs}, {"score": away_score, "info": away_overs},
-                    fmt, league, home_team, away_team
+                    fmt, league, home_team, away_team, match_gender
                 )
 
             matches.append({
