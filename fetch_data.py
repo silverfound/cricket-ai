@@ -25,7 +25,7 @@ except Exception as e:
     print(f"⚠️ Model load error: {e}")
     score_model, team_league_encoders, win_model, pre_match_model = None, None, None, None
 
-# 🔥 OVERS NIKALNE KA FUNCTION
+# 🔥 OVERS NIKALNE KA FUNCTION (For UI)
 def extract_overs(info_str):
     if not info_str: return ""
     if '/' in info_str:
@@ -73,6 +73,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
 
         if t1 == -1 or t2 == -1: return None 
+        if l_id == -1: l_id = 0
 
         input_data = pd.DataFrame({
             'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2],
@@ -87,7 +88,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         else: return f"{away_team} ({round(away_prob, 1)}%)"
     except: return None
 
-# 🤖 LIVE MATCH AI PREDICTION (SMART PARSER)
+# 🤖 LIVE MATCH AI PREDICTION (THE ULTIMATE FIX)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
     if not all([score_model, team_league_encoders, win_model]): return None, None
     try:
@@ -98,17 +99,17 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
         a_score_str = str(away_info.get("score", "-"))
         a_info = str(away_info.get("info", ""))
 
-        # Helper: Score parse karna
+        # Helper 1: Score parsing (Runs + Wickets)
         def parse_score(s_str):
             if not s_str or s_str == "-" or s_str.lower() == "null": return None, None
-            if "/" in s_str:
-                parts = s_str.split("/")
-                return int(parts[0]), int(parts[1])
-            else:
-                try: return int(s_str), 10 # Agar wickets nahi diye (All Out)
-                except: return None, None
+            match = re.search(r'(\d+)(?:/(\d+))?', s_str)
+            if match:
+                runs = int(match.group(1))
+                wkts = int(match.group(2)) if match.group(2) else 10 # Agar sirf 182 likha hai, matlab all out
+                return runs, wkts
+            return None, None
 
-        # Helper: Overs parse karna (16.5/20 ov se 16.5 nikalna)
+        # Helper 2: Overs parsing (16.5/20 ov se 16.5 nikalna)
         def parse_overs(i_str):
             if not i_str: return 0.0
             match = re.search(r'(\d+\.\d+|\d+)', i_str)
@@ -124,7 +125,11 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
         if h_runs is None and a_runs is None:
             return None, None
 
-        # Target check
+        # Innings Break Check
+        if "break" in h_info.lower() or "break" in a_info.lower():
+            return None, None
+
+        # 1. Determine Target & Chasing Team (The Smart Way)
         target = None
         chasing_score, chasing_wickets, chasing_overs = 0, 0, 0.0
         chasing_team, defending_team = "", ""
@@ -159,14 +164,18 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
                     chasing_team, defending_team = home_team, away_team
 
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
+        if l_id == -1: l_id = 0
 
-        # 2nd Innings
+        # ==========================================
+        # 2nd Innings (Win Probability)
+        # ==========================================
         if target:
             runs_needed = target - chasing_score
             wickets_left = 10 - chasing_wickets
             balls_bowled = int(chasing_overs) * 6 + int((chasing_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
             
+            # Agar match khatam ho gaya
             if balls_remaining <= 0 or runs_needed <= 0 or wickets_left <= 0:
                 return None, None
 
@@ -187,7 +196,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             prob = win_model.predict_proba(input_data)[0][1] * 100
             return round(float(prob), 1), None
 
-        # 1st Innings
+        # ==========================================
+        # 1st Innings (Projected Score)
+        # ==========================================
         else:
             batting_score, batting_wickets, batting_overs = None, None, None
             batting_team, bowling_team = "", ""
@@ -204,6 +215,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
 
+            # Agar All Out hai ya overs khatam hain, toh prediction mat do
             if batting_wickets >= 10 or balls_remaining <= 0 or batting_overs <= 0:
                 return None, None
 
@@ -224,7 +236,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             })
             pred_score = float(score_model.predict(input_data)[0])
             
-            # 🔥 FIX: Prediction current score se kam nahi ho sakti
+            # AI kabhi current score se kam nahi bolega
             if pred_score < batting_score:
                 pred_score = batting_score
                 
@@ -232,7 +244,7 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
     except Exception as e:
         return None, None
 
-# --- APIs FUNCTIONS ---
+# --- APIs FUNCTIONS (Unchanged) ---
 def fetch_highlightly():
     all_data = []
     for d in [today, tomorrow]:
@@ -272,7 +284,7 @@ def fetch_sportscore():
     except: pass
     return None, None
 
-# --- Formatter ---
+# --- Formatter (Unchanged) ---
 def standardize_data(data, source):
     matches = []
     if not data: return matches
