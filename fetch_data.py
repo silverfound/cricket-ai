@@ -87,56 +87,80 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         else: return f"{away_team} ({round(away_prob, 1)}%)"
     except: return None
 
-# 🤖 LIVE MATCH AI PREDICTION (PERFECTED)
+# 🤖 LIVE MATCH AI PREDICTION (SMART PARSER)
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
     if not all([score_model, team_league_encoders, win_model]): return None, None
     try:
         total_overs = 20 if match_format.upper() == "T20" else (50 if match_format.upper() == "ODI" else 100)
         
-        h_score = str(home_info.get("score", "-"))
+        h_score_str = str(home_info.get("score", "-"))
         h_info = str(home_info.get("info", ""))
-        a_score = str(away_info.get("score", "-"))
+        a_score_str = str(away_info.get("score", "-"))
         a_info = str(away_info.get("info", ""))
 
-        h_valid = h_score != "-" and "/" in h_score and h_score.lower() != "null"
-        a_valid = a_score != "-" and "/" in a_score and a_score.lower() != "null"
+        # Helper: Score parse karna
+        def parse_score(s_str):
+            if not s_str or s_str == "-" or s_str.lower() == "null": return None, None
+            if "/" in s_str:
+                parts = s_str.split("/")
+                return int(parts[0]), int(parts[1])
+            else:
+                try: return int(s_str), 10 # Agar wickets nahi diye (All Out)
+                except: return None, None
 
-        if not h_valid and not a_valid:
+        # Helper: Overs parse karna (16.5/20 ov se 16.5 nikalna)
+        def parse_overs(i_str):
+            if not i_str: return 0.0
+            match = re.search(r'(\d+\.\d+|\d+)', i_str)
+            if match: return float(match.group(1))
+            return 0.0
+
+        h_runs, h_wkts = parse_score(h_score_str)
+        a_runs, a_wkts = parse_score(a_score_str)
+        
+        h_overs = parse_overs(h_info)
+        a_overs = parse_overs(a_info)
+
+        if h_runs is None and a_runs is None:
             return None, None
 
+        # Target check
         target = None
         chasing_score, chasing_wickets, chasing_overs = 0, 0, 0.0
         chasing_team, defending_team = "", ""
 
-        if "T:" in h_info and a_valid:
+        if "T:" in h_info and a_runs is not None:
             target = int(re.search(r'T:(\d+)', h_info).group(1))
-            chasing_score = int(a_score.split("/")[0])
-            chasing_wickets = int(a_score.split("/")[1])
-            chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', a_info).group(1)) if "ov" in a_info else 0
+            chasing_score, chasing_wickets, chasing_overs = a_runs, a_wkts, a_overs
             chasing_team, defending_team = away_team, home_team
-        elif "T:" in a_info and h_valid:
+        elif "T:" in a_info and h_runs is not None:
             target = int(re.search(r'T:(\d+)', a_info).group(1))
-            chasing_score = int(h_score.split("/")[0])
-            chasing_wickets = int(h_score.split("/")[1])
-            chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1)) if "ov" in h_info else 0
+            chasing_score, chasing_wickets, chasing_overs = h_runs, h_wkts, h_overs
             chasing_team, defending_team = home_team, away_team
-        elif h_valid and a_valid:
-            target = int(h_score.split("/")[0]) + 1 
-            chasing_score = int(a_score.split("/")[0])
-            chasing_wickets = int(a_score.split("/")[1])
-            chasing_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', a_info).group(1)) if "ov" in a_info else 0
-            chasing_team, defending_team = away_team, home_team
+        elif h_runs is not None and a_runs is not None:
+            # Agar dono score hai, toh 2nd innings hai
+            if a_overs > 0 and (h_overs == 0 or h_overs >= total_overs or h_wkts == 10):
+                target = h_runs + 1
+                chasing_score, chasing_wickets, chasing_overs = a_runs, a_wkts, a_overs
+                chasing_team, defending_team = away_team, home_team
+            elif h_overs > 0 and (a_overs == 0 or a_overs >= total_overs or a_wkts == 10):
+                target = a_runs + 1
+                chasing_score, chasing_wickets, chasing_overs = h_runs, h_wkts, h_overs
+                chasing_team, defending_team = home_team, away_team
+            else:
+                target = h_runs + 1
+                chasing_score, chasing_wickets, chasing_overs = a_runs, a_wkts, a_overs
+                chasing_team, defending_team = away_team, home_team
 
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
 
-        # 2nd Innings (Win Probability)
+        # 2nd Innings
         if target:
             runs_needed = target - chasing_score
             wickets_left = 10 - chasing_wickets
             balls_bowled = int(chasing_overs) * 6 + int((chasing_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
             
-            # Agar match khatam ho chuka hai (all out ya balls khatam)
             if balls_remaining <= 0 or runs_needed <= 0 or wickets_left <= 0:
                 return None, None
 
@@ -156,55 +180,48 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             })
             prob = win_model.predict_proba(input_data)[0][1] * 100
             return round(float(prob), 1), None
-                
-        # 1st Innings (Projected Score)
+
+        # 1st Innings
         else:
-            batting_score, batting_wickets, batting_overs = 0, 0, 0.0
+            batting_score, batting_wickets, batting_overs = None, None, None
             batting_team, bowling_team = "", ""
             
-            if h_valid:
-                batting_score = int(h_score.split("/")[0])
-                batting_wickets = int(h_score.split("/")[1])
-                batting_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', h_info).group(1)) if "ov" in h_info else 0
+            if h_runs is not None and a_runs is None:
+                batting_score, batting_wickets, batting_overs = h_runs, h_wkts, h_overs
                 batting_team, bowling_team = home_team, away_team
-            elif a_valid:
-                batting_score = int(a_score.split("/")[0])
-                batting_wickets = int(a_score.split("/")[1])
-                batting_overs = float(re.search(r'(\d+\.\d+|\d+)\s*ov', a_info).group(1)) if "ov" in a_info else 0
+            elif a_runs is not None and h_runs is None:
+                batting_score, batting_wickets, batting_overs = a_runs, a_wkts, a_overs
                 batting_team, bowling_team = away_team, home_team
-            else: return None, None
-            
+            else:
+                return None, None
+
             balls_bowled = int(batting_overs) * 6 + int((batting_overs % 1) * 10)
             balls_remaining = (total_overs * 6) - balls_bowled
 
-            # Agar innings khatam ho chuki hai (All Out ya Overs khatam)
-            if batting_wickets >= 10 or balls_remaining <= 0:
+            if batting_wickets >= 10 or balls_remaining <= 0 or batting_overs <= 0:
                 return None, None
 
-            if batting_overs > 0 and batting_score > 0:
-                crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
-                
-                b_id = safe_encode_team(batting_team, team_league_encoders['team'])
-                bw_id = safe_encode_team(bowling_team, team_league_encoders['team'])
-                if b_id == -1: b_id = 0
-                if bw_id == -1: bw_id = 0
+            crr = batting_score / (balls_bowled / 6) if balls_bowled > 0 else 0
+            
+            b_id = safe_encode_team(batting_team, team_league_encoders['team'])
+            bw_id = safe_encode_team(bowling_team, team_league_encoders['team'])
+            if b_id == -1: b_id = 0
+            if bw_id == -1: bw_id = 0
 
-                fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
+            fmt_code = 0 if "T20" in match_format.upper() else (1 if "ODI" in match_format.upper() else 2)
 
-                input_data = pd.DataFrame({
-                    'league_id': [l_id], 'batting_team_id': [b_id], 'bowling_team_id': [bw_id], 
-                    'format': [fmt_code], 'current_score': [batting_score], 
-                    'balls_remaining': [balls_remaining], 'wickets_lost': [batting_wickets], 
-                    'current_run_rate': [crr], 'last_3_overs_runs': [10]
-                })
-                pred_score = float(score_model.predict(input_data)[0])
+            input_data = pd.DataFrame({
+                'league_id': [l_id], 'batting_team_id': [b_id], 'bowling_team_id': [bw_id], 
+                'format': [fmt_code], 'current_score': [batting_score], 
+                'balls_remaining': [balls_remaining], 'wickets_lost': [batting_wickets], 
+                'current_run_rate': [crr], 'last_3_overs_runs': [10]
+            })
+            pred_score = float(score_model.predict(input_data)[0])
+            
+            if pred_score < batting_score:
+                pred_score = batting_score
                 
-                # 🔥 LOGIC FIX: AI kabhi bhi current score se kam predict nahi kar sakta
-                if pred_score < batting_score:
-                    pred_score = batting_score
-                
-                return None, f"{int(pred_score)-5} - {int(pred_score)+5}"
-        return None, None
+            return None, f"{int(pred_score)-5} - {int(pred_score)+5}"
     except Exception as e:
         return None, None
 
