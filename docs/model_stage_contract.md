@@ -121,3 +121,19 @@ Toss fields did not improve this overall test result in this feature setup. This
 3. Report AUC/log loss/Brier and calibration for win probabilities; MAE/RMSE and error by format for score projections.
 4. Report sample sizes separately by format and gender. A one-match subgroup is not evaluable.
 5. Keep current production artifacts unchanged until a replacement is trained with an exactly matching inference schema and passes integration tests.
+
+
+## Venue feature engineering implementation
+
+The utility in `venue_features.py` builds leakage-safe venue history columns from a completed-match table. Required columns are `match_date`, `venue`, `format`, `team1`, `team2`, `winner`, and `first_innings_runs`. It emits:
+- `venue_id`
+- `venue_format_prior_matches`
+- `venue_format_prior_avg_first_innings_runs`
+- `team1_venue_prior_win_rate`
+- `team2_venue_prior_win_rate`
+
+Venue averages are format-specific. Team rates are smoothed toward 0.5. Matches on the same calendar date are featurized against the state before that date, preventing same-day result leakage when exact completion timestamps are unavailable. Unseen venue averages use a fixed neutral prior (150 runs) unless a training-only prior is explicitly supplied. Do not calculate that prior from the full backtest dataset.
+
+**Current data blocker:** this repository currently contains the aggregate team-form/H2H JSON but no match-level historical CSV with venue, date, winner and innings totals. Therefore no honest venue-aware model can be trained or evaluated from the repository data yet. Obtain a licensed/provider historical match dataset, normalize venue aliases, then run chronological training/evaluation. Keep the current production artifact active until the new artifact passes those checks.
+
+Post-toss pitch modelling also needs timestamped match-day pitch observations joined to match outcomes. The current fixture feed extraction only records venue identity; it does not claim to know the pitch condition.
