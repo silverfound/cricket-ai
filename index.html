@@ -109,10 +109,13 @@
                 if (!response.ok) throw new Error("File not found");
                 const data = await response.json();
                 
-                // UTC Time ko aapke phone ke local time mein convert karna
-const utcDate = new Date(data.last_updated);
-if (Number.isNaN(utcDate.getTime())) throw new Error("Invalid last-updated timestamp");
-const localTime = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                // Render the UTC timestamp in the device/browser's own local timezone.
+const updatedAt = new Date(data.last_updated);
+if (Number.isNaN(updatedAt.getTime())) throw new Error("Invalid last-updated timestamp");
+const localTime = updatedAt.toLocaleString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+});
 document.getElementById('last-updated').innerText = "Last Updated: " + localTime;
                 document.getElementById('api-source').innerText = "⚡ Powered by: " + (data.data_source_api || "Unknown API");
                 allMatches = Array.isArray(data.matches) ? data.matches : []; 
