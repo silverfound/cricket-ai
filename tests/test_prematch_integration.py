@@ -162,3 +162,35 @@ def test_completed_new_zealand_india_match_retrospective(capsys):
         f"prediction={prediction} actual_winner={actual_winner} "
         f"matched={predicted_team.casefold() == actual_winner.casefold()}"
     )
+
+
+def test_prediction_audit_logs_once_per_fixture(tmp_path):
+    from prediction_audit import log_pre_match_prediction
+
+    path = tmp_path / "predictions.jsonl"
+    record = {
+        "source": "Highlightly",
+        "source_match_id": "fixture-123",
+        "league": "Test League",
+        "format": "T20",
+        "team1": "Team A",
+        "team2": "Team B",
+        "prediction": "Team A (61.2%)",
+        "model_version": "final_pre_match_model_v3",
+        "actual_winner": None,
+    }
+    assert log_pre_match_prediction(record, str(path)) is True
+    assert log_pre_match_prediction(record, str(path)) is False
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1
+    assert rows[0]["prediction"] == "Team A (61.2%)"
+    assert rows[0]["actual_winner"] is None
+
+
+def test_prediction_audit_skips_missing_id_or_prediction(tmp_path):
+    from prediction_audit import log_pre_match_prediction
+
+    path = tmp_path / "predictions.jsonl"
+    assert log_pre_match_prediction({"source": "Highlightly", "prediction": "Team A"}, str(path)) is False
+    assert log_pre_match_prediction({"source": "Highlightly", "source_match_id": "x"}, str(path)) is False
+    assert not path.exists()
