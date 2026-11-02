@@ -3,6 +3,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from sklearn.preprocessing import LabelEncoder
+
 import fetch_data
 
 
