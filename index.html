@@ -110,7 +110,8 @@
                 const data = await response.json();
                 
                 // UTC Time ko aapke phone ke local time mein convert karna
-const utcDate = new Date(data.last_updated.replace(" ", "T") + "Z");
+const utcDate = new Date(data.last_updated);
+if (Number.isNaN(utcDate.getTime())) throw new Error("Invalid last-updated timestamp");
 const localTime = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 document.getElementById('last-updated').innerText = "Last Updated: " + localTime;
                 document.getElementById('api-source').innerText = "⚡ Powered by: " + (data.data_source_api || "Unknown API");
