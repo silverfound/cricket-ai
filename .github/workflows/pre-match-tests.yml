@@ -31,4 +31,4 @@ jobs:
       - name: Run integration tests
         env:
           PYTHONPATH: .
-        run: pytest -q tests/test_prematch_integration.py
+        run: pytest -q -s tests/test_prematch_integration.py
