@@ -122,12 +122,12 @@ def safe_encode_team(team_name, encoder, gender=None):
         requested_lower = requested.lower()
 
         def is_women(name):
-            return bool(re.search(r"\\bwomen\\b|\\bw\\b|\\(w\\)", str(name).strip().lower()))
+            return bool(re.search(r"\bwomen\b|\bw\b|\(w\)", str(name).strip().lower()))
 
         def normalize(name):
-            value = re.sub(r"\\(.*?\\)", "", str(name).strip().lower())
-            value = re.sub(r"\\bwomen\\b|\\(w\\)|\\bw\\b", "", value)
-            return re.sub(r"\\s+", " ", value).strip()
+            value = re.sub(r"\(.*?\)", "", str(name).strip().lower())
+            value = re.sub(r"\bwomen\b|\(w\)|\bw\b", "", value)
+            return re.sub(r"\s+", " ", value).strip()
 
         wanted_women = (gender == "female") if gender in ("female", "male") else is_women(requested)
         candidates = [str(cls) for cls in encoder.classes_
