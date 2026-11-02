@@ -1,0 +1,18 @@
+{
+  "model": "LightGBM Elo + prior-form v1",
+  "accuracy": 0.6390627794670005,
+  "log_loss": 0.6297765332194891,
+  "roc_auc": 0.6962336497687588,
+  "brier_score": 0.22023637746945143,
+  "best_iteration": 172,
+  "train_matches": 7828,
+  "validation_matches": 3164,
+  "test_matches": 5591,
+  "train_end": "2021-09-30",
+  "validation_end": "2023-10-18",
+  "test_start": "2023-10-19",
+  "test_end": "2026-10-25",
+  "prediction_timing": "After toss; toss decision is an input feature.",
+  "evaluation": "Chronological holdout. Early stopping on validation only; final model refit on train+validation; test set not used for tuning.",
+  "warning": "This is a research benchmark from the Elo feature dataset, not yet the deployed website model. Compare with existing models on the same test window before replacement."
+}
