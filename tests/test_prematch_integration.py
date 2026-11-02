@@ -83,3 +83,50 @@ def test_final_artifact_label_mapping_and_feature_schema():
     expected = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
     assert artifact["features"] == expected
     assert list(app.pre_match_model.feature_names_in_) == expected
+
+
+
+def test_completed_new_zealand_india_match_retrospective(capsys):
+    """Run the production pre-match pipeline on the Nov 1, 2026 T20I fixture.
+
+    This is a pipeline/retrospective check, not a model-accuracy gate:
+    a single match may legitimately be predicted incorrectly.
+    """
+    import pytest
+
+    assert app.pre_match_model is not None
+    encoders = app.team_league_encoders
+    assert encoders is not None
+    team_encoder = encoders["team"]
+    league_encoder = encoders["league"]
+
+    def find_team(wanted):
+        for cls in team_encoder.classes_:
+            if app.normalize_history_team(str(cls)) == app.normalize_history_team(wanted):
+                return str(cls)
+        return None
+
+    nz = find_team("New Zealand")
+    india = find_team("India")
+    league = next(
+        (str(cls) for cls in league_encoder.classes_
+         if "india in new zealand" in str(cls).lower()),
+        None,
+    )
+    if not (nz and india and league):
+        pytest.skip(
+            "Retrospective fixture unsupported by saved encoders: "
+            f"New Zealand={bool(nz)}, India={bool(india)}, "
+            f"India in New Zealand league={bool(league)}"
+        )
+
+    prediction = app.get_pre_match_prediction(nz, india, "T20", league, "male")
+    assert prediction is not None, "Production prediction pipeline returned None"
+    predicted_team = prediction.rsplit(" (", 1)[0]
+    actual_winner = "New Zealand"  # Won the 5th T20I on 2026-11-01.
+    print(
+        "RETROSPECTIVE_MATCH_CHECK "
+        f"fixture=New Zealand-vs-India-2026-11-01 "
+        f"prediction={prediction} actual_winner={actual_winner} "
+        f"matched={predicted_team.casefold() == actual_winner.casefold()}"
+    )
