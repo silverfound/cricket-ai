@@ -71,19 +71,21 @@ def safe_encode_team(team_name, encoder):
 
 # 🤖 PRE-MATCH AI PREDICTION
 def get_pre_match_prediction(home_team, away_team, match_format, league_name):
+def get_pre_match_prediction(home_team, away_team, match_format, league_name):
     if not pre_match_model or not team_league_encoders: return None
     try:
         t1 = safe_encode_team(home_team, team_league_encoders['team'])
         t2 = safe_encode_team(away_team, team_league_encoders['team'])
         l_id = safe_encode_league(league_name, team_league_encoders['league'])
 
-        if t1 == -1 or t2 == -1: return None
+        if t1 == -1 or t2 == -1: return None 
 
-        # 🔥 FIX: Model ko 6 features chahiye (Form aur H2H 50% default de rahe hain)
-input_data = pd.DataFrame({
-    'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2],
-    't1_form': [0.5], 't2_form': [0.5], 'h2h_win_rate': [0.5]
-})
+        # 🔥 Yahan sahi indentation (space) hai
+        input_data = pd.DataFrame({
+            'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2],
+            't1_form': [0.5], 't2_form': [0.5], 'h2h_win_rate': [0.5]
+        })
+
         prob = pre_match_model.predict_proba(input_data)[0]
         
         home_prob = prob[1] * 100
