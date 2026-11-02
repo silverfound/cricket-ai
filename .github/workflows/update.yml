@@ -2,14 +2,14 @@ name: Update Live Data
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Har 30 minute mein chalega
+    - cron: '0 * * * *' # Har 1 ghante mein chalega (API limit safe rakhne ke liye)
   workflow_dispatch: 
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Safe write permission
+      contents: write # Safe write permission for pushing data
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
