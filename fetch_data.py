@@ -71,7 +71,6 @@ def safe_encode_team(team_name, encoder):
 
 # 🤖 PRE-MATCH AI PREDICTION
 def get_pre_match_prediction(home_team, away_team, match_format, league_name):
-def get_pre_match_prediction(home_team, away_team, match_format, league_name):
     if not pre_match_model or not team_league_encoders: return None
     try:
         t1 = safe_encode_team(home_team, team_league_encoders['team'])
@@ -80,7 +79,7 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
 
         if t1 == -1 or t2 == -1: return None 
 
-        # 🔥 Yahan sahi indentation (space) hai
+        # 🔥 Yahan 6 features hain (Form aur H2H 50-50 default de rahe hain)
         input_data = pd.DataFrame({
             'league_id': [l_id], 'team1_id': [t1], 'team2_id': [t2],
             't1_form': [0.5], 't2_form': [0.5], 'h2h_win_rate': [0.5]
@@ -347,17 +346,15 @@ def main():
 
     final_matches.sort(key=lambda x: x.get("start_time_iso") or "")
 
-    # 🔥 DUPLICATE MATCHES HATAEN (Yeh naya code hai)
+    # 🔥 DUPLICATE MATCHES HATAEN
     seen = set()
     unique_matches = []
     for m in final_matches:
-        # Match ki unique pehchan (Home + Away + Time)
         key = (m.get("home", "").lower(), m.get("away", "").lower(), m.get("start_time_iso", ""))
         if key not in seen:
             seen.add(key)
             unique_matches.append(m)
     final_matches = unique_matches
-    # 🔥 DUPLICATE LOGIC END
 
     output = {
         "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
