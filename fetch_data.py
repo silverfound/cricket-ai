@@ -84,6 +84,61 @@ def safe_text(value, default=""):
     if value is None: return default
     return str(value).strip()
 
+HISTORY_PATH = os.path.join("data", "team_form_h2h_history.json")
+historical_features = {}
+try:
+    with open(HISTORY_PATH, "r", encoding="utf-8") as history_file:
+        historical_features = json.load(history_file)
+    history_meta = safe_dict(historical_features.get("metadata"))
+    print(f"Historical form/H2H loaded: {history_meta.get('valid_matches', 0)} matches.")
+except FileNotFoundError:
+    print("Historical form/H2H file not found; neutral defaults will be used.")
+except Exception as history_error:
+    print(f"Historical form/H2H load error: {history_error}")
+    historical_features = {}
+
+def normalize_history_team(team_name):
+    return re.sub(r"\\s+", " ", safe_text(team_name)).strip().casefold()
+
+def get_historical_form(team_name, gender):
+    gender_key = "female" if str(gender).lower() == "female" else "male"
+    teams = safe_dict(safe_dict(historical_features.get("teams")).get(gender_key))
+    wanted = normalize_history_team(team_name)
+    for name, values in teams.items():
+        if normalize_history_team(name) == wanted:
+            try:
+                return float(safe_dict(values).get("form", 0.5))
+            except (TypeError, ValueError):
+                return 0.5
+    return 0.5
+
+def get_historical_h2h(team1, team2, gender):
+    gender_key = "female" if str(gender).lower() == "female" else "male"
+    h2h = safe_dict(safe_dict(historical_features.get("h2h")).get(gender_key))
+    wanted1, wanted2 = normalize_history_team(team1), normalize_history_team(team2)
+    for name1, opponents in h2h.items():
+        if normalize_history_team(name1) == wanted1:
+            for name2, record in safe_dict(opponents).items():
+                if normalize_history_team(name2) == wanted2:
+                    try:
+                        return float(safe_dict(record).get("win_rate", 0.5))
+                    except (TypeError, ValueError):
+                        return 0.5
+    return 0.5
+
+def infer_match_gender(match_data, league_name, home_team, away_team):
+    match_data = safe_dict(match_data)
+    for key in ("gender", "sex"):
+        value = safe_text(match_data.get(key)).lower()
+        if value in ("female", "women", "woman", "womens"):
+            return "female"
+        if value in ("male", "men", "mens"):
+            return "male"
+    labels = " ".join([safe_text(league_name), safe_text(home_team), safe_text(away_team)]).lower()
+    if re.search(r"women|woman|wbb|wpl|\\(w\\)", labels):
+        return "female"
+    return "male"
+
 def extract_overs(info_str):
     if not info_str: return ""
     text = str(info_str).strip()
@@ -168,7 +223,7 @@ def safe_encode_team(team_name, encoder):
 # PREDICTION FUNCTIONS
 # =========================================================
 
-def get_pre_match_prediction(home_team, away_team, match_format, league_name):
+def get_pre_match_prediction(home_team, away_team, match_format, league_name, gender="male"):
     if pre_match_model is None or team_league_encoders is None: return None
     try:
         team_encoder = team_league_encoders.get("team")
@@ -178,19 +233,21 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         t1 = safe_encode_team(home_team, team_encoder)
         t2 = safe_encode_team(away_team, team_encoder)
         l_id = safe_encode_league(league_name, league_encoder)
-
         if t1 == -1 or t2 == -1 or l_id == -1: return None
 
+        t1_form = get_historical_form(home_team, gender)
+        t2_form = get_historical_form(away_team, gender)
+        h2h_win_rate = get_historical_h2h(home_team, away_team, gender)
         input_data = pd.DataFrame({
             "league_id": [l_id], "team1_id": [t1], "team2_id": [t2],
-            "t1_form": [0.5], "t2_form": [0.5], "h2h_win_rate": [0.5]
+            "t1_form": [t1_form], "t2_form": [t2_form],
+            "h2h_win_rate": [h2h_win_rate]
         })
         probabilities = pre_match_model.predict_proba(input_data)
         if probabilities is None or len(probabilities) == 0 or len(probabilities[0]) < 2: return None
 
         classes = list(getattr(pre_match_model, "classes_", [0, 1]))
         if 0 not in classes or 1 not in classes: return None
-
         home_index = classes.index(1)
         away_index = classes.index(0)
         home_probability = float(probabilities[0][home_index])
@@ -198,12 +255,12 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name):
         home_prob = home_probability * 100
         away_prob = away_probability * 100
 
-        # The model's threshold was selected on validation data. Apply it to
-        # class-1 (team1/home) probability rather than assuming 0.50.
         if home_probability >= pre_match_threshold:
             return f"{home_team} ({round(home_prob, 1)}%)"
         return f"{away_team} ({round(away_prob, 1)}%)"
-    except: return None
+    except Exception as prediction_error:
+        print(f"Pre-match prediction error: {prediction_error}")
+        return None
 
 def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
     if (score_model is None or team_league_encoders is None or win_model is None): return None, None
@@ -438,7 +495,8 @@ def standardize_data(data, source):
             if match_state == "live" and supported_format:
                 win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
             elif match_state == "upcoming" and supported_format:
-                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league)
+                match_gender = infer_match_gender(m, league, home_team, away_team)
+                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
 
             matches.append({
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("startTime")), "match_state": match_state,
