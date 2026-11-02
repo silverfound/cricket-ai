@@ -523,9 +523,7 @@ def standardize_data(data, source):
             prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
 
             match_gender = infer_match_gender(m, league, home_team, away_team)
-            if match_state == "live" and prediction_supported_format:
-                win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team, match_gender)
-            elif match_state == "upcoming" and prediction_supported_format:
+            if match_state == "upcoming" and prediction_supported_format:
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
 
             matches.append({
@@ -563,12 +561,6 @@ def standardize_data(data, source):
             win_prob, proj_score = None, None
 
             prediction_supported_format = any(x in fmt.upper() for x in ("T20", "ODI"))
-            if match_state == "live" and prediction_supported_format:
-                match_gender = infer_match_gender(m, league, home_team, away_team)
-                win_prob, proj_score = get_ai_predictions(
-                    {"score": home_score, "info": home_overs}, {"score": away_score, "info": away_overs},
-                    fmt, league, home_team, away_team, match_gender
-                )
 
             matches.append({
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("dateTimeGMT")), "match_state": match_state,
