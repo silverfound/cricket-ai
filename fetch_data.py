@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 
 from datetime import datetime, timedelta, timezone
+from prediction_audit import log_pre_match_prediction
 
 # =========================================================
 # CONFIGURATION
@@ -525,6 +526,19 @@ def standardize_data(data, source):
             match_gender = infer_match_gender(m, league, home_team, away_team)
             if match_state == "upcoming" and prediction_supported_format:
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
+                log_pre_match_prediction({
+                    "source": "Highlightly",
+                    "source_match_id": safe_text(m.get("id") or m.get("matchId")),
+                    "league": league,
+                    "format": fmt,
+                    "start_time_iso": safe_text(m.get("startTime")),
+                    "team1": home_team,
+                    "team2": away_team,
+                    "gender": match_gender,
+                    "prediction": pre_match_winner,
+                    "model_version": "final_pre_match_model_v3",
+                    "actual_winner": None,
+                })
 
             matches.append({
                 "source_match_id": safe_text(m.get("id") or m.get("matchId")),
