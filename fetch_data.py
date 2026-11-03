@@ -210,15 +210,20 @@ def is_ai_supported(match):
 # SMART ENCODERS
 # =========================================================
 
-def safe_encode_league(league_name, encoder):
-    if encoder is None or not league_name: return -1
+def safe_encode_league(league_name, encoder, fallback_names=None):
+    """Encode the exact competition, then only explicitly supplied known aliases."""
+    if encoder is None: return -1
     try:
-        league_clean = str(league_name).strip().lower()
-        for cls in encoder.classes_:
-            if str(cls).strip().lower() == league_clean:
-                return int(encoder.transform([cls])[0])
+        available = {str(cls).strip().casefold(): cls for cls in encoder.classes_}
+        candidates = [league_name] + list(fallback_names or [])
+        for candidate in candidates:
+            key = str(candidate or "").strip().casefold()
+            if key and key in available:
+                return int(encoder.transform([available[key]])[0])
         return -1
-    except: return -1
+    except Exception as exc:
+        print(f"League encoding failed for {league_name!r}: {exc}")
+        return -1
 
 def is_womens_competition(league_name):
     league = str(league_name or "").strip().lower()
@@ -279,8 +284,20 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name, ge
         gender = "female" if str(gender).lower() == "female" else "male"
         t1 = safe_encode_team(home_team, team_encoder, gender)
         t2 = safe_encode_team(away_team, team_encoder, gender)
-        l_id = safe_encode_league(league_name, league_encoder)
+        # Some providers publish a tour label (e.g. "India in New Zealand")
+        # while the training encoder stores the host country's ODI-series label.
+        # Use this fallback only when that exact category exists in the fitted encoder.
+        league_fallbacks = []
+        if "ODI" in str(match_format or "").upper():
+            for team in (home_team, away_team):
+                league_fallbacks.append(f"{team} ODI Series")
+        l_id = safe_encode_league(league_name, league_encoder, league_fallbacks)
         if t1 == -1 or t2 == -1 or l_id == -1:
+            print(
+                "Pre-match inputs unavailable: "
+                f"home_team_id={t1}, away_team_id={t2}, league_id={l_id}, "
+                f"league={league_name!r}, format={match_format!r}"
+            )
             return None
 
         input_data = pd.DataFrame({
