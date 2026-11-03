@@ -190,20 +190,103 @@ def clean_team_name(name):
     name = re.sub(r'\s+', ' ', name).strip()
     return name.casefold()
 
+# Recognized national sides. Match eligibility is based on the two teams and
+# match format, not on whether a tour/series name happens to be in a league list.
+INTERNATIONAL_TEAM_ALIASES = {
+    "afghanistan": {"afghanistan", "afghanistan national cricket team"},
+    "australia": {"australia", "australia national cricket team"},
+    "bangladesh": {"bangladesh", "bangladesh national cricket team"},
+    "england": {"england", "england national cricket team"},
+    "india": {"india", "india national cricket team"},
+    "ireland": {"ireland", "ireland national cricket team"},
+    "new zealand": {"new zealand", "new zealand national cricket team", "nz"},
+    "pakistan": {"pakistan", "pakistan national cricket team"},
+    "south africa": {"south africa", "south africa national cricket team"},
+    "sri lanka": {"sri lanka", "sri lanka national cricket team"},
+    "west indies": {"west indies", "windies"},
+    "zimbabwe": {"zimbabwe", "zimbabwe national cricket team"},
+    "nepal": {"nepal"},
+    "netherlands": {"netherlands", "the netherlands", "holland"},
+    "scotland": {"scotland"},
+    "united arab emirates": {"united arab emirates", "uae"},
+    "oman": {"oman"},
+    "united states": {"united states", "united states of america", "usa"},
+    "canada": {"canada"},
+    "namibia": {"namibia"},
+    "papua new guinea": {"papua new guinea", "png"},
+    "uganda": {"uganda"},
+    "hong kong": {"hong kong", "hong kong china"},
+    "jersey": {"jersey"},
+    "kenya": {"kenya"},
+    "bermuda": {"bermuda"},
+    "singapore": {"singapore"},
+    "malaysia": {"malaysia"},
+    "qatar": {"qatar"},
+    "kuwait": {"kuwait"},
+    "bahrain": {"bahrain"},
+    "saudi arabia": {"saudi arabia"},
+    "italy": {"italy"},
+    "germany": {"germany"},
+    "spain": {"spain"},
+    "austria": {"austria"},
+    "denmark": {"denmark"},
+    "sweden": {"sweden"},
+    "norway": {"norway"},
+    "belgium": {"belgium"},
+    "france": {"france"},
+    "japan": {"japan"},
+    "thailand": {"thailand"},
+    "indonesia": {"indonesia"},
+    "fiji": {"fiji"},
+    "vanuatu": {"vanuatu"},
+    "tanzania": {"tanzania"},
+    "nigeria": {"nigeria"},
+    "rwanda": {"rwanda"},
+    "botswana": {"botswana"},
+    "ghana": {"ghana"},
+}
+
+def normalize_international_team_name(name):
+    value = safe_text(name).casefold()
+    value = re.sub(r"\\b(women|woman|men|male|female)\\b", "", value)
+    value = re.sub(r"\\b(under\\s*19|u\\s*19|u19|a)\\b", "", value)
+    value = re.sub(r"[^a-z]+", " ", value)
+    return re.sub(r"\\s+", " ", value).strip()
+
+INTERNATIONAL_TEAM_NAMES = {
+    normalize_international_team_name(alias)
+    for aliases in INTERNATIONAL_TEAM_ALIASES.values()
+    for alias in aliases
+}
+
+def is_international_team(team_name):
+    return normalize_international_team_name(team_name) in INTERNATIONAL_TEAM_NAMES
+
+def is_international_fixture(home_team, away_team):
+    return is_international_team(home_team) and is_international_team(away_team)
+
 def is_ai_supported(match):
     fmt = str(match.get("format", "")).upper()
     league = str(match.get("league", "")).upper()
-    
+    home_team = safe_text(match.get("home"))
+    away_team = safe_text(match.get("away"))
+
     if "THE FORD TROPHY" in league:
         return False
 
-    if not any(x in fmt for x in ["T20", "ODI", "HUNDRED"]):
+    is_t20 = any(token in fmt for token in ("T20", "TWENTY20", "20 OVERS"))
+    is_odi = any(token in fmt for token in ("ODI", "ONE DAY", "50 OVERS"))
+    if not (is_t20 or is_odi):
         return False
 
-    # ODI is a supported model format; explicitly exclude The Ford Trophy above.
-    if "ODI" in fmt:
+    # International tours/series are eligible regardless of competition title
+    # or the order in which the provider lists the two national teams.
+    if is_international_fixture(home_team, away_team):
         return True
 
+    # Preserve existing domestic ODI support and the domestic T20 allowlist.
+    if is_odi:
+        return True
     return any(keyword in league for keyword in ALLOWED_KEYWORDS)
 
 # =========================================================
@@ -228,6 +311,20 @@ def safe_encode_league(league_name, encoder, fallback_names=None):
 def is_womens_competition(league_name):
     league = str(league_name or "").strip().lower()
     return "women" in league or "wpl" in league or "wbbl" in league
+
+def extract_tour_host(league_name, home_team, away_team):
+    """Resolve the host from common tour labels without depending on fixture order."""
+    label = safe_text(league_name).casefold()
+    match = re.search(r"\\b(?:in|tour of|visit to|hosted by)\\s+(.+)$", label)
+    if not match:
+        return ""
+    host_text = re.sub(r"[^a-z]+", " ", match.group(1)).strip()
+    for team in (home_team, away_team):
+        normalized = normalize_international_team_name(team)
+        if normalized and (host_text == normalized or host_text.startswith(normalized + " ")):
+            return safe_text(team)
+    return ""
+
 
 
 def safe_encode_team(team_name, encoder, gender=None):
@@ -284,16 +381,16 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name, ge
         gender = "female" if str(gender).lower() == "female" else "male"
         t1 = safe_encode_team(home_team, team_encoder, gender)
         t2 = safe_encode_team(away_team, team_encoder, gender)
-        # Some providers publish a tour label (e.g. "India in New Zealand")
-        # while the training encoder stores the host country's ODI-series label.
-        # Use this fallback only when that exact category exists in the fitted encoder.
+        # A tour/series title is provider metadata, not the identity of the fixture.
+        # Try an encoder-known host-country series alias for either limited-overs
+        # format, then the trained neutral bucket. Never invent a new encoder class.
+        fmt_upper = str(match_format or "").upper()
+        format_label = "ODI" if ("ODI" in fmt_upper or "ONE DAY" in fmt_upper) else "T20"
         league_fallbacks = []
-        if "ODI" in str(match_format or "").upper():
-            for team in (home_team, away_team):
-                league_fallbacks.append(f"{team} ODI Series")
-            # The trained encoder includes a neutral "Unknown League" bucket.
-            # Use it only when the real competition and team-series aliases are absent.
-            league_fallbacks.append("Unknown League")
+        tour_host = extract_tour_host(league_name, home_team, away_team)
+        if tour_host:
+            league_fallbacks.append(f"{tour_host} {format_label} Series")
+        league_fallbacks.append("Unknown League")
         l_id = safe_encode_league(league_name, league_encoder, league_fallbacks)
         if t1 == -1 or t2 == -1 or l_id == -1:
             print(
