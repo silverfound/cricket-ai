@@ -1,48 +1,308 @@
 {
-    "last_updated": "2026-11-03T20:58:28.036961+00:00",
-    "total_matches": 5,
+    "last_updated": "2026-11-03T21:03:12.254505+00:00",
+    "total_matches": 9,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
+    "post_toss_prediction_engine": "post_toss_logistic_v1",
+    "cricketdata_toss_catalog": [
+        {
+            "id": "22508d08-daf1-4a48-a83b-5d3084d2a7bc",
+            "teams": [
+                "Biratnagar Kings",
+                "Kathmandu Gorkhas"
+            ],
+            "date": "2026-11-05",
+            "dateTimeGMT": "2026-11-05T10:45:00",
+            "matchType": "t20",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "a8e562f2-154c-4af1-84d1-9b346393678b",
+            "teams": [
+                "Janakpur Bolts",
+                "Lumbini Lions"
+            ],
+            "date": "2026-11-05",
+            "dateTimeGMT": "2026-11-05T06:45:00",
+            "matchType": "t20",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "6a250c41-5f65-4ac1-aef3-cce2eda491d6",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-08",
+            "dateTimeGMT": "2027-01-08T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "16851fe9-d7b8-4ba6-b587-aecb878b2a43",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-06",
+            "dateTimeGMT": "2027-01-06T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "7f4287dd-1e96-4231-9fa3-c08828af7e0b",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-05",
+            "dateTimeGMT": "2027-01-05T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "1e7fcb1c-1a02-487f-bf5c-85f56bb67024",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-03",
+            "dateTimeGMT": "2027-01-03T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "5bc0e55a-c1a2-4aa1-aef3-9f23f3976c99",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-03",
+            "dateTimeGMT": "2027-01-03T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "5a49bf46-9d93-458c-87e7-846b8f4d0174",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-02",
+            "dateTimeGMT": "2027-01-02T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "5ba51260-11ec-4b6d-8486-75ddef88b685",
+            "teams": [
+                "Tbc",
+                "Tbc"
+            ],
+            "date": "2027-01-02",
+            "dateTimeGMT": "2027-01-02T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "13558d5e-d4f5-42f0-b44a-4d64ffb17a77",
+            "teams": [
+                "Haryana",
+                "Mumbai"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "ea31e518-515a-4a0f-868a-22a6e88a3181",
+            "teams": [
+                "Gujarat",
+                "Services"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "23c116fc-8d61-4a7e-a378-971342ece4c1",
+            "teams": [
+                "Tamil Nadu",
+                "Vidarbha"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "b21bee54-48a8-4ac1-b9db-0c8f4ba75298",
+            "teams": [
+                "Railways",
+                "Bihar"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "74f0cd5d-28e2-434f-92c2-1ad5b7f273a1",
+            "teams": [
+                "Baroda",
+                "Andhra"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "175c2f5b-d8d5-447d-bb48-10e422ebd191",
+            "teams": [
+                "Uttarakhand",
+                "Madhya Pradesh"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "adb0b1bb-1b8f-4bf3-84f1-8f717f39089e",
+            "teams": [
+                "Chandigarh",
+                "Chhattisgarh"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "36738f08-9670-4b18-b722-bbccff3bc582",
+            "teams": [
+                "Jammu And Kashmir",
+                "Jharkhand"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "ea003ed1-871c-47a4-b00f-1fdc5150c01f",
+            "teams": [
+                "Saurashtra",
+                "Hyderabad"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "f08ec109-e70b-42e2-91c3-2879f4a5e2ee",
+            "teams": [
+                "Puducherry",
+                "Kerala"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "7121e7f3-fc5f-4ca3-b55a-4d53a31f84eb",
+            "teams": [
+                "Karnataka",
+                "Odisha"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        },
+        {
+            "id": "c8411989-ddce-4d81-b68c-922e16121091",
+            "teams": [
+                "Assam",
+                "Bengal"
+            ],
+            "date": "2026-12-29",
+            "dateTimeGMT": "2026-12-29T03:30:00",
+            "matchType": "odi",
+            "matchStarted": false,
+            "matchEnded": false,
+            "tossWinner": "",
+            "tossChoice": ""
+        }
+    ],
+    "cricketdata_toss_catalog_checked_at": "2026-11-03T21:03:09.033073+00:00",
     "venue_model_active": true,
     "matches": [
-        {
-            "source_match_id": "54599057",
-            "league": "NCL GT20 Canada",
-            "format": "T20",
-            "venue": "",
-            "start_time_iso": "2026-11-03T00:00:00.000Z",
-            "match_state": "finished",
-            "home": "Toronto Kings",
-            "away": "Montreal Warriors",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Abandoned",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54316432",
-            "league": "CSA T20 Challenge",
-            "format": "T20",
-            "venue": "",
-            "start_time_iso": "2026-11-03T16:00:00.000Z",
-            "match_state": "finished",
-            "home": "Dolphins",
-            "away": "Western Province",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Abandoned",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
         {
             "source_match_id": "53880437",
             "league": "India in New Zealand",
@@ -99,6 +359,120 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Melbourne Renegades Women | Hobart Hurricanes Women: 47.1% | Melbourne Renegades Women: 52.9%"
+        },
+        {
+            "source_match_id": "54038497",
+            "league": "Women's Big Bash League",
+            "format": "T20",
+            "venue": "",
+            "start_time_iso": "2026-11-05T04:40:00.000Z",
+            "match_state": "upcoming",
+            "home": "Adelaide Strikers Women",
+            "away": "Brisbane Heat Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": "AI Pick: Brisbane Heat Women | Adelaide Strikers Women: 44.2% | Brisbane Heat Women: 55.8%"
+        },
+        {
+            "source_match_id": "54545227",
+            "league": "Under-19s Asia Cup",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-05T05:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Afghanistan Under-19s",
+            "away": "Bangladesh Under-19s",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
+            "source_match_id": "54545192",
+            "league": "Under-19s Asia Cup",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-05T05:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Malaysia Under-19s",
+            "away": "Sri Lanka Under-19s",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
+            "source_match_id": "54038532",
+            "league": "Women's Big Bash League",
+            "format": "T20",
+            "venue": "",
+            "start_time_iso": "2026-11-05T08:10:00.000Z",
+            "match_state": "upcoming",
+            "home": "Sydney Thunder Women",
+            "away": "Perth Scorchers Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": "AI Pick: Perth Scorchers Women | Sydney Thunder Women: 47.5% | Perth Scorchers Women: 52.5%"
+        },
+        {
+            "source_match_id": "54316502",
+            "league": "CSA T20 Challenge",
+            "format": "T20",
+            "venue": "",
+            "start_time_iso": "2026-11-05T16:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Easterns",
+            "away": "Dolphins",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
+            "source_match_id": "54316467",
+            "league": "CSA T20 Challenge",
+            "format": "T20",
+            "venue": "",
+            "start_time_iso": "2026-11-05T16:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Warriors",
+            "away": "Boland",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": "AI Pick: Warriors | Warriors: 54.4% | Boland: 45.6%"
         }
     ]
 }
