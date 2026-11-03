@@ -1,0 +1,42 @@
+{
+  "model": "post_toss_logistic_v1",
+  "dataset": "matches_with_elo_features.csv",
+  "dataset_rows": 16583,
+  "split": {
+    "train_matches": 7828,
+    "validation_matches": 3164,
+    "test_matches": 5591,
+    "train_before": "2021-10-01",
+    "validation_start": "2021-10-01",
+    "validation_end": "2023-10-18",
+    "test_start": "2023-10-19",
+    "test_end": "2026-10-25",
+    "method": "Chronological split; C selected on validation log loss; test set untouched."
+  },
+  "pre_toss_logistic_baseline_same_features": {
+    "accuracy": 0.6612412806295832,
+    "log_loss": 0.6292914326834885,
+    "roc_auc": 0.7061081645464211,
+    "brier_score": 0.21940412754882374,
+    "best_C": 10
+  },
+  "post_toss_candidate": {
+    "accuracy": 0.6612412806295832,
+    "log_loss": 0.6293238314086268,
+    "roc_auc": 0.7060376391611258,
+    "brier_score": 0.21942053570615364,
+    "best_C": 10
+  },
+  "incremental_effect": {
+    "accuracy_delta": 0.0,
+    "log_loss_delta": 0.000032398728513,
+    "roc_auc_delta": -0.000070525385295,
+    "brier_score_delta": 0.00001640815733,
+    "interpretation": "Toss feature did not improve accuracy; probability metrics changed slightly in the worse direction. Candidate is an additive stage model, not a proven performance upgrade."
+  },
+  "runtime": {
+    "active_code": true,
+    "panel_condition": "Only display when CricketData toss winner and decision are verified for the exact fixture.",
+    "scores_used_or_displayed": false
+  }
+}

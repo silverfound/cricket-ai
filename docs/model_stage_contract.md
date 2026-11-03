@@ -24,28 +24,39 @@ Persist this prediction as its own immutable record, including match identifier,
 
 ## Stage 2 — Post-toss, pre-match winner prediction
 
-This is a separate prediction made after the toss but before the first ball. It uses the same eligible pre-match information plus:
-- `toss_winner`
-- `toss_decision` (bat/field)
-- today’s observed pitch condition (batting-friendly, pace assistance, spin assistance, two-paced), only from a reliable match-day source or verified input
-- optionally weather/dew observations available at prediction time.
+The website now has a separate additive candidate, post_toss_logistic_v1. The existing Pre-Toss model and its stored prediction are not overwritten.
 
-Do not substitute a generic venue profile for today’s pitch report. Store pitch source and observation time; if unknown, keep it unknown rather than guessing.
+### Candidate feature schema
+- last-five-match form for the **first-batting team** and the chasing team, gender-aware
+- smoothed directional cumulative head-to-head win rate
+- prior average first-innings runs at the venue for the match format
+- smoothed prior venue win rates for each team
+- format (ODI vs T20-family) and gender
+- whether the toss-winning side chose to bat
 
-Train and validate a dedicated post-toss artifact with this exact stage-appropriate schema. Do not silently add toss columns to the existing pre-toss artifact or reuse it with an incompatible input schema.
+The historical sheet's team1 is consistently the first-innings batting side. Runtime therefore orders the two teams from the verified toss result before inference. The candidate does **not** currently use today's pitch report, weather/dew, playing XI, or a separate toss-winner identity feature. Do not claim those are model inputs.
 
-Persist this as a second immutable record for the same match, with stage=`post_toss`, prediction timestamp, model version, and both team probabilities. Keep the pre-toss record unchanged so the two predictions can be compared later.
+### Held-out experiment (historical CSV candidate)
+Dataset: matches_with_elo_features.csv (16,583 rows). Chronological split:
+- train: 7,828 matches, before 2021-10-01
+- validation: 3,164 matches, 2021-10-01 through 2023-10-18
+- untouched test: 5,591 matches, 2023-10-19 through 2026-10-25
+
+On the same test window, the no-toss logistic baseline achieved accuracy 0.661241, log loss 0.629291, ROC-AUC 0.706108, and Brier score 0.219404. The toss-feature candidate achieved accuracy 0.661241, log loss 0.629324, ROC-AUC 0.706038, and Brier score 0.219421. **Accuracy did not improve**; probability metrics were slightly worse. This is a usable experimental candidate, not evidence that toss features boost accuracy. Metrics are recorded in training/post_toss_v1_metrics.json.
+
+### Runtime data gate
+The post-toss panel is rendered only when a provider match is matched to the exact fixture by team pair and start time, and toss winner/choice are verified. CricketData matches/match_info supplies the toss fields; catalog polling is throttled to 30 minutes and match-info retries are throttled per fixture. Scores are deliberately excluded from the toss cache and post-toss output. If CricketData does not cover the exact fixture or has not published the toss, the post-toss panel remains absent rather than guessing.
+
+Persist a post-toss prediction as a separate stage/version and keep the Pre-Toss prediction unchanged. A future improvement should add immutable per-stage audit records, and should validate the incremental effect of toss on a paired holdout before promoting the model as a better-performing final model.
 
 ## Measuring the incremental value of the toss
 
 Compare pre-toss and post-toss predictions on the same held-out matches:
 - Report accuracy, ROC-AUC, log loss, Brier score and calibration for each stage, with sample counts.
-- Report the paired change in probability for each team's winning chance from pre-toss to post-toss.
-- Also compare the post-toss model against a post-toss ablation trained without toss fields. This isolates the incremental predictive value of toss information from other pipeline differences.
+- Report the paired change in probability for each team's winning chance from toss to post-toss.
+- Compare the post-toss model against a post-toss ablation trained without toss fields.
 - Break results down by format, venue, toss decision and toss winner where sample sizes support it.
 - Use chronological splits and ensure every feature is available at its prediction timestamp.
-
-A probability shift after the toss shows how the model updated its view; by itself it does not prove the toss caused that change or improved predictive accuracy. The paired held-out evaluation and toss-feature ablation are needed to assess predictive importance.
 
 ## Stage 3 — First-innings live score projection
 

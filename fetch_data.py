@@ -1148,9 +1148,9 @@ def attach_post_toss_predictions(matches, previous_matches, catalog):
         if not provider_match:
             continue
         provider_match = safe_dict(provider_match)
-        toss_winner = safe_text(provider_match.get("tossWinner"))
-        toss_choice = safe_text(provider_match.get("tossChoice")).lower()
-        provider_id = safe_text(provider_match.get("id"))
+        toss_winner = safe_text(provider_match.get("tossWinner") or previous.get("toss_winner"))
+        toss_choice = safe_text(provider_match.get("tossChoice") or previous.get("toss_choice")).lower()
+        provider_id = safe_text(provider_match.get("id") or previous.get("toss_provider_match_id"))
 
         fixture_time = _parse_utc(match.get("start_time_iso"))
         if fixture_time:
@@ -1223,113 +1223,9 @@ def attach_post_toss_predictions(matches, previous_matches, catalog):
 
 
 
-def diagnose_cricketdata_matches_pages(previous_data):
-    """Temporary coverage probe across later CricketData match-list pages; no scores logged."""
-    if not KEY_CRICKETDATA:
-        return
-    target_pairs = []
-    for fixture in safe_list(safe_dict(previous_data).get("matches")):
-        fixture = safe_dict(fixture)
-        a, b = normalize_history_team(fixture.get("home")), normalize_history_team(fixture.get("away"))
-        if a and b:
-            target_pairs.append((a, b, safe_text(fixture.get("home")), safe_text(fixture.get("away"))))
-    for offset in (50, 75, 100):
-        try:
-            response = requests.get(
-                f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset={offset}",
-                timeout=20,
-            )
-            print(f"POST-TOSS COVERAGE PROBE offset={offset} HTTP {response.status_code}")
-            if response.status_code != 200:
-                print("POST-TOSS COVERAGE PROBE error:", response.text[:180])
-                continue
-            payload = safe_dict(response.json())
-            records = safe_list(payload.get("data"))
-            hits = []
-            for raw in records:
-                raw = safe_dict(raw)
-                teams = safe_list(raw.get("teams"))
-                if len(teams) < 2:
-                    continue
-                c1, c2 = normalize_history_team(teams[0]), normalize_history_team(teams[1])
-                for a, b, home, away in target_pairs:
-                    if (c1 == a and c2 == b) or (c1 == b and c2 == a):
-                        hits.append({
-                            "fixture": [home, away], "provider_teams": teams,
-                            "id": raw.get("id"), "date": raw.get("date"),
-                            "dateTimeGMT": raw.get("dateTimeGMT"),
-                            "matchType": raw.get("matchType"),
-                            "matchStarted": raw.get("matchStarted"),
-                            "matchEnded": raw.get("matchEnded"),
-                        })
-            print(f"POST-TOSS COVERAGE PROBE offset={offset} rows={len(records)} target_pair_hits={len(hits)}")
-            if hits:
-                print("POST-TOSS COVERAGE PROBE matching metadata:", hits)
-            elif records:
-                sample = safe_dict(records[0])
-                print("POST-TOSS COVERAGE PROBE sample metadata:", {
-                    "teams": sample.get("teams"), "date": sample.get("date"),
-                    "dateTimeGMT": sample.get("dateTimeGMT"), "matchType": sample.get("matchType"),
-                })
-        except Exception as exc:
-            print(f"POST-TOSS COVERAGE PROBE offset={offset} request failed: {exc}")
-
-
-
-def diagnose_highlightly_detail_toss(previous_data):
-    """Temporary one-run check for documented/undocumented toss metadata in match detail."""
-    if not KEY_HIGHLIGHTLY:
-        print("HIGHLIGHTLY TOSS DETAIL PROBE: key missing.")
-        return
-    fixtures = [
-        safe_dict(item) for item in safe_list(safe_dict(previous_data).get("matches"))
-        if safe_dict(item).get("api_source") == "Highlightly"
-        and safe_dict(item).get("source_match_id")
-    ]
-    if not fixtures:
-        print("HIGHLIGHTLY TOSS DETAIL PROBE: no prior fixture ID.")
-        return
-    match_id = safe_text(fixtures[0].get("source_match_id"))
-    headers = {
-        "x-rapidapi-key": KEY_HIGHLIGHTLY,
-        "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com",
-    }
-    try:
-        response = requests.get(
-            f"https://cricket-highlights-api.p.rapidapi.com/matches/{match_id}",
-            headers=headers, timeout=20,
-        )
-        print(f"HIGHLIGHTLY TOSS DETAIL PROBE HTTP {response.status_code}")
-        if response.status_code != 200:
-            print("HIGHLIGHTLY TOSS DETAIL PROBE error:", response.text[:200])
-            return
-        payload = safe_dict(response.json())
-        print("HIGHLIGHTLY TOSS DETAIL PROBE top keys:", list(payload.keys()))
-        toss_paths = []
-        def scan(value, path=""):
-            if isinstance(value, dict):
-                for key, child in value.items():
-                    child_path = f"{path}.{key}" if path else key
-                    if "toss" in str(key).lower():
-                        toss_paths.append((child_path, child if not isinstance(child, (dict, list)) else str(type(child).__name__)))
-                    scan(child, child_path)
-            elif isinstance(value, list):
-                for index, child in enumerate(value[:20]):
-                    scan(child, f"{path}[{index}]")
-        scan(payload)
-        print("HIGHLIGHTLY TOSS DETAIL PROBE toss-related fields:", toss_paths[:30])
-        state = safe_dict(payload.get("state"))
-        print("HIGHLIGHTLY TOSS DETAIL PROBE state report:", {
-            "description": state.get("description"), "report": safe_text(state.get("report"))[:300],
-        })
-    except Exception as exc:
-        print(f"HIGHLIGHTLY TOSS DETAIL PROBE request failed: {exc}")
-
 
 def main():
     previous_data = _load_previous_live_data()
-    diagnose_highlightly_detail_toss(previous_data)
-    diagnose_cricketdata_matches_pages(previous_data)
     previous_matches = {
         (safe_text(item.get("api_source")), safe_text(item.get("source_match_id"))): item
         for item in safe_list(previous_data.get("matches"))
