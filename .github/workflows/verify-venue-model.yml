@@ -25,15 +25,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install pandas scikit-learn xgboost joblib
 
       - name: Load and test venue-aware candidate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
-          from venue_model import load_venue_candidate, predict_venue_candidate
-          artifact, state = load_venue_candidate()
-          assert artifact is not None and state is not None, "Venue-aware model or state failed to load"
-          result = predict_venue_candidate(
-              artifact, state,
-              "India", "Australia", "ODI", "male", "International", "Lord's"
-          )
-          assert result is not None, "Venue-aware model loaded but synthetic prediction failed"
-          print("VENUE MODEL VERIFIED")
-          print("Synthetic prediction:", result)
-        shell: python
+          python -c "from venue_model import load_venue_candidate, predict_venue_candidate; artifact, state = load_venue_candidate(); assert artifact is not None and state is not None, 'Venue-aware model or state failed to load'; result = predict_venue_candidate(artifact, state, 'India', 'Australia', 'ODI', 'male', 'International', \"Lord's\"); assert result is not None, 'Venue-aware model loaded but synthetic prediction failed'; print('VENUE MODEL VERIFIED'); print('Synthetic prediction:', result)"
