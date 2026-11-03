@@ -265,18 +265,20 @@ def is_international_team(team_name):
 def is_international_fixture(home_team, away_team):
     return is_international_team(home_team) and is_international_team(away_team)
 
+def is_supported_prediction_format(match_format):
+    fmt = safe_text(match_format).upper()
+    return (
+        any(token in fmt for token in ("T20", "TWENTY20", "20 OVERS"))
+        or any(token in fmt for token in ("ODI", "ONE DAY", "50 OVERS"))
+    )
+
 def is_ai_supported(match):
-    fmt = str(match.get("format", "")).upper()
-    league = str(match.get("league", "")).upper()
+    fmt = safe_text(match.get("format")).upper()
+    league = safe_text(match.get("league")).upper()
     home_team = safe_text(match.get("home"))
     away_team = safe_text(match.get("away"))
 
-    if "THE FORD TROPHY" in league:
-        return False
-
-    is_t20 = any(token in fmt for token in ("T20", "TWENTY20", "20 OVERS"))
-    is_odi = any(token in fmt for token in ("ODI", "ONE DAY", "50 OVERS"))
-    if not (is_t20 or is_odi):
+    if "THE FORD TROPHY" in league or not is_supported_prediction_format(fmt):
         return False
 
     # International tours/series are eligible regardless of competition title
@@ -285,7 +287,7 @@ def is_ai_supported(match):
         return True
 
     # Preserve existing domestic ODI support and the domestic T20 allowlist.
-    if is_odi:
+    if "ODI" in fmt or "ONE DAY" in fmt or "50 OVERS" in fmt:
         return True
     return any(keyword in league for keyword in ALLOWED_KEYWORDS)
 
@@ -677,7 +679,7 @@ def standardize_data(data, source):
             win_prob, proj_score, pre_match_winner = None, None, None
             # The Hundred fixtures may be displayed, but prediction models are
             # not enabled until Hundred-specific ball-rate features are validated.
-            prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
+            prediction_supported_format = is_supported_prediction_format(fmt)
 
             match_gender = infer_match_gender(m, league, home_team, away_team)
             venue_name = extract_venue(m)
@@ -733,7 +735,7 @@ def standardize_data(data, source):
             league = safe_text(m.get("name"), "League")
             win_prob, proj_score = None, None
 
-            prediction_supported_format = any(x in fmt.upper() for x in ("T20", "ODI"))
+            prediction_supported_format = is_supported_prediction_format(fmt)
 
             matches.append({
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("dateTimeGMT")), "match_state": match_state,
