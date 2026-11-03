@@ -105,7 +105,7 @@
 const utcDate = new Date(data.last_updated.replace(" ", "T") + "Z");
 const localTime = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 document.getElementById('last-updated').innerText = "Last Updated: " + localTime;
-                document.getElementById('api-source').innerText = "⚡ Powered by: " + (data.data_source_api || "Unknown API");
+                document.getElementById('api-source').innerText = (data.venue_model_active ? "✅ Venue-Aware AI ACTIVE" : "⚠️ Baseline AI") + " | ⚡ Powered by: " + (data.data_source_api || "Unknown API");
                 allMatches = data.matches; 
                 
                 loadingText.style.display = 'none';
