@@ -635,12 +635,26 @@ def fetch_matchstat():
     return None, None
 
 def fetch_sportscore():
-    url = "https://sportscore.com/api/widget/matches/?sport=cricket&limit=50"
-    try:
-        response = requests.get(url, timeout=15)
-        if response.status_code == 200: return response.json(), "Sportscore"
-    except: pass
-    return None, None
+    """Fetch upcoming cricket fixtures for today and tomorrow (2 requests/run)."""
+    api_key = os.environ.get("SPORTSCORE_API_KEY")
+    headers = {"X-Api-Key": api_key} if api_key else {}
+    all_matches = []
+    for match_date in (today, tomorrow):
+        try:
+            response = requests.get(
+                "https://sportscore.com/api/v1/fixtures/",
+                headers=headers,
+                params={"sport": "cricket", "date": match_date, "status": "upcoming", "limit": 200},
+                timeout=20
+            )
+            if response.status_code != 200:
+                print(f"SportScore API error for {match_date}: HTTP {response.status_code} - {response.text[:300]}")
+                continue
+            payload = response.json()
+            all_matches.extend(safe_list(safe_dict(payload).get("matches")))
+        except Exception as exc:
+            print(f"SportScore request failed for {match_date}: {exc}")
+    return {"matches": all_matches}, "Sportscore"
 
 # =========================================================
 # DATA STANDARDIZATION
@@ -763,23 +777,63 @@ def standardize_data(data, source):
             })
 
     elif source == "Sportscore":
+        known_t20_competitions = [
+            "INDIAN PREMIER LEAGUE", "IPL", "BIG BASH LEAGUE", "BBL",
+            "PAKISTAN SUPER LEAGUE", "PSL", "CARIBBEAN PREMIER LEAGUE", "CPL",
+            "SA20", "ILT20", "T20 BLAST", "LPL", "BPL", "SUPER SMASH",
+            "CSA T20", "GT20", "GLOBAL T20", "WOMEN'S BIG BASH LEAGUE",
+            "WBBL", "WPL", "WOMEN'S PREMIER LEAGUE", "ICC T20 WORLD CUP"
+        ]
         for m in safe_list(data.get("matches")):
             m = safe_dict(m)
-            status_raw = safe_text(m.get("status_text"))
-            status_lower = status_raw.lower()
-            if "upcoming" in status_lower or "abnormal" in status_lower: match_state = "upcoming"
-            elif "finished" in status_lower: match_state = "finished"
-            else: match_state = "live"
+            league = safe_text(m.get("competition"), "League")
+            fmt = safe_text(m.get("format")).upper()
+            league_upper = league.upper()
+            if not fmt:
+                if "T20" in league_upper or any(token in league_upper for token in known_t20_competitions):
+                    fmt = "T20"
+                elif "ODI" in league_upper or "ONE DAY" in league_upper or "50 OVERS" in league_upper:
+                    fmt = "ODI"
+                elif "THE HUNDRED" in league_upper:
+                    fmt = "THE HUNDRED"
+
+            status_value = safe_text(m.get("status")).lower()
+            if status_value == "upcoming":
+                match_state, status_raw = "upcoming", "Upcoming"
+            elif status_value == "finished":
+                match_state, status_raw = "finished", "Finished"
+            elif status_value == "live":
+                match_state, status_raw = "live", safe_text(m.get("status_text"), "Live")
+            else:
+                continue
+
+            home_team = safe_text(m.get("home"), "Home")
+            away_team = safe_text(m.get("away"), "Away")
+            start_time = safe_text(m.get("time"))
+            pre_match_winner = None
+            match_gender = infer_match_gender(m, league, home_team, away_team)
+            if match_state == "upcoming" and is_supported_prediction_format(fmt) and is_ai_supported({
+                "format": fmt, "league": league, "home": home_team, "away": away_team
+            }):
+                pre_match_winner = get_pre_match_prediction(
+                    home_team, away_team, fmt, league, match_gender, extract_venue(m)
+                )
+                log_pre_match_prediction({
+                    "source": "Sportscore",
+                    "source_match_id": safe_text(m.get("url") or f"{home_team}|{away_team}|{start_time}"),
+                    "league": league, "format": fmt, "venue": extract_venue(m),
+                    "start_time_iso": start_time, "team1": home_team, "team2": away_team,
+                    "gender": match_gender, "prediction": pre_match_winner,
+                    "model_version": ACTIVE_PRE_MATCH_MODEL, "actual_winner": None
+                })
 
             matches.append({
-                "league": safe_text(m.get("competition"), "League"), 
-                "format": safe_text(m.get("format"), ""), 
-                "start_time_iso": safe_text(m.get("time")), "match_state": match_state,
-                "home": safe_text(m.get("home"), "Home"), "away": safe_text(m.get("away"), "Away"),
-                "score_home": safe_text(m.get("home_score"), "-"), "overs_home": "",
-                "score_away": safe_text(m.get("away_score"), "-"), "overs_away": "",
+                "source_match_id": safe_text(m.get("url")),
+                "league": league, "format": fmt, "start_time_iso": start_time,
+                "match_state": match_state, "home": home_team, "away": away_team,
+                "score_home": "-", "overs_home": "", "score_away": "-", "overs_away": "",
                 "status": status_raw, "api_source": source,
-                "win_probability": None, "projected_score": None, "pre_match_winner": None
+                "win_probability": None, "projected_score": None, "pre_match_winner": pre_match_winner
             })
 
     return matches
@@ -819,36 +873,16 @@ def main():
     all_matches = []
     successful_sources = []
 
-    # 1. PRIMARY: Highlightly
-    print("Trying Primary API: Highlightly...")
-    data, source = fetch_highlightly()
-    if data:
-        primary_matches = standardize_data(data, source)
-        supported_primary = [m for m in primary_matches if is_ai_supported(m)]
-        if supported_primary:
-            all_matches = supported_primary
-            successful_sources.append("Highlightly")
-            print(f"Received {len(supported_primary)} supported matches from Highlightly.")
-
-    # 2. FALLBACK: Only if no supported matches found from Primary
-    if len(all_matches) == 0:
-        print("No supported Highlightly matches. Trying fallbacks...")
-        fallbacks = [
-            ("CricketData", fetch_cricketdata),
-            ("Matchstat", fetch_matchstat),
-            ("Sportscore", fetch_sportscore)
-        ]
-        for api_name, fetch_func in fallbacks:
-            print(f"Trying fallback: {api_name}...")
-            f_data, f_source = fetch_func()
-            if f_data:
-                raw_matches = standardize_data(f_data, f_source)
-                supported_fallback = [m for m in raw_matches if is_ai_supported(m)]
-                if len(supported_fallback) > 0:
-                    all_matches = supported_fallback
-                    successful_sources.append(f_source)
-                    print(f"Fallback success: {api_name} ({len(supported_fallback)} supported matches).")
-                    break
+    # SportScore is the sole fixture source. Only upcoming fixtures are requested;
+    # no live-score polling or calls to the previous providers are made.
+    print("Fetching upcoming fixtures from SportScore...")
+    data, source = fetch_sportscore()
+    if data is not None:
+        raw_matches = standardize_data(data, source)
+        all_matches = [m for m in raw_matches if m.get("match_state") == "upcoming" and is_ai_supported(m)]
+        if all_matches:
+            successful_sources.append(source)
+        print(f"SportScore returned {len(raw_matches)} fixtures; {len(all_matches)} pass the existing AI filters.")
 
     # 3. DEDUPLICATION & SORTING
     final_matches = deduplicate_matches(all_matches)
