@@ -46,3 +46,17 @@ def test_womens_competition_detection():
     assert fetch_data.is_womens_competition("Women's Premier League")
     assert fetch_data.is_womens_competition("WBBL")
     assert not fetch_data.is_womens_competition("Indian Premier League")
+
+def test_unknown_odi_tour_name_uses_only_an_existing_team_odi_series_category():
+    league_encoder = LabelEncoder().fit(["New Zealand ODI Series", "India ODI Series"])
+    encoded = fetch_data.safe_encode_league(
+        "India in New Zealand", league_encoder,
+        ["New Zealand ODI Series", "India ODI Series"]
+    )
+    assert encoded == int(league_encoder.transform(["New Zealand ODI Series"])[0])
+
+
+def test_unknown_league_without_known_alias_stays_unavailable():
+    league_encoder = LabelEncoder().fit(["New Zealand ODI Series"])
+    assert fetch_data.safe_encode_league("Unseen Competition", league_encoder, []) == -1
+
