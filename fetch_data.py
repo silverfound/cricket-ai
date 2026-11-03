@@ -5,7 +5,7 @@ import requests
 import joblib
 import pandas as pd
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # =========================================================
 # CONFIGURATION
@@ -25,9 +25,13 @@ ALLOWED_KEYWORDS = [
     "PSL", "PAKISTAN SUPER LEAGUE",
     "CPL", "CARIBBEAN PREMIER LEAGUE",
     "SA20", "ILT20", "T20 BLAST", "LPL", "BPL", "SUPER SMASH",
+    "CSA T20 CHALLENGE", "CSA T20", "CSA PRO20",
+    "GT20", "GLOBAL T20", "GLOBAL T20 CANADA",
     "WBBL", "WOMEN'S BIG BASH LEAGUE",
     "WPL", "WOMEN'S PREMIER LEAGUE",
     "ICC T20 WORLD CUP", "ICC CRICKET WORLD CUP",
+    "ICC MEN'S CRICKET WORLD CUP LEAGUE 2",
+    "INDIA IN NEW ZEALAND",
     "THE HUNDRED"
 ]
 
@@ -36,14 +40,41 @@ ALLOWED_KEYWORDS = [
 # =========================================================
 
 try:
-    score_model = joblib.load("score_pred_model_v3.pkl")
+    # Only the final pre-match winner model is active.
+    # Legacy live score/chase model files remain in the repository as backups.
+    score_model = None
+    win_model = None
     team_league_encoders = joblib.load("team_league_encoders.pkl")
-    win_model = joblib.load("win_prob_model_v3.pkl")
-    pre_match_model = joblib.load("pre_match_model_v3.pkl")
-    print("Models successfully loaded.")
+    final_pre_match_path = os.path.join("models", "final_pre_match_model_v3.pkl")
+    if not os.path.exists(final_pre_match_path):
+        raise FileNotFoundError("Final pre-match model artifact is required; legacy fallback is disabled.")
+
+    pre_match_artifact = joblib.load(final_pre_match_path)
+    if not isinstance(pre_match_artifact, dict) or "model" not in pre_match_artifact:
+        raise ValueError("Final pre-match artifact has an unexpected format.")
+    pre_match_model = pre_match_artifact["model"]
+    pre_match_threshold = float(pre_match_artifact.get("threshold", 0.5))
+    required_features = ["league_id", "team1_id", "team2_id", "t1_form", "t2_form", "h2h_win_rate"]
+    expected_features = pre_match_artifact.get("features")
+    label_mapping = pre_match_artifact.get("label_mapping", {})
+    if list(expected_features or []) != required_features:
+        raise ValueError("Final pre-match model feature order does not match production.")
+    if label_mapping != {1: "Team 1 wins", 0: "Team 2 wins"}:
+        raise ValueError("Final pre-match model label mapping is missing or incompatible.")
+    model_classes = list(getattr(pre_match_model, "classes_", []))
+    if model_classes != [0, 1]:
+        raise ValueError(f"Unexpected final pre-match model classes: {model_classes}")
+    model_features = list(getattr(pre_match_model, "feature_names_in_", []))
+    if model_features and model_features != required_features:
+        raise ValueError("Final pre-match estimator feature names do not match production.")
+    if not 0.0 <= pre_match_threshold <= 1.0:
+        raise ValueError("Final pre-match model threshold must be between 0 and 1.")
+    print(f"Final pre-match model loaded (threshold={pre_match_threshold:.2f}).")
+    print("Legacy live score/chase models are disabled.")
 except Exception as e:
     print(f"Model loading error: {e}")
-    score_model = team_league_encoders = win_model = pre_match_model = None
+    score_model = win_model = team_league_encoders = pre_match_model = None
+    pre_match_threshold = 0.5
 
 # =========================================================
 # COMMON HELPERS
@@ -59,9 +90,69 @@ def safe_text(value, default=""):
     if value is None: return default
     return str(value).strip()
 
+HISTORY_PATH = os.path.join("data", "team_form_h2h_history.json")
+historical_features = {}
+try:
+    with open(HISTORY_PATH, "r", encoding="utf-8") as history_file:
+        historical_features = json.load(history_file)
+    history_meta = safe_dict(historical_features.get("metadata"))
+    print(f"Historical form/H2H loaded: {history_meta.get('valid_matches', 0)} matches.")
+except FileNotFoundError:
+    print("Historical form/H2H file not found; neutral defaults will be used.")
+except Exception as history_error:
+    print(f"Historical form/H2H load error: {history_error}")
+    historical_features = {}
+
+def normalize_history_team(team_name):
+    return re.sub(r"\s+", " ", safe_text(team_name)).strip().casefold()
+
+def get_historical_form(team_name, gender):
+    gender_key = "female" if str(gender).lower() == "female" else "male"
+    teams = safe_dict(safe_dict(historical_features.get("teams")).get(gender_key))
+    wanted = normalize_history_team(team_name)
+    for name, values in teams.items():
+        if normalize_history_team(name) == wanted:
+            try:
+                return float(safe_dict(values).get("form", 0.5))
+            except (TypeError, ValueError):
+                return 0.5
+    return 0.5
+
+def get_historical_h2h(team1, team2, gender):
+    gender_key = "female" if str(gender).lower() == "female" else "male"
+    h2h = safe_dict(safe_dict(historical_features.get("h2h")).get(gender_key))
+    wanted1, wanted2 = normalize_history_team(team1), normalize_history_team(team2)
+    for name1, opponents in h2h.items():
+        if normalize_history_team(name1) == wanted1:
+            for name2, record in safe_dict(opponents).items():
+                if normalize_history_team(name2) == wanted2:
+                    try:
+                        return float(safe_dict(record).get("win_rate", 0.5))
+                    except (TypeError, ValueError):
+                        return 0.5
+    return 0.5
+
+def infer_match_gender(match_data, league_name, home_team, away_team):
+    match_data = safe_dict(match_data)
+    for key in ("gender", "sex"):
+        value = safe_text(match_data.get(key)).lower()
+        if value in ("female", "women", "woman", "womens"):
+            return "female"
+        if value in ("male", "men", "mens"):
+            return "male"
+    labels = " ".join([safe_text(league_name), safe_text(home_team), safe_text(away_team)]).lower()
+    if re.search(r"women|woman|wbb|wpl|\(w\)", labels):
+        return "female"
+    return "male"
+
+
 def extract_overs(info_str):
     if not info_str: return ""
     text = str(info_str).strip()
+    # The Hundred is reported in balls, not six-ball overs.
+    balls_match = re.search(r"\b(\d+)\s*balls?\b", text, re.I)
+    if balls_match:
+        return f"{balls_match.group(1)} balls"
     match = re.search(r"(\d+\.\d+|\d+)\s*ov(?:er)?s?\b", text, re.I)
     if match: return f"{match.group(1)} ov"
     match = re.search(r"^\s*(\d+\.\d+|\d+)\s*/", text)
@@ -79,14 +170,17 @@ def is_ai_supported(match):
     fmt = str(match.get("format", "")).upper()
     league = str(match.get("league", "")).upper()
     
+    if "THE FORD TROPHY" in league:
+        return False
+
     if not any(x in fmt for x in ["T20", "ODI", "HUNDRED"]):
         return False
-        
-    for keyword in ALLOWED_KEYWORDS:
-        if keyword in league:
-            return True
-            
-    return False
+
+    # ODI is a supported model format; explicitly exclude The Ford Trophy above.
+    if "ODI" in fmt:
+        return True
+
+    return any(keyword in league for keyword in ALLOWED_KEYWORDS)
 
 # =========================================================
 # SMART ENCODERS
@@ -102,80 +196,84 @@ def safe_encode_league(league_name, encoder):
         return -1
     except: return -1
 
-def safe_encode_team(team_name, encoder):
-    if encoder is None or not team_name: return -1
-    try:
-        team_name_clean = str(team_name).strip().lower()
-        for cls in encoder.classes_:
-            if str(cls).strip().lower() == team_name_clean:
-                return int(encoder.transform([cls])[0])
+def is_womens_competition(league_name):
+    league = str(league_name or "").strip().lower()
+    return "women" in league or "wpl" in league or "wbbl" in league
 
-        def is_women_team(name):
-            name = str(name).strip().lower()
-            return bool(re.search(r"\bwomen\b", name) or re.search(r"\bw\b", name) or re.search(r"\(w\)", name))
+
+def safe_encode_team(team_name, encoder, gender=None):
+    """Encode a team without crossing the men's/women's class boundary."""
+    if encoder is None or not team_name:
+        return -1
+    try:
+        requested = str(team_name).strip()
+        requested_lower = requested.lower()
+
+        def is_women(name):
+            return bool(re.search(r"\bwomen\b|\bw\b|\(w\)", str(name).strip().lower()))
 
         def normalize(name):
-            name = str(name).strip().lower()
-            name = re.sub(r"\(.*?\)", "", name)
-            name = re.sub(r"\bwomen\b", "", name)
-            name = re.sub(r"\(w\)", "", name)
-            name = re.sub(r"\bw\b", "", name)
-            name = re.sub(r"\s+", " ", name)
-            return name.strip()
+            value = re.sub(r"\(.*?\)", "", str(name).strip().lower())
+            value = re.sub(r"\bwomen\b|\(w\)|\bw\b", "", value)
+            return re.sub(r"\s+", " ", value).strip()
 
-        api_is_women = is_women_team(team_name_clean)
-        normalized_api = normalize(team_name_clean)
-        matches = []
-
-        for cls in encoder.classes_:
-            cls_clean = str(cls).strip().lower()
-            encoder_is_women = is_women_team(cls_clean)
-            if api_is_women != encoder_is_women: continue
-            if normalize(cls_clean) == normalized_api:
-                matches.append(cls)
-
-        if len(matches) == 1:
-            return int(encoder.transform([matches[0]])[0])
+        wanted_women = (gender == "female") if gender in ("female", "male") else is_women(requested)
+        candidates = [str(cls) for cls in encoder.classes_
+                      if is_women(cls) == wanted_women and normalize(cls) == normalize(requested)]
+        if len(candidates) == 1:
+            return int(encoder.transform([candidates[0]])[0])
+        exact = [str(cls) for cls in encoder.classes_
+                 if str(cls).strip().lower() == requested_lower and is_women(cls) == wanted_women]
+        if len(exact) == 1:
+            return int(encoder.transform([exact[0]])[0])
         return -1
-    except: return -1
+    except Exception as exc:
+        print(f"Team encoding failed for {team_name!r}: {exc}")
+        return -1
 
 # =========================================================
 # PREDICTION FUNCTIONS
 # =========================================================
 
-def get_pre_match_prediction(home_team, away_team, match_format, league_name):
-    if pre_match_model is None or team_league_encoders is None: return None
+def get_pre_match_prediction(home_team, away_team, match_format, league_name, gender="male"):
+    if pre_match_model is None or team_league_encoders is None:
+        return None
     try:
         team_encoder = team_league_encoders.get("team")
         league_encoder = team_league_encoders.get("league")
-        if team_encoder is None or league_encoder is None: return None
+        if team_encoder is None or league_encoder is None:
+            return None
 
-        t1 = safe_encode_team(home_team, team_encoder)
-        t2 = safe_encode_team(away_team, team_encoder)
+        gender = "female" if str(gender).lower() == "female" else "male"
+        t1 = safe_encode_team(home_team, team_encoder, gender)
+        t2 = safe_encode_team(away_team, team_encoder, gender)
         l_id = safe_encode_league(league_name, league_encoder)
-
-        if t1 == -1 or t2 == -1 or l_id == -1: return None
+        if t1 == -1 or t2 == -1 or l_id == -1:
+            return None
 
         input_data = pd.DataFrame({
             "league_id": [l_id], "team1_id": [t1], "team2_id": [t2],
-            "t1_form": [0.5], "t2_form": [0.5], "h2h_win_rate": [0.5]
+            "t1_form": [get_historical_form(home_team, gender)],
+            "t2_form": [get_historical_form(away_team, gender)],
+            "h2h_win_rate": [get_historical_h2h(home_team, away_team, gender)]
         })
         probabilities = pre_match_model.predict_proba(input_data)
-        if probabilities is None or len(probabilities) == 0 or len(probabilities[0]) < 2: return None
+        if probabilities is None or len(probabilities) == 0 or len(probabilities[0]) < 2:
+            return None
+        classes = list(getattr(pre_match_model, "classes_", [0, 1]))
+        if 0 not in classes or 1 not in classes:
+            return None
+        home_probability = float(probabilities[0][classes.index(1)])
+        away_probability = float(probabilities[0][classes.index(0)])
+        threshold = float(globals().get("pre_match_threshold", 0.5))
+        if home_probability >= threshold:
+            return f"{home_team} ({round(home_probability * 100, 1)}%)"
+        return f"{away_team} ({round(away_probability * 100, 1)}%)"
+    except Exception as prediction_error:
+        print(f"Pre-match prediction error: {prediction_error}")
+        return None
 
-        classes = getattr(pre_match_model, "classes_", [0, 1])
-        if 0 not in classes or 1 not in classes: return None
-
-        home_index = list(classes).index(1)
-        away_index = list(classes).index(0)
-        home_prob = float(probabilities[0][home_index]) * 100
-        away_prob = float(probabilities[0][away_index]) * 100
-
-        if home_prob > away_prob: return f"{home_team} ({round(home_prob, 1)}%)"
-        return f"{away_team} ({round(away_prob, 1)}%)"
-    except: return None
-
-def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team):
+def get_ai_predictions(home_info, away_info, match_format, league_name, home_team, away_team, gender=None):
     if (score_model is None or team_league_encoders is None or win_model is None): return None, None
     try:
         home_info = safe_dict(home_info)
@@ -276,8 +374,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             crr = chasing_score / overs_bowled if overs_bowled > 0 else 0
             rrr = runs_needed / (balls_remaining / 6) if balls_remaining > 0 else 0
 
-            c_id = safe_encode_team(chasing_team, team_encoder)
-            d_id = safe_encode_team(defending_team, team_encoder)
+            match_gender = gender or ("female" if is_womens_competition(league_name) else "male")
+            c_id = safe_encode_team(chasing_team, team_encoder, match_gender)
+            d_id = safe_encode_team(defending_team, team_encoder, match_gender)
             if c_id == -1 or d_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -307,8 +406,9 @@ def get_ai_predictions(home_info, away_info, match_format, league_name, home_tea
             overs_bowled = batting_balls_bowled / 6
             crr = batting_score / overs_bowled if overs_bowled > 0 else 0
 
-            b_id = safe_encode_team(batting_team, team_encoder)
-            bw_id = safe_encode_team(bowling_team, team_encoder)
+            match_gender = gender or ("female" if is_womens_competition(league_name) else "male")
+            b_id = safe_encode_team(batting_team, team_encoder, match_gender)
+            bw_id = safe_encode_team(bowling_team, team_encoder, match_gender)
             if b_id == -1 or bw_id == -1: return None, None
 
             input_data = pd.DataFrame({
@@ -335,11 +435,26 @@ def fetch_highlightly():
     for match_date in [today, tomorrow]:
         url = f"https://cricket-highlights-api.p.rapidapi.com/matches?date={match_date}"
         try:
-            response = requests.get(url, headers=headers, timeout=15)
+            response = requests.get(
+                "https://cricket-highlights-api.p.rapidapi.com/matches",
+                headers=headers,
+                params={
+                    "date": match_date,
+                    "limit": 100,
+                    "offset": 0
+                },
+                timeout=20
+            )
             if response.status_code == 200:
                 data = response.json()
-                if isinstance(data, dict): all_data.extend(safe_list(data.get("data")))
-        except: pass
+                if isinstance(data, dict):
+                    all_data.extend(safe_list(data.get("data")))
+                elif isinstance(data, list):
+                    all_data.extend(data)
+            else:
+                print(f"Highlightly API error for {match_date}: HTTP {response.status_code} - {response.text[:300]}")
+        except Exception as e:
+            print(f"Highlightly request failed for {match_date}: {e}")
     return {"data": all_data}, "Highlightly"
 
 def fetch_cricketdata():
@@ -403,14 +518,16 @@ def standardize_data(data, source):
             away_team = safe_text(away_data.get("name"), "Away")
 
             win_prob, proj_score, pre_match_winner = None, None, None
-            supported_format = any(x in fmt.upper() for x in ["T20", "ODI", "HUNDRED"])
+            # The Hundred fixtures may be displayed, but prediction models are
+            # not enabled until Hundred-specific ball-rate features are validated.
+            prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
 
-            if match_state == "live" and supported_format:
-                win_prob, proj_score = get_ai_predictions(home_info, away_info, fmt, league, home_team, away_team)
-            elif match_state == "upcoming" and supported_format:
-                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league)
+            match_gender = infer_match_gender(m, league, home_team, away_team)
+            if match_state == "upcoming" and prediction_supported_format:
+                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
 
             matches.append({
+                "source_match_id": safe_text(m.get("id") or m.get("matchId")),
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("startTime")), "match_state": match_state,
                 "home": home_team, "away": away_team, "score_home": safe_text(home_info.get("score"), "-"),
                 "overs_home": extract_overs(home_info.get("info", "")), "score_away": safe_text(away_info.get("score"), "-"),
@@ -443,11 +560,7 @@ def standardize_data(data, source):
             league = safe_text(m.get("name"), "League")
             win_prob, proj_score = None, None
 
-            if match_state == "live":
-                win_prob, proj_score = get_ai_predictions(
-                    {"score": home_score, "info": home_overs}, {"score": away_score, "info": away_overs},
-                    fmt, league, home_team, away_team
-                )
+            prediction_supported_format = any(x in fmt.upper() for x in ("T20", "ODI"))
 
             matches.append({
                 "league": league, "format": fmt, "start_time_iso": safe_text(m.get("dateTimeGMT")), "match_state": match_state,
@@ -502,34 +615,26 @@ def standardize_data(data, source):
 # =========================================================
 
 def deduplicate_matches(matches):
+    """Deduplicate only with a reliable ID or exact fixture timestamp."""
     seen = set()
     unique_matches = []
-
     for match in matches:
+        source_id = safe_text(match.get("source_match_id"))
         home = clean_team_name(match.get("home"))
         away = clean_team_name(match.get("away"))
-
-        if not home or not away:
-            unique_matches.append(match)
-            continue
-
         start_time = safe_text(match.get("start_time_iso"))
-        date_key = start_time[:10] if start_time else ""
-
-        # Date missing ho to match preserve karein
-        if not date_key:
+        league = safe_text(match.get("league")).casefold()
+        fmt = safe_text(match.get("format")).casefold()
+        if source_id:
+            key = ("id", source_id)
+        elif home and away and start_time:
+            key = ("fixture", tuple(sorted((home, away))), league, fmt, start_time)
+        else:
             unique_matches.append(match)
             continue
-
-        teams_key = tuple(sorted([home, away]))
-        key = (teams_key, date_key)
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-        unique_matches.append(match)
-
+        if key not in seen:
+            seen.add(key)
+            unique_matches.append(match)
     return unique_matches
 
 # =========================================================
@@ -578,7 +683,7 @@ def main():
     used_api = ", ".join(successful_sources) if successful_sources else "None"
     
     output = {
-        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
         "total_matches": len(final_matches),
         "data_source_api": used_api,
         "matches": final_matches
