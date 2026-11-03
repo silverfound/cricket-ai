@@ -10,6 +10,9 @@ from prediction_audit import log_pre_match_prediction
 from venue_model import load_venue_candidate, predict_venue_candidate
 
 venue_candidate_artifact, venue_candidate_state = load_venue_candidate()
+VENUE_MODEL_ACTIVE = venue_candidate_artifact is not None and venue_candidate_state is not None
+ACTIVE_PRE_MATCH_MODEL = "venue_aware_candidate" if VENUE_MODEL_ACTIVE else "final_pre_match_model_v3"
+print(f"PRE-MATCH ENGINE: {ACTIVE_PRE_MATCH_MODEL}")
 
 # =========================================================
 # CONFIGURATION
@@ -555,6 +558,7 @@ def standardize_data(data, source):
             venue_name = extract_venue(m)
             if match_state == "upcoming" and prediction_supported_format:
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender, venue_name)
+                prediction_model = "venue_aware_candidate" if VENUE_MODEL_ACTIVE and venue_name else "final_pre_match_model_v3"
                 log_pre_match_prediction({
                     "source": "Highlightly",
                     "source_match_id": safe_text(m.get("id") or m.get("matchId")),
@@ -566,7 +570,7 @@ def standardize_data(data, source):
                     "team2": away_team,
                     "gender": match_gender,
                     "prediction": pre_match_winner,
-                    "model_version": "final_pre_match_model_v3",
+                    "model_version": prediction_model,
                     "actual_winner": None,
                 })
 
@@ -730,6 +734,8 @@ def main():
         "last_updated": datetime.now(timezone.utc).isoformat(),
         "total_matches": len(final_matches),
         "data_source_api": used_api,
+        "prediction_engine": ACTIVE_PRE_MATCH_MODEL,
+        "venue_model_active": VENUE_MODEL_ACTIVE,
         "matches": final_matches
     }
 
