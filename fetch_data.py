@@ -317,10 +317,18 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name, ge
             return None
         home_probability = float(probabilities[0][classes.index(1)])
         away_probability = float(probabilities[0][classes.index(0)])
-        threshold = float(globals().get("pre_match_threshold", 0.5))
-        if home_probability >= threshold:
-            return f"{home_team} ({round(home_probability * 100, 1)}%)"
-        return f"{away_team} ({round(away_probability * 100, 1)}%)"
+        # For a two-team match, display both complementary probabilities and
+        # select the team with the higher probability. A tuned classification
+        # threshold must not label a sub-50% side as the most likely winner.
+        if home_probability >= away_probability:
+            winner = home_team
+        else:
+            winner = away_team
+        return (
+            f"AI Pick: {winner} | "
+            f"{home_team}: {round(home_probability * 100, 1)}% | "
+            f"{away_team}: {round(away_probability * 100, 1)}%"
+        )
     except Exception as prediction_error:
         print(f"Pre-match prediction error: {prediction_error}")
         return None
