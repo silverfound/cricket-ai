@@ -902,9 +902,8 @@ def main():
                 successful_sources.append("CricketData")
             print(f"CricketData returned {len(backup_matches)} fixtures; {len(all_matches)} pass the existing AI filters.")
 
-    # Diagnostic-only probe of the saved Matchstat RapidAPI key. Its response
-    # is not yet eligible for website data until its fixture schema is validated.
-    if not all_matches:
+    # One-time diagnostic probe of the saved Matchstat RapidAPI key.
+    if True:
         print("Checking Matchstat third-provider fixture endpoint (diagnostic only)...")
         matchstat_data, _ = fetch_matchstat()
 
