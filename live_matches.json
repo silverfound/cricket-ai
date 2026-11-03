@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-03T15:25:13.522931+00:00",
+    "last_updated": "2026-11-03T16:19:12.017378+00:00",
     "total_matches": 5,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -30,18 +30,18 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-03T16:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Dolphins",
             "away": "Western Province",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "Match delayed",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Western Province | Dolphins: 49.9% | Western Province: 50.1%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "53880437",
