@@ -1,24 +1,24 @@
 {
-    "last_updated": "2026-11-02 23:32:46",
+    "last_updated": "2026-11-03 00:50:03",
     "total_matches": 1,
     "data_source_api": "Highlightly",
     "matches": [
         {
             "league": "Women's Big Bash League",
             "format": "T20",
-            "start_time_iso": "2026-11-02T08:10:00.000Z",
-            "match_state": "finished",
-            "home": "Melbourne Stars Women",
-            "away": "Perth Scorchers Women",
-            "score_home": "109",
-            "overs_home": "20 ov",
-            "score_away": "124/9",
+            "start_time_iso": "2026-11-04T08:10:00.000Z",
+            "match_state": "upcoming",
+            "home": "Hobart Hurricanes Women",
+            "away": "Melbourne Renegades Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
             "overs_away": "",
-            "status": "Finished",
+            "status": "Scheduled",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": null
+            "pre_match_winner": "Melbourne Renegades Women (98.3%)"
         }
     ]
 }
