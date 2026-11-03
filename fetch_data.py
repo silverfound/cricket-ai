@@ -1276,8 +1276,59 @@ def diagnose_cricketdata_matches_pages(previous_data):
 
 
 
+def diagnose_highlightly_detail_toss(previous_data):
+    """Temporary one-run check for documented/undocumented toss metadata in match detail."""
+    if not KEY_HIGHLIGHTLY:
+        print("HIGHLIGHTLY TOSS DETAIL PROBE: key missing.")
+        return
+    fixtures = [
+        safe_dict(item) for item in safe_list(safe_dict(previous_data).get("matches"))
+        if safe_dict(item).get("api_source") == "Highlightly"
+        and safe_dict(item).get("source_match_id")
+    ]
+    if not fixtures:
+        print("HIGHLIGHTLY TOSS DETAIL PROBE: no prior fixture ID.")
+        return
+    match_id = safe_text(fixtures[0].get("source_match_id"))
+    headers = {
+        "x-rapidapi-key": KEY_HIGHLIGHTLY,
+        "x-rapidapi-host": "cricket-highlights-api.p.rapidapi.com",
+    }
+    try:
+        response = requests.get(
+            f"https://cricket-highlights-api.p.rapidapi.com/matches/{match_id}",
+            headers=headers, timeout=20,
+        )
+        print(f"HIGHLIGHTLY TOSS DETAIL PROBE HTTP {response.status_code}")
+        if response.status_code != 200:
+            print("HIGHLIGHTLY TOSS DETAIL PROBE error:", response.text[:200])
+            return
+        payload = safe_dict(response.json())
+        print("HIGHLIGHTLY TOSS DETAIL PROBE top keys:", list(payload.keys()))
+        toss_paths = []
+        def scan(value, path=""):
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    child_path = f"{path}.{key}" if path else key
+                    if "toss" in str(key).lower():
+                        toss_paths.append((child_path, child if not isinstance(child, (dict, list)) else str(type(child).__name__)))
+                    scan(child, child_path)
+            elif isinstance(value, list):
+                for index, child in enumerate(value[:20]):
+                    scan(child, f"{path}[{index}]")
+        scan(payload)
+        print("HIGHLIGHTLY TOSS DETAIL PROBE toss-related fields:", toss_paths[:30])
+        state = safe_dict(payload.get("state"))
+        print("HIGHLIGHTLY TOSS DETAIL PROBE state report:", {
+            "description": state.get("description"), "report": safe_text(state.get("report"))[:300],
+        })
+    except Exception as exc:
+        print(f"HIGHLIGHTLY TOSS DETAIL PROBE request failed: {exc}")
+
+
 def main():
     previous_data = _load_previous_live_data()
+    diagnose_highlightly_detail_toss(previous_data)
     diagnose_cricketdata_matches_pages(previous_data)
     previous_matches = {
         (safe_text(item.get("api_source")), safe_text(item.get("source_match_id"))): item
