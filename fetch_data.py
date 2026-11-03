@@ -866,59 +866,35 @@ def deduplicate_matches(matches):
 # =========================================================
 
 def diagnose_cricketdata_toss_once():
-    """Temporary one-run schema probe for CricketData toss fields; never logs scores."""
+    """Temporary one-run probe of CricketData scheduled-match list; no score fields logged."""
     if not KEY_CRICKETDATA:
         print("TOSS PROBE: CricketData key missing.")
         return
     try:
         response = requests.get(
-            f"https://api.cricapi.com/v1/currentMatches?apikey={KEY_CRICKETDATA}&offset=0",
+            f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset=0",
             timeout=20,
         )
-        print(f"TOSS PROBE currentMatches HTTP {response.status_code}")
+        print(f"TOSS PROBE matches endpoint HTTP {response.status_code}")
         if response.status_code != 200:
-            print("TOSS PROBE currentMatches error:", response.text[:250])
+            print("TOSS PROBE matches endpoint error:", response.text[:250])
             return
-        records = safe_list(safe_dict(response.json()).get("data"))
-        print("TOSS PROBE currentMatches count:", len(records))
-        toss_records = []
-        for record in records:
-            record = safe_dict(record)
-            if record.get("tossWinner") or record.get("tossChoice"):
-                toss_records.append(record)
-        print("TOSS PROBE list toss fields present:", len(toss_records))
+        payload = safe_dict(response.json())
+        records = safe_list(payload.get("data"))
+        print("TOSS PROBE matches count:", len(records), "top keys:", list(payload.keys()))
         if records:
             sample = safe_dict(records[0])
-            print("TOSS PROBE sample list keys:", [k for k in sample.keys() if k not in ("score", "scorecard")])
-            print("TOSS PROBE sample metadata:", {
+            print("TOSS PROBE matches sample keys:", [k for k in sample.keys() if k not in ("score", "scorecard")])
+            print("TOSS PROBE matches sample metadata:", {
                 "id": sample.get("id"), "name": sample.get("name"),
                 "teams": sample.get("teams"), "date": sample.get("date"),
                 "dateTimeGMT": sample.get("dateTimeGMT"), "matchType": sample.get("matchType"),
                 "status": sample.get("status"), "matchStarted": sample.get("matchStarted"),
-                "matchEnded": sample.get("matchEnded"), "tossWinner": sample.get("tossWinner"),
-                "tossChoice": sample.get("tossChoice"),
+                "matchEnded": sample.get("matchEnded"),
             })
-        candidates = [r for r in records if safe_dict(r).get("id")][:2]
-        for record in candidates:
-            record = safe_dict(record)
-            info_response = requests.get(
-                f"https://api.cricapi.com/v1/match_info?apikey={KEY_CRICKETDATA}&id={record.get('id')}",
-                timeout=20,
-            )
-            print(f"TOSS PROBE match_info HTTP {info_response.status_code}")
-            if info_response.status_code == 200:
-                match_info = safe_dict(safe_dict(info_response.json()).get("data"))
-                print("TOSS PROBE match_info keys:", [k for k in match_info.keys() if k not in ("score", "scorecard")])
-                print("TOSS PROBE match_info metadata:", {
-                    "id": match_info.get("id"), "name": match_info.get("name"),
-                    "teams": match_info.get("teams"), "date": match_info.get("date"),
-                    "dateTimeGMT": match_info.get("dateTimeGMT"), "matchType": match_info.get("matchType"),
-                    "status": match_info.get("status"), "matchStarted": match_info.get("matchStarted"),
-                    "matchEnded": match_info.get("matchEnded"), "tossWinner": match_info.get("tossWinner"),
-                    "tossChoice": match_info.get("tossChoice"),
-                })
-            else:
-                print("TOSS PROBE match_info error:", info_response.text[:250])
+            print("TOSS PROBE scheduled future rows:", sum(
+                1 for r in records if safe_dict(r).get("matchStarted") is not True and safe_dict(r).get("matchEnded") is not True
+            ))
     except Exception as exc:
         print(f"TOSS PROBE request failed: {exc}")
 
