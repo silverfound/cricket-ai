@@ -291,6 +291,9 @@ def get_pre_match_prediction(home_team, away_team, match_format, league_name, ge
         if "ODI" in str(match_format or "").upper():
             for team in (home_team, away_team):
                 league_fallbacks.append(f"{team} ODI Series")
+            # The trained encoder includes a neutral "Unknown League" bucket.
+            # Use it only when the real competition and team-series aliases are absent.
+            league_fallbacks.append("Unknown League")
         l_id = safe_encode_league(league_name, league_encoder, league_fallbacks)
         if t1 == -1 or t2 == -1 or l_id == -1:
             print(
