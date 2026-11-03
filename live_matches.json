@@ -20,5 +20,7 @@
             "projected_score": null,
             "pre_match_winner": null
         }
-    ]
+    ],
+    "prediction_engine": "venue_aware_candidate",
+    "venue_model_active": true
 }
