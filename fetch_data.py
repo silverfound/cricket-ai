@@ -1223,8 +1223,44 @@ def attach_post_toss_predictions(matches, previous_matches, catalog):
 
 
 
+def diagnose_cricketdata_matches_page2():
+    """Temporary one-run probe of the next matches API page; never logs scores."""
+    if not KEY_CRICKETDATA:
+        return
+    try:
+        response = requests.get(
+            f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset=25",
+            timeout=20,
+        )
+        print(f"POST-TOSS PAGE2 PROBE HTTP {response.status_code}")
+        if response.status_code != 200:
+            print("POST-TOSS PAGE2 PROBE error:", response.text[:250])
+            return
+        payload = safe_dict(response.json())
+        records = safe_list(payload.get("data"))
+        info = safe_dict(payload.get("info"))
+        print("POST-TOSS PAGE2 PROBE count:", len(records), "info:", {
+            "hitsToday": info.get("hitsToday"), "hitsLimit": info.get("hitsLimit"),
+            "hitsUsed": info.get("hitsUsed"),
+        })
+        print("POST-TOSS PAGE2 PROBE metadata:", [
+            {
+                "id": safe_dict(r).get("id"),
+                "teams": safe_dict(r).get("teams"),
+                "date": safe_dict(r).get("date"),
+                "dateTimeGMT": safe_dict(r).get("dateTimeGMT"),
+                "matchType": safe_dict(r).get("matchType"),
+                "matchStarted": safe_dict(r).get("matchStarted"),
+                "matchEnded": safe_dict(r).get("matchEnded"),
+            } for r in records
+        ])
+    except Exception as exc:
+        print(f"POST-TOSS PAGE2 PROBE request failed: {exc}")
+
+
 def main():
     previous_data = _load_previous_live_data()
+    diagnose_cricketdata_matches_page2()
     previous_matches = {
         (safe_text(item.get("api_source")), safe_text(item.get("source_match_id"))): item
         for item in safe_list(previous_data.get("matches"))
