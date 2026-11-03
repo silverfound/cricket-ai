@@ -248,8 +248,8 @@ INTERNATIONAL_TEAM_ALIASES = {
 
 def normalize_international_team_name(name):
     value = safe_text(name).casefold()
-    value = re.sub(r"\b(women|woman|men|male|female)\\b", "", value)
-    value = re.sub(r"\b(under\\s*19|u\\s*19|u19|a)\\b", "", value)
+    value = re.sub(r"\b(women|woman|men|male|female)\b", "", value)
+    value = re.sub(r"\b(under\s*19|u\s*19|u19|a)\b", "", value)
     value = re.sub(r"[^a-z]+", " ", value)
     return re.sub(r"\s+", " ", value).strip()
 
@@ -314,7 +314,7 @@ def is_womens_competition(league_name):
 
 def extract_tour_host(league_name, home_team, away_team):
     """Resolve the host from common tour labels without depending on fixture order."""
-    label = safe_text(league_name).casefold()
+    match = re.search(r"\b(?:in|tour of|visit to|hosted by)\s+(.+)$", label)
     match = re.search(r"\b(?:in|tour of|visit to|hosted by)\\s+(.+)$", label)
     if not match:
         return ""
