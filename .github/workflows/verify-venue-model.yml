@@ -1,0 +1,39 @@
+name: Verify Venue-Aware Model
+
+on:
+  push:
+    paths:
+      - '.github/workflows/verify-venue-model.yml'
+      - 'venue_model.py'
+      - 'models/venue_aware_candidate.joblib'
+      - 'data/venue_model_state.json'
+  workflow_dispatch:
+
+jobs:
+  verify-venue-model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install pandas scikit-learn xgboost joblib
+
+      - name: Load and test venue-aware candidate
+        run: |
+          from venue_model import load_venue_candidate, predict_venue_candidate
+          artifact, state = load_venue_candidate()
+          assert artifact is not None and state is not None, "Venue-aware model or state failed to load"
+          result = predict_venue_candidate(
+              artifact, state,
+              "India", "Australia", "ODI", "male", "International", "Lord's"
+          )
+          assert result is not None, "Venue-aware model loaded but synthetic prediction failed"
+          print("VENUE MODEL VERIFIED")
+          print("Synthetic prediction:", result)
+        shell: python
