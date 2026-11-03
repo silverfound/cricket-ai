@@ -646,42 +646,39 @@ def fetch_cricketdata():
         return None, None
 
 def fetch_matchstat():
-    """Probe Matchstat/SportsAPI365 fixture catalog; do not use live-only feed as fixtures."""
+    """Diagnostic probe of Matchstat fixture endpoints; not yet used as a data source."""
     if not KEY_MATCHSTAT:
         print("Matchstat RapidAPI key is missing.")
         return None, None
-    url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/events"
-    headers = {
-        "x-rapidapi-key": KEY_MATCHSTAT,
-        "x-rapidapi-host": "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"
-    }
-    try:
-        response = requests.get(url, headers=headers, timeout=20)
-        print(f"Matchstat events endpoint: HTTP {response.status_code}")
-        if response.status_code != 200:
-            print(f"Matchstat API error: {response.text[:500]}")
-            return None, None
-        payload = response.json()
-        if isinstance(payload, dict):
-            print("Matchstat events response keys:", list(payload.keys()))
-            items = payload.get("results", payload.get("data", payload.get("events", [])))
-            if isinstance(items, list):
-                print(f"Matchstat events returned {len(items)} records.")
-                if items:
-                    print("Matchstat sample event fields:", list(safe_dict(items[0]).keys()))
-                    print("Matchstat sample event:", str(items[0])[:1800])
-        elif isinstance(payload, list):
-            print(f"Matchstat events returned {len(payload)} records.")
-            if payload:
-                print("Matchstat sample event fields:", list(safe_dict(payload[0]).keys()))
-                print("Matchstat sample event:", str(payload[0])[:1800])
-        else:
-            print("Matchstat events returned unexpected JSON type:", type(payload).__name__)
-            return None, None
-        return payload, "Matchstat"
-    except Exception as exc:
-        print(f"Matchstat events request failed: {exc}")
-        return None, None
+    host = "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"
+    headers = {"x-rapidapi-key": KEY_MATCHSTAT, "x-rapidapi-host": host}
+    for path in ("/fixtures/today", "/v1/fixtures", "/v1/live"):
+        try:
+            response = requests.get(f"https://{host}{path}", headers=headers, timeout=20)
+            print(f"Matchstat {path} endpoint: HTTP {response.status_code}")
+            if response.status_code == 200:
+                payload = response.json()
+                print(f"Matchstat {path} response type: {type(payload).__name__}")
+                if isinstance(payload, dict):
+                    print("Matchstat response keys:", list(payload.keys()))
+                    records = payload.get("results", payload.get("data", payload.get("events", [])))
+                    if isinstance(records, list):
+                        print(f"Matchstat {path} returned {len(records)} records.")
+                        if records:
+                            sample = safe_dict(records[0])
+                            print("Matchstat sample fields:", list(sample.keys()))
+                            print("Matchstat sample record:", str(sample)[:1600])
+                elif isinstance(payload, list):
+                    print(f"Matchstat {path} returned {len(payload)} records.")
+                    if payload:
+                        print("Matchstat sample fields:", list(safe_dict(payload[0]).keys()))
+                        print("Matchstat sample record:", str(payload[0])[:1600])
+                return payload, "Matchstat"
+            else:
+                print(f"Matchstat {path} error: {response.text[:350]}")
+        except Exception as exc:
+            print(f"Matchstat {path} request failed: {exc}")
+    return None, None
 
 # =========================================================
 # DATA STANDARDIZATION
