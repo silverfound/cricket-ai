@@ -1,7 +1,6 @@
 name: Update Live Data
 
 on:
-  # Run the model verification automatically whenever its code or artifacts change.
   push:
     paths:
       - '.github/workflows/update.yml'
@@ -10,7 +9,7 @@ on:
       - 'models/venue_aware_candidate.joblib'
       - 'data/venue_model_state.json'
   schedule:
-    - cron: '0 * * * *' # Har 1 ghante mein chalega (API limit safe rakhne ke liye)
+    - cron: '*/15 * * * *' # Every 15 minutes
   workflow_dispatch:
 
 jobs:
@@ -23,15 +22,12 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-
     - name: Install dependencies
       run: python -m pip install --upgrade pip && python -m pip install requests pandas scikit-learn xgboost joblib
-
     - name: Verify venue-aware model artifact
       run: |
         python - <<'PY'
@@ -47,7 +43,6 @@ jobs:
         SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
       run: python fetch_data.py
-
     - name: Commit and Push changes
       run: |
         git config --global user.name 'GitHub Action'
