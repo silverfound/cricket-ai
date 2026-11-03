@@ -865,8 +865,64 @@ def deduplicate_matches(matches):
 # MAIN EXECUTION
 # =========================================================
 
+def diagnose_cricketdata_toss_once():
+    """Temporary one-run schema probe for toss metadata; logs no score fields."""
+    if not KEY_CRICKETDATA:
+        print("TOSS PROBE: CricketData key missing.")
+        return
+    try:
+        response = requests.get(
+            f"https://api.cricapi.com/v1/currentMatches?apikey={KEY_CRICKETDATA}&offset=0",
+            timeout=20,
+        )
+        print(f"TOSS PROBE currentMatches HTTP {response.status_code}")
+        if response.status_code != 200:
+            print("TOSS PROBE currentMatches error:", response.text[:250])
+            return
+        payload = response.json()
+        records = safe_list(safe_dict(payload).get("data"))
+        print("TOSS PROBE currentMatches count:", len(records))
+        candidates = []
+        for record in records:
+            record = safe_dict(record)
+            if record.get("matchStarted") is True and record.get("matchEnded") is not True:
+                candidates.append(record)
+        print("TOSS PROBE active records with id:", len([r for r in candidates if r.get("id")]))
+        for record in candidates[:2]:
+            print("TOSS PROBE list metadata:", {
+                "id": record.get("id"), "name": record.get("name"),
+                "teams": record.get("teams"), "date": record.get("date"),
+                "dateTimeGMT": record.get("dateTimeGMT"), "matchType": record.get("matchType"),
+                "status": record.get("status"), "matchStarted": record.get("matchStarted"),
+                "matchEnded": record.get("matchEnded"), "tossWinner": record.get("tossWinner"),
+                "tossChoice": record.get("tossChoice"),
+            })
+            info_response = requests.get(
+                f"https://api.cricapi.com/v1/match_info?apikey={KEY_CRICKETDATA}&id={record.get('id')}",
+                timeout=20,
+            )
+            print(f"TOSS PROBE match_info HTTP {info_response.status_code}")
+            if info_response.status_code == 200:
+                info_payload = safe_dict(info_response.json())
+                match_info = safe_dict(info_payload.get("data"))
+                print("TOSS PROBE match_info keys:", list(match_info.keys()))
+                print("TOSS PROBE toss values:", {
+                    "tossWinner": match_info.get("tossWinner"),
+                    "tossChoice": match_info.get("tossChoice"),
+                    "matchStarted": match_info.get("matchStarted"),
+                    "matchEnded": match_info.get("matchEnded"),
+                    "teams": match_info.get("teams"),
+                    "date": match_info.get("date"),
+                    "dateTimeGMT": match_info.get("dateTimeGMT"),
+                })
+            else:
+                print("TOSS PROBE match_info error:", info_response.text[:250])
+    except Exception as exc:
+        print(f"TOSS PROBE request failed: {exc}")
+
 def main():
     all_matches = []
+    diagnose_cricketdata_toss_once()
     successful_sources = []
 
     # Highlightly is primary. CricketData is queried only if Highlightly fails
