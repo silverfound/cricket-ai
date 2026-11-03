@@ -645,7 +645,8 @@ def fetch_sportscore():
             response = requests.get(
                 "https://sportscore.com/api/v1/fixtures/",
                 headers=headers,
-                params={"sport": "cricket", "date": match_date, "status": "upcoming", "limit": 200},
+                # Fetch the full day's fixture list; filter upcoming locally below.
+                params={"sport": "cricket", "date": match_date, "limit": 200},
                 timeout=20
             )
             if response.status_code != 200:
