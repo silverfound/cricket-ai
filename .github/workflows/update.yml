@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/update.yml'
       - 'venue_model.py'
+      - 'fetch_data.py'
       - 'models/venue_aware_candidate.joblib'
       - 'data/venue_model_state.json'
   schedule:
