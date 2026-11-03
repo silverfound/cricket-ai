@@ -43,9 +43,16 @@ def build_candidate_row(team1, team2, match_format, gender, league, venue, state
     vf = state["venue_format"].get(_key(venue, fmt), {})
     t1v = state["venue_team"].get(_key(venue, fmt, team1), {})
     t2v = state["venue_team"].get(_key(venue, fmt, team2), {})
-    h = h2h.get(_key(team1, team2), {})
+    h = h2h.get(_key(team1, team2))
+    reversed_h2h = False
+    if h is None:
+        h = h2h.get(_key(team2, team1), {})
+        reversed_h2h = True
     h2h_matches = int(h.get("matches", 0))
-    h2h_rate = (float(h.get("team1_wins", 0)) + 0.5) / (h2h_matches + 1)
+    h2h_wins = int(h.get("team1_wins", 0))
+    if reversed_h2h:
+        h2h_wins = h2h_matches - h2h_wins
+    h2h_rate = (h2h_wins + 0.5) / (h2h_matches + 1)
     t1_form = form.get(team1, [])
     t2_form = form.get(team2, [])
     avg = float(vf.get("first_innings_runs_sum", 0)) / int(vf.get("matches", 1)) if vf.get("matches") else 150.0
