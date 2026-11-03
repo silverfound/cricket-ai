@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-03T13:48:31.743299+00:00",
+    "last_updated": "2026-11-03T13:58:10.540907+00:00",
     "total_matches": 5,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -41,7 +41,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Western Province (50.1%)"
+            "pre_match_winner": "AI Pick: Western Province | Dolphins: 49.9% | Western Province: 50.1%"
         },
         {
             "source_match_id": "53880437",
@@ -60,7 +60,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "India (58.0%)"
+            "pre_match_winner": "AI Pick: India | New Zealand: 42.0% | India: 58.0%"
         },
         {
             "source_match_id": "54585022",
@@ -79,7 +79,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Oman (48.0%)"
+            "pre_match_winner": "AI Pick: United Arab Emirates | United Arab Emirates: 52.0% | Oman: 48.0%"
         },
         {
             "source_match_id": "54038462",
@@ -98,7 +98,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "Melbourne Renegades Women (52.9%)"
+            "pre_match_winner": "AI Pick: Melbourne Renegades Women | Hobart Hurricanes Women: 47.1% | Melbourne Renegades Women: 52.9%"
         }
     ]
 }
