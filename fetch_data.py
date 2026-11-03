@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from prediction_audit import log_pre_match_prediction
 from venue_model import load_venue_candidate, predict_venue_candidate
 
@@ -22,8 +23,9 @@ KEY_MATCHSTAT = os.environ.get("RAPIDAPI_KEY")
 KEY_HIGHLIGHTLY = os.environ.get("SECONDARY_API_KEY")
 KEY_CRICKETDATA = os.environ.get("CRICKETDATA_API_KEY")
 
-today = datetime.now().strftime("%Y-%m-%d")
-tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+saudi_now = datetime.now(ZoneInfo("Asia/Riyadh"))
+today = saudi_now.strftime("%Y-%m-%d")
+tomorrow = (saudi_now + timedelta(days=1)).strftime("%Y-%m-%d")
 
 # 🔥 STRICT ALLOWLIST (Reviewer's Safe Version)
 ALLOWED_KEYWORDS = [
@@ -653,43 +655,6 @@ def fetch_matchstat():
     except: pass
     return None, None
 
-def fetch_sportscore():
-    """Fetch upcoming cricket fixtures for today and tomorrow (2 requests/run)."""
-    api_key = os.environ.get("SPORTSCORE_API_KEY")
-    headers = {"X-Api-Key": api_key} if api_key else {}
-    all_matches = []
-    request_succeeded = False
-    for match_date in (today, tomorrow):
-        try:
-            response = requests.get(
-                "https://sportscore.com/api/v1/fixtures/",
-                headers=headers,
-                # Fetch the full day's fixture list; filter upcoming locally below.
-                params={"sport": "cricket", "date": match_date, "limit": 200},
-                timeout=20
-            )
-            if response.status_code != 200:
-                print(f"SportScore API error for {match_date}: HTTP {response.status_code} - {response.text[:300]}")
-                continue
-            payload = response.json()
-            request_succeeded = True
-            day_matches = safe_list(safe_dict(payload).get("matches"))
-            print(f"SportScore {match_date}: {len(day_matches)} upcoming fixtures")
-            for fixture in day_matches:
-                fixture = safe_dict(fixture)
-                print(
-                    "SportScore fixture:",
-                    safe_text(fixture.get("competition")),
-                    "|", safe_text(fixture.get("home")), "vs", safe_text(fixture.get("away")),
-                    "|", safe_text(fixture.get("time"))
-                )
-            all_matches.extend(day_matches)
-        except Exception as exc:
-            print(f"SportScore request failed for {match_date}: {exc}")
-    if not request_succeeded:
-        return None, None
-    return {"matches": all_matches}, "Sportscore"
-
 # =========================================================
 # DATA STANDARDIZATION
 # =========================================================
@@ -716,6 +681,17 @@ def standardize_data(data, source):
                 match_state = "live"
             elif status_lower in ("finished", "abandoned", "cancelled"):
                 match_state = "finished"
+            elif status_lower == "no live coverage":
+                # Coverage is not a match state. Keep future fixtures upcoming,
+                # but do not guess whether a past-starting match is live or finished.
+                try:
+                    match_start = pd.to_datetime(m.get("startTime"), utc=True, errors="coerce")
+                    match_state = "upcoming" if pd.notna(match_start) and match_start > pd.Timestamp.now(tz="UTC") else None
+                except Exception:
+                    match_state = None
+                if match_state is None:
+                    print("Skipping Highlightly match: no live coverage and start time cannot confirm upcoming state.")
+                    continue
             else:
                 print(f"Skipping Highlightly match with unrecognized state: {status_raw}")
                 continue
