@@ -899,10 +899,7 @@ def main():
                 successful_sources.append("CricketData")
             print(f"CricketData returned {len(backup_matches)} fixtures; {len(all_matches)} pass the existing AI filters.")
 
-    # One-time diagnostic probe of the saved Matchstat RapidAPI key.
-    if True:
-        print("Checking Matchstat third-provider fixture endpoint (diagnostic only)...")
-        matchstat_data, _ = fetch_matchstat()
+    # Matchstat is not enabled: all tested endpoints returned HTTP 404.
 
     # 3. DEDUPLICATION & SORTING
     final_matches = deduplicate_matches(all_matches)
