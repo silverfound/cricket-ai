@@ -60,3 +60,21 @@ def test_unknown_league_without_known_alias_stays_unavailable():
     league_encoder = LabelEncoder().fit(["New Zealand ODI Series"])
     assert fetch_data.safe_encode_league("Unseen Competition", league_encoder, []) == -1
 
+
+def test_odi_tour_prediction_can_use_trained_neutral_league_bucket():
+    league_encoder = LabelEncoder().fit(["Unknown League", "New Zealand ODI Series"])
+    encoded = fetch_data.safe_encode_league(
+        "India in New Zealand", league_encoder,
+        ["New Zealand ODI Series", "India ODI Series", "Unknown League"]
+    )
+    assert encoded == int(league_encoder.transform(["New Zealand ODI Series"])[0])
+
+
+def test_neutral_league_bucket_is_available_when_series_alias_is_not():
+    league_encoder = LabelEncoder().fit(["Unknown League", "Other ODI Series"])
+    encoded = fetch_data.safe_encode_league(
+        "India in New Zealand", league_encoder,
+        ["New Zealand ODI Series", "India ODI Series", "Unknown League"]
+    )
+    assert encoded == int(league_encoder.transform(["Unknown League"])[0])
+
