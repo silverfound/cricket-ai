@@ -1223,44 +1223,62 @@ def attach_post_toss_predictions(matches, previous_matches, catalog):
 
 
 
-def diagnose_cricketdata_matches_page2():
-    """Temporary one-run probe of the next matches API page; never logs scores."""
+def diagnose_cricketdata_matches_pages(previous_data):
+    """Temporary coverage probe across later CricketData match-list pages; no scores logged."""
     if not KEY_CRICKETDATA:
         return
-    try:
-        response = requests.get(
-            f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset=25",
-            timeout=20,
-        )
-        print(f"POST-TOSS PAGE2 PROBE HTTP {response.status_code}")
-        if response.status_code != 200:
-            print("POST-TOSS PAGE2 PROBE error:", response.text[:250])
-            return
-        payload = safe_dict(response.json())
-        records = safe_list(payload.get("data"))
-        info = safe_dict(payload.get("info"))
-        print("POST-TOSS PAGE2 PROBE count:", len(records), "info:", {
-            "hitsToday": info.get("hitsToday"), "hitsLimit": info.get("hitsLimit"),
-            "hitsUsed": info.get("hitsUsed"),
-        })
-        print("POST-TOSS PAGE2 PROBE metadata:", [
-            {
-                "id": safe_dict(r).get("id"),
-                "teams": safe_dict(r).get("teams"),
-                "date": safe_dict(r).get("date"),
-                "dateTimeGMT": safe_dict(r).get("dateTimeGMT"),
-                "matchType": safe_dict(r).get("matchType"),
-                "matchStarted": safe_dict(r).get("matchStarted"),
-                "matchEnded": safe_dict(r).get("matchEnded"),
-            } for r in records
-        ])
-    except Exception as exc:
-        print(f"POST-TOSS PAGE2 PROBE request failed: {exc}")
+    target_pairs = []
+    for fixture in safe_list(safe_dict(previous_data).get("matches")):
+        fixture = safe_dict(fixture)
+        a, b = normalize_history_team(fixture.get("home")), normalize_history_team(fixture.get("away"))
+        if a and b:
+            target_pairs.append((a, b, safe_text(fixture.get("home")), safe_text(fixture.get("away"))))
+    for offset in (50, 75, 100):
+        try:
+            response = requests.get(
+                f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset={offset}",
+                timeout=20,
+            )
+            print(f"POST-TOSS COVERAGE PROBE offset={offset} HTTP {response.status_code}")
+            if response.status_code != 200:
+                print("POST-TOSS COVERAGE PROBE error:", response.text[:180])
+                continue
+            payload = safe_dict(response.json())
+            records = safe_list(payload.get("data"))
+            hits = []
+            for raw in records:
+                raw = safe_dict(raw)
+                teams = safe_list(raw.get("teams"))
+                if len(teams) < 2:
+                    continue
+                c1, c2 = normalize_history_team(teams[0]), normalize_history_team(teams[1])
+                for a, b, home, away in target_pairs:
+                    if (c1 == a and c2 == b) or (c1 == b and c2 == a):
+                        hits.append({
+                            "fixture": [home, away], "provider_teams": teams,
+                            "id": raw.get("id"), "date": raw.get("date"),
+                            "dateTimeGMT": raw.get("dateTimeGMT"),
+                            "matchType": raw.get("matchType"),
+                            "matchStarted": raw.get("matchStarted"),
+                            "matchEnded": raw.get("matchEnded"),
+                        })
+            print(f"POST-TOSS COVERAGE PROBE offset={offset} rows={len(records)} target_pair_hits={len(hits)}")
+            if hits:
+                print("POST-TOSS COVERAGE PROBE matching metadata:", hits)
+            elif records:
+                sample = safe_dict(records[0])
+                print("POST-TOSS COVERAGE PROBE sample metadata:", {
+                    "teams": sample.get("teams"), "date": sample.get("date"),
+                    "dateTimeGMT": sample.get("dateTimeGMT"), "matchType": sample.get("matchType"),
+                })
+        except Exception as exc:
+            print(f"POST-TOSS COVERAGE PROBE offset={offset} request failed: {exc}")
+
 
 
 def main():
     previous_data = _load_previous_live_data()
-    diagnose_cricketdata_matches_page2()
+    diagnose_cricketdata_matches_pages(previous_data)
     previous_matches = {
         (safe_text(item.get("api_source")), safe_text(item.get("source_match_id"))): item
         for item in safe_list(previous_data.get("matches"))
