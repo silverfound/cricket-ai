@@ -77,4 +77,45 @@ def test_neutral_league_bucket_is_available_when_series_alias_is_not():
         ["New Zealand ODI Series", "India ODI Series", "Unknown League"]
     )
     assert encoded == int(league_encoder.transform(["Unknown League"])[0])
+def test_international_odi_tour_is_supported_independent_of_series_name_and_team_order():
+    assert fetch_data.is_ai_supported({
+        "format": "ODI", "league": "New Zealand tour of India",
+        "home": "India", "away": "New Zealand"
+    })
+    assert fetch_data.is_ai_supported({
+        "format": "ODI", "league": "India in New Zealand",
+        "home": "New Zealand", "away": "India"
+    })
+
+
+def test_international_t20_tour_is_supported_without_icc_tournament_name():
+    assert fetch_data.is_ai_supported({
+        "format": "T20I", "league": "India tour of New Zealand",
+        "home": "New Zealand", "away": "India"
+    })
+    assert fetch_data.is_ai_supported({
+        "format": "T20", "league": "Bilateral Series",
+        "home": "India", "away": "New Zealand"
+    })
+
+
+def test_unknown_domestic_t20_competition_remains_filtered():
+    assert not fetch_data.is_ai_supported({
+        "format": "T20", "league": "Unlisted Local League",
+        "home": "City XI", "away": "County XI"
+    })
+
+
+def test_tour_host_detection_does_not_depend_on_home_away_order():
+    assert fetch_data.extract_tour_host("India in New Zealand", "New Zealand", "India") == "New Zealand"
+    assert fetch_data.extract_tour_host("India tour of New Zealand", "India", "New Zealand") == "New Zealand"
+
+
+def test_t20_international_prediction_can_use_neutral_league_bucket():
+    league_encoder = LabelEncoder().fit(["Unknown League", "New Zealand ODI Series"])
+    encoded = fetch_data.safe_encode_league(
+        "India tour of New Zealand", league_encoder,
+        ["New Zealand T20 Series", "Unknown League"]
+    )
+    assert encoded == int(league_encoder.transform(["Unknown League"])[0])
 
