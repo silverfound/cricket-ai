@@ -1,6 +1,7 @@
 name: Update Live Data
 
 on:
+  # Run the model verification automatically whenever its code or artifacts change.
   push:
     paths:
       - '.github/workflows/update.yml'
