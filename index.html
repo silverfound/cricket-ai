@@ -101,10 +101,18 @@
                 if (!response.ok) throw new Error("File not found");
                 const data = await response.json();
                 
-                // UTC Time ko aapke phone ke local time mein convert karna
-const utcDate = new Date(data.last_updated.replace(" ", "T") + "Z");
-const localTime = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-document.getElementById('last-updated').innerText = "Last Updated: " + localTime;
+                // Parse ISO timestamps with their existing timezone; only append UTC
+                // for legacy timestamps that do not contain an offset.
+                const rawUpdated = String(data.last_updated || "").trim();
+                const hasTimezone = /(?:Z|[+-]\\d{2}:?\\d{2})$/i.test(rawUpdated);
+                const normalizedUpdated = rawUpdated.includes("T") ? rawUpdated : rawUpdated.replace(" ", "T");
+                const updatedDate = new Date(normalizedUpdated + (hasTimezone ? "" : "Z"));
+                const updatedLabel = Number.isNaN(updatedDate.getTime())
+                    ? "Last Updated: unavailable"
+                    : "Last Updated: " + updatedDate.toLocaleString([], {
+                        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
+                    });
+                document.getElementById('last-updated').innerText = updatedLabel;
                 document.getElementById('api-source').innerText = (data.venue_model_active ? "✅ Venue-Aware AI ACTIVE" : "⚠️ Baseline AI") + " | ⚡ Powered by: " + (data.data_source_api || "Unknown API");
                 allMatches = data.matches; 
                 
