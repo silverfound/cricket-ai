@@ -133,6 +133,23 @@ def get_historical_h2h(team1, team2, gender):
                         return 0.5
     return 0.5
 
+def extract_venue(match_data):
+    """Return provider-supplied stadium/ground name without guessing."""
+    match_data = safe_dict(match_data)
+    for key in ("venue", "ground", "stadium"):
+        value = match_data.get(key)
+        if isinstance(value, dict):
+            name = safe_text(value.get("name") or value.get("title") or value.get("groundName"))
+            if name:
+                return name
+        elif isinstance(value, str) and value.strip():
+            return value.strip()
+    for key in ("venueName", "groundName", "stadiumName"):
+        value = safe_text(match_data.get(key))
+        if value:
+            return value
+    return ""
+
 def infer_match_gender(match_data, league_name, home_team, away_team):
     match_data = safe_dict(match_data)
     for key in ("gender", "sex"):
@@ -524,6 +541,7 @@ def standardize_data(data, source):
             prediction_supported_format = any(x in fmt.upper() for x in ["T20", "ODI"])
 
             match_gender = infer_match_gender(m, league, home_team, away_team)
+            venue_name = extract_venue(m)
             if match_state == "upcoming" and prediction_supported_format:
                 pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
                 log_pre_match_prediction({
@@ -531,6 +549,7 @@ def standardize_data(data, source):
                     "source_match_id": safe_text(m.get("id") or m.get("matchId")),
                     "league": league,
                     "format": fmt,
+                    "venue": venue_name,
                     "start_time_iso": safe_text(m.get("startTime")),
                     "team1": home_team,
                     "team2": away_team,
@@ -542,7 +561,7 @@ def standardize_data(data, source):
 
             matches.append({
                 "source_match_id": safe_text(m.get("id") or m.get("matchId")),
-                "league": league, "format": fmt, "start_time_iso": safe_text(m.get("startTime")), "match_state": match_state,
+                "league": league, "format": fmt, "venue": venue_name, "start_time_iso": safe_text(m.get("startTime")), "match_state": match_state,
                 "home": home_team, "away": away_team, "score_home": safe_text(home_info.get("score"), "-"),
                 "overs_home": extract_overs(home_info.get("info", "")), "score_away": safe_text(away_info.get("score"), "-"),
                 "overs_away": extract_overs(away_info.get("info", "")), "status": status_raw, "api_source": source,

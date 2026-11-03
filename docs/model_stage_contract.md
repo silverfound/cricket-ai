@@ -16,6 +16,10 @@ Current production input schema:
 
 Current runtime receives `match_format` but does not use it in the six-column model input. Toss winner/decision must not be included in a prediction made before the toss.
 
+Venue is an eligible pre-toss feature because the scheduled ground is normally known before the toss. The current production artifact does not yet use venue: it has no venue columns and must not be given extra columns at inference. The fixture adapter now captures an explicitly provider-supplied venue name in match output and the prediction audit record. Retraining requires historical match-level rows with venue, match date, teams, result, format and gender. Derive venue rolling averages and venue-team performance strictly from matches completed before each fixture timestamp, with minimum-sample smoothing and chronological validation. Do not infer missing venues or use future matches.
+
+Recommended next-artifact venue features: stable venue ID; prior format-aware average first-innings runs; smoothed prior venue win rates for each team; and pace/spin or boundary indicators only where reliable historical sources exist. Ground identity and historical ground behaviour are distinct from today’s pitch condition, which belongs only in a separate post-toss model.
+
 Persist this prediction as its own immutable record, including match identifier, prediction timestamp, model version, both team probabilities, and stage=`pre_toss`.
 
 ## Stage 2 — Post-toss, pre-match winner prediction
@@ -23,6 +27,10 @@ Persist this prediction as its own immutable record, including match identifier,
 This is a separate prediction made after the toss but before the first ball. It uses the same eligible pre-match information plus:
 - `toss_winner`
 - `toss_decision` (bat/field)
+- today’s observed pitch condition (batting-friendly, pace assistance, spin assistance, two-paced), only from a reliable match-day source or verified input
+- optionally weather/dew observations available at prediction time.
+
+Do not substitute a generic venue profile for today’s pitch report. Store pitch source and observation time; if unknown, keep it unknown rather than guessing.
 
 Train and validate a dedicated post-toss artifact with this exact stage-appropriate schema. Do not silently add toss columns to the existing pre-toss artifact or reuse it with an incompatible input schema.
 
@@ -113,3 +121,19 @@ Toss fields did not improve this overall test result in this feature setup. This
 3. Report AUC/log loss/Brier and calibration for win probabilities; MAE/RMSE and error by format for score projections.
 4. Report sample sizes separately by format and gender. A one-match subgroup is not evaluable.
 5. Keep current production artifacts unchanged until a replacement is trained with an exactly matching inference schema and passes integration tests.
+
+
+## Venue feature engineering implementation
+
+The utility in `venue_features.py` builds leakage-safe venue history columns from a completed-match table. Required columns are `match_date`, `venue`, `format`, `team1`, `team2`, `winner`, and `first_innings_runs`. It emits:
+- `venue_id`
+- `venue_format_prior_matches`
+- `venue_format_prior_avg_first_innings_runs`
+- `team1_venue_prior_win_rate`
+- `team2_venue_prior_win_rate`
+
+Venue averages are format-specific. Team rates are smoothed toward 0.5. Matches on the same calendar date are featurized against the state before that date, preventing same-day result leakage when exact completion timestamps are unavailable. Unseen venue averages use a fixed neutral prior (150 runs) unless a training-only prior is explicitly supplied. Do not calculate that prior from the full backtest dataset.
+
+**Current data blocker:** this repository currently contains the aggregate team-form/H2H JSON but no match-level historical CSV with venue, date, winner and innings totals. Therefore no honest venue-aware model can be trained or evaluated from the repository data yet. Obtain a licensed/provider historical match dataset, normalize venue aliases, then run chronological training/evaluation. Keep the current production artifact active until the new artifact passes those checks.
+
+Post-toss pitch modelling also needs timestamped match-day pitch observations joined to match outcomes. The current fixture feed extraction only records venue identity; it does not claim to know the pitch condition.
