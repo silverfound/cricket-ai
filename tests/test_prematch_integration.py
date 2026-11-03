@@ -194,3 +194,11 @@ def test_prediction_audit_skips_missing_id_or_prediction(tmp_path):
     assert log_pre_match_prediction({"source": "Highlightly", "prediction": "Team A"}, str(path)) is False
     assert log_pre_match_prediction({"source": "Highlightly", "source_match_id": "x"}, str(path)) is False
     assert not path.exists()
+
+
+
+def test_extract_venue_supports_provider_shapes_without_guessing():
+    assert app.extract_venue({"venue": {"name": "Gaddafi Stadium"}}) == "Gaddafi Stadium"
+    assert app.extract_venue({"ground": {"title": "Lahore Ground"}}) == "Lahore Ground"
+    assert app.extract_venue({"venueName": "National Stadium"}) == "National Stadium"
+    assert app.extract_venue({"venue": None}) == ""
