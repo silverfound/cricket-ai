@@ -44,7 +44,6 @@ jobs:
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         SECONDARY_API_KEY: ${{ secrets.SECONDARY_API_KEY }}
-        SPORTSCORE_API_KEY: ${{ secrets.SPORTSCORE_API_KEY }}
         CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
       run: python fetch_data.py
     - name: Commit and Push changes
