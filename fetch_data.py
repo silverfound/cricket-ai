@@ -646,14 +646,42 @@ def fetch_cricketdata():
         return None, None
 
 def fetch_matchstat():
-    if not KEY_MATCHSTAT: return None, None
-    url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/v1/live"
-    headers = {"x-rapidapi-key": KEY_MATCHSTAT, "x-rapidapi-host": "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"}
+    """Probe Matchstat/SportsAPI365 fixture catalog; do not use live-only feed as fixtures."""
+    if not KEY_MATCHSTAT:
+        print("Matchstat RapidAPI key is missing.")
+        return None, None
+    url = "https://cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com/events"
+    headers = {
+        "x-rapidapi-key": KEY_MATCHSTAT,
+        "x-rapidapi-host": "cricket-api-data-live-scores-stats-odds-predictions.p.rapidapi.com"
+    }
     try:
-        response = requests.get(url, headers=headers, timeout=15)
-        if response.status_code == 200: return response.json(), "Matchstat"
-    except: pass
-    return None, None
+        response = requests.get(url, headers=headers, timeout=20)
+        print(f"Matchstat events endpoint: HTTP {response.status_code}")
+        if response.status_code != 200:
+            print(f"Matchstat API error: {response.text[:500]}")
+            return None, None
+        payload = response.json()
+        if isinstance(payload, dict):
+            print("Matchstat events response keys:", list(payload.keys()))
+            items = payload.get("results", payload.get("data", payload.get("events", [])))
+            if isinstance(items, list):
+                print(f"Matchstat events returned {len(items)} records.")
+                if items:
+                    print("Matchstat sample event fields:", list(safe_dict(items[0]).keys()))
+                    print("Matchstat sample event:", str(items[0])[:1800])
+        elif isinstance(payload, list):
+            print(f"Matchstat events returned {len(payload)} records.")
+            if payload:
+                print("Matchstat sample event fields:", list(safe_dict(payload[0]).keys()))
+                print("Matchstat sample event:", str(payload[0])[:1800])
+        else:
+            print("Matchstat events returned unexpected JSON type:", type(payload).__name__)
+            return None, None
+        return payload, "Matchstat"
+    except Exception as exc:
+        print(f"Matchstat events request failed: {exc}")
+        return None, None
 
 # =========================================================
 # DATA STANDARDIZATION
