@@ -865,43 +865,372 @@ def deduplicate_matches(matches):
 # MAIN EXECUTION
 # =========================================================
 
-def diagnose_cricketdata_toss_once():
-    """Temporary one-run probe of CricketData scheduled-match list; no score fields logged."""
+# =========================================================
+# POST-TOSS WINNER MODEL (historical CSV candidate; add-on only)
+# =========================================================
+POST_TOSS_MODEL_VERSION = "post_toss_logistic_v1"
+POST_TOSS_FEATURES = [
+    "team1_form5", "team2_form5", "h2h_team1_rate", "venue_avg_runs_scaled",
+    "team1_venue_win_rate", "team2_venue_win_rate", "format_odi",
+    "gender_female", "toss_winner_chose_bat",
+]
+POST_TOSS_COEFFICIENTS = [
+    0.14624345042581485, -0.16904249839601956, 0.32473588179866275,
+    -0.0028372658657461686, 0.10665302405707319, -0.09561394733961363,
+    -0.004205366025075851, -0.008174503748603797, -0.002897025848781098,
+]
+POST_TOSS_MEANS = [
+    0.49960729015041244, 0.5040711426491994, 0.5020288754793623,
+    0.554053303897825, 0.5067853428502281, 0.5055147880790857,
+    0.21115356622998543, 0.19687045123726346, 0.43777292576419213,
+]
+POST_TOSS_SCALES = [
+    0.26832563786958574, 0.26891522745323115, 0.19678725431026745,
+    0.1436854617437341, 0.09414967160053585, 0.09486280730375933,
+    0.408127109732182, 0.39763359599875325, 0.4961126799750751,
+]
+POST_TOSS_INTERCEPT = -0.09053912390618732
+
+
+def post_toss_model_probability(features):
+    """Return calibrated logistic probability for team1 (the side batting first)."""
+    if not isinstance(features, (list, tuple)) or len(features) != len(POST_TOSS_FEATURES):
+        return None
+    try:
+        z = POST_TOSS_INTERCEPT
+        for value, coefficient, mean, scale in zip(
+            features, POST_TOSS_COEFFICIENTS, POST_TOSS_MEANS, POST_TOSS_SCALES
+        ):
+            number = float(value)
+            if not math.isfinite(number) or not math.isfinite(scale) or scale <= 0:
+                return None
+            z += coefficient * ((number - mean) / scale)
+        z = max(-30.0, min(30.0, z))
+        return 1.0 / (1.0 + math.exp(-z))
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def _lookup_normalized_state(mapping, wanted_key):
+    mapping = safe_dict(mapping)
+    wanted = normalize_history_team(wanted_key)
+    for key, value in mapping.items():
+        if normalize_history_team(key) == wanted:
+            return safe_dict(value)
+    return {}
+
+
+def _get_smoothed_h2h_rate(team1, team2, gender):
+    gender_key = "female" if str(gender).lower() == "female" else "male"
+    h2h_map = safe_dict(safe_dict(historical_features.get("h2h")).get(gender_key))
+    wanted1, wanted2 = normalize_history_team(team1), normalize_history_team(team2)
+    for name1, opponents in h2h_map.items():
+        if normalize_history_team(name1) != wanted1:
+            continue
+        for name2, record in safe_dict(opponents).items():
+            if normalize_history_team(name2) == wanted2:
+                record = safe_dict(record)
+                try:
+                    wins = float(record.get("wins", 0))
+                    matches = float(record.get("matches", 0))
+                    return (wins + 0.5) / (matches + 1.0)
+                except (TypeError, ValueError, ZeroDivisionError):
+                    return 0.5
+    return 0.5
+
+
+def get_post_toss_prediction(first_batting_team, chasing_team, match_format,
+                             league_name, gender="male", venue=None, toss_choice="bat"):
+    """Infer winner probability after toss. Team1 is ordered as the first batting side."""
+    try:
+        first_batting_team = safe_text(first_batting_team)
+        chasing_team = safe_text(chasing_team)
+        fmt = safe_text(match_format).upper()
+        gender_key = "female" if str(gender).lower() == "female" else "male"
+        venue_name = safe_text(venue)
+        if not first_batting_team or not chasing_team or not is_supported_prediction_format(fmt):
+            return None
+
+        state = safe_dict(venue_candidate_state)
+        venue_format = _lookup_normalized_state(
+            safe_dict(state.get("venue_format")), f"{venue_name}||{fmt}"
+        )
+        venue_matches = int(venue_format.get("matches", 0) or 0)
+        venue_runs_sum = float(venue_format.get("first_innings_runs_sum", 0) or 0)
+        venue_average = venue_runs_sum / venue_matches if venue_matches else 150.0
+
+        first_venue = _lookup_normalized_state(
+            safe_dict(state.get("venue_team")), f"{venue_name}||{fmt}||{first_batting_team}"
+        )
+        chase_venue = _lookup_normalized_state(
+            safe_dict(state.get("venue_team")), f"{venue_name}||{fmt}||{chasing_team}"
+        )
+        first_venue_matches = int(first_venue.get("matches", 0) or 0)
+        chase_venue_matches = int(chase_venue.get("matches", 0) or 0)
+        first_venue_wins = float(first_venue.get("wins", 0) or 0)
+        chase_venue_wins = float(chase_venue.get("wins", 0) or 0)
+        first_venue_rate = (first_venue_wins + 2.5) / (first_venue_matches + 5.0)
+        chase_venue_rate = (chase_venue_wins + 2.5) / (chase_venue_matches + 5.0)
+
+        choice = safe_text(toss_choice).lower()
+        toss_winner_chose_bat = 1.0 if choice == "bat" else 0.0
+        features = [
+            get_historical_form(first_batting_team, gender_key),
+            get_historical_form(chasing_team, gender_key),
+            _get_smoothed_h2h_rate(first_batting_team, chasing_team, gender_key),
+            venue_average / 300.0,
+            first_venue_rate,
+            chase_venue_rate,
+            1.0 if "ODI" in fmt or "ONE DAY" in fmt or "50 OVERS" in fmt else 0.0,
+            1.0 if gender_key == "female" else 0.0,
+            toss_winner_chose_bat,
+        ]
+        p_first = post_toss_model_probability(features)
+        if p_first is None:
+            return None
+        p_chase = 1.0 - p_first
+        winner = first_batting_team if p_first >= p_chase else chasing_team
+        return (
+            f"AI Pick: {winner} | "
+            f"{first_batting_team}: {round(p_first * 100, 1)}% | "
+            f"{chasing_team}: {round(p_chase * 100, 1)}%"
+        )
+    except Exception as exc:
+        print(f"Post-toss prediction error: {exc}")
+        return None
+
+
+def _load_previous_live_data():
+    try:
+        with open("live_matches.json", "r", encoding="utf-8") as stream:
+            return safe_dict(json.load(stream))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+
+
+def _parse_utc(value):
+    parsed = pd.to_datetime(value, utc=True, errors="coerce")
+    return parsed if pd.notna(parsed) else None
+
+
+def _sanitize_cricketdata_catalog(records):
+    """Cache only fixture/toss metadata; deliberately omit score and status strings."""
+    sanitized = []
+    for raw in safe_list(records):
+        record = safe_dict(raw)
+        if record.get("matchEnded") is True:
+            continue
+        teams = safe_list(record.get("teams"))
+        match_id = safe_text(record.get("id"))
+        if not match_id or len(teams) < 2:
+            continue
+        sanitized.append({
+            "id": match_id,
+            "teams": [safe_text(teams[0]), safe_text(teams[1])],
+            "date": safe_text(record.get("date")),
+            "dateTimeGMT": safe_text(record.get("dateTimeGMT")),
+            "matchType": safe_text(record.get("matchType")),
+            "matchStarted": record.get("matchStarted") is True,
+            "matchEnded": record.get("matchEnded") is True,
+            "tossWinner": safe_text(record.get("tossWinner")),
+            "tossChoice": safe_text(record.get("tossChoice")),
+        })
+    return sanitized
+
+
+def _get_cricketdata_match_catalog(previous_data):
+    """Poll the scheduled matches list at most every 30 minutes; retain a scoreless cache."""
+    previous_data = safe_dict(previous_data)
+    cached_catalog = safe_list(previous_data.get("cricketdata_toss_catalog"))
+    cached_at = safe_text(previous_data.get("cricketdata_toss_catalog_checked_at"))
+    cached_time = _parse_utc(cached_at)
+    now = datetime.now(timezone.utc)
+    if cached_catalog and cached_time and (now - cached_time.to_pydatetime()) < timedelta(minutes=30):
+        return cached_catalog, cached_at
+
     if not KEY_CRICKETDATA:
-        print("TOSS PROBE: CricketData key missing.")
-        return
+        return cached_catalog, cached_at
     try:
         response = requests.get(
             f"https://api.cricapi.com/v1/matches?apikey={KEY_CRICKETDATA}&offset=0",
             timeout=20,
         )
-        print(f"TOSS PROBE matches endpoint HTTP {response.status_code}")
         if response.status_code != 200:
-            print("TOSS PROBE matches endpoint error:", response.text[:250])
-            return
+            print(f"CricketData toss catalog HTTP {response.status_code}: {response.text[:200]}")
+            return cached_catalog, cached_at
         payload = safe_dict(response.json())
-        records = safe_list(payload.get("data"))
-        print("TOSS PROBE matches count:", len(records), "top keys:", list(payload.keys()))
-        if records:
-            sample = safe_dict(records[0])
-            print("TOSS PROBE matches sample keys:", [k for k in sample.keys() if k not in ("score", "scorecard")])
-            print("TOSS PROBE matches sample metadata:", {
-                "id": sample.get("id"), "name": sample.get("name"),
-                "teams": sample.get("teams"), "date": sample.get("date"),
-                "dateTimeGMT": sample.get("dateTimeGMT"), "matchType": sample.get("matchType"),
-                "status": sample.get("status"), "matchStarted": sample.get("matchStarted"),
-                "matchEnded": sample.get("matchEnded"),
-            })
-            print("TOSS PROBE scheduled future rows:", sum(
-                1 for r in records if safe_dict(r).get("matchStarted") is not True and safe_dict(r).get("matchEnded") is not True
-            ))
+        if payload.get("status") not in ("success", None):
+            print("CricketData toss catalog returned unsuccessful status.")
+            return cached_catalog, cached_at
+        catalog = _sanitize_cricketdata_catalog(payload.get("data"))
+        checked_at = now.isoformat()
+        print(f"CricketData toss catalog refreshed: {len(catalog)} non-ended fixtures.")
+        return catalog, checked_at
     except Exception as exc:
-        print(f"TOSS PROBE request failed: {exc}")
+        print(f"CricketData toss catalog request failed: {exc}")
+        return cached_catalog, cached_at
+
+
+def _catalog_match_for_fixture(match, catalog):
+    """Find the exact CricketData fixture by team pair and nearest start time."""
+    team1 = normalize_history_team(match.get("home"))
+    team2 = normalize_history_team(match.get("away"))
+    fixture_time = _parse_utc(match.get("start_time_iso"))
+    if not team1 or not team2:
+        return None
+    candidates = []
+    for record in safe_list(catalog):
+        teams = safe_list(safe_dict(record).get("teams"))
+        if len(teams) < 2:
+            continue
+        c1, c2 = normalize_history_team(teams[0]), normalize_history_team(teams[1])
+        if not ((c1 == team1 and c2 == team2) or (c1 == team2 and c2 == team1)):
+            continue
+        provider_time = _parse_utc(safe_dict(record).get("dateTimeGMT"))
+        if fixture_time and provider_time:
+            difference = abs((fixture_time - provider_time).total_seconds()) / 3600.0
+            if difference > 8.0:
+                continue
+            candidates.append((difference, record))
+        else:
+            fixture_date = safe_text(match.get("start_time_iso"))[:10]
+            provider_date = safe_text(safe_dict(record).get("dateTimeGMT") or safe_dict(record).get("date"))[:10]
+            if fixture_date and provider_date and fixture_date == provider_date:
+                candidates.append((0.0, record))
+    return min(candidates, key=lambda item: item[0])[1] if candidates else None
+
+
+def _fetch_cricketdata_match_info(match_id):
+    if not KEY_CRICKETDATA or not match_id:
+        return None
+    try:
+        response = requests.get(
+            f"https://api.cricapi.com/v1/match_info?apikey={KEY_CRICKETDATA}&id={match_id}",
+            timeout=20,
+        )
+        if response.status_code != 200:
+            print(f"CricketData match_info HTTP {response.status_code} for fixture.")
+            return None
+        payload = safe_dict(response.json())
+        if payload.get("status") not in ("success", None):
+            return None
+        return safe_dict(payload.get("data"))
+    except Exception as exc:
+        print(f"CricketData match_info request failed: {exc}")
+        return None
+
+
+def attach_post_toss_predictions(matches, previous_matches, catalog):
+    """Attach post-toss probabilities only when exact fixture/toss metadata is verified."""
+    now = datetime.now(timezone.utc)
+    attached = 0
+    queried = 0
+    for match in matches:
+        match = safe_dict(match)
+        source_id = safe_text(match.get("source_match_id"))
+        source = safe_text(match.get("api_source"))
+        previous = safe_dict(previous_matches.get((source, source_id)))
+        for cache_key in (
+            "toss_winner", "toss_choice", "toss_source", "toss_provider_match_id",
+            "toss_checked_at", "post_toss_prediction", "post_toss_model_version",
+        ):
+            if previous.get(cache_key):
+                match[cache_key] = previous[cache_key]
+
+        if match.get("post_toss_prediction"):
+            attached += 1
+            continue
+        if match.get("match_state") != "upcoming":
+            continue
+
+        provider_match = _catalog_match_for_fixture(match, catalog)
+        if not provider_match:
+            continue
+        provider_match = safe_dict(provider_match)
+        toss_winner = safe_text(provider_match.get("tossWinner"))
+        toss_choice = safe_text(provider_match.get("tossChoice")).lower()
+        provider_id = safe_text(provider_match.get("id"))
+
+        fixture_time = _parse_utc(match.get("start_time_iso"))
+        if fixture_time:
+            delta_minutes = (fixture_time.to_pydatetime() - now).total_seconds() / 60.0
+            if delta_minutes > 120 or delta_minutes < -120:
+                continue
+
+        last_checked = _parse_utc(previous.get("toss_checked_at"))
+        if not (toss_winner and toss_choice in ("bat", "bowl", "field")):
+            if last_checked and (now - last_checked.to_pydatetime()) < timedelta(minutes=30):
+                continue
+            details = _fetch_cricketdata_match_info(provider_id)
+            queried += 1
+            match["toss_checked_at"] = now.isoformat()
+            if not details:
+                continue
+            detail_teams = safe_list(details.get("teams"))
+            if len(detail_teams) >= 2:
+                fixture_teams = {
+                    normalize_history_team(match.get("home")),
+                    normalize_history_team(match.get("away")),
+                }
+                detail_team_pair = {
+                    normalize_history_team(detail_teams[0]),
+                    normalize_history_team(detail_teams[1]),
+                }
+                if detail_team_pair != fixture_teams:
+                    print("CricketData match_info team pair did not match Highlightly fixture; toss ignored.")
+                    continue
+            toss_winner = safe_text(details.get("tossWinner"))
+            toss_choice = safe_text(details.get("tossChoice")).lower()
+            if not (toss_winner and toss_choice in ("bat", "bowl", "field")):
+                continue
+
+        home = safe_text(match.get("home"))
+        away = safe_text(match.get("away"))
+        toss_winner_norm = normalize_history_team(toss_winner)
+        if toss_winner_norm == normalize_history_team(home):
+            toss_winner_team = home
+            toss_loser_team = away
+        elif toss_winner_norm == normalize_history_team(away):
+            toss_winner_team = away
+            toss_loser_team = home
+        else:
+            print("CricketData toss winner is not one of fixture teams; toss ignored.")
+            continue
+
+        if toss_choice == "bat":
+            first_batting_team, chasing_team = toss_winner_team, toss_loser_team
+        else:
+            first_batting_team, chasing_team = toss_loser_team, toss_winner_team
+
+        prediction = get_post_toss_prediction(
+            first_batting_team, chasing_team, match.get("format"), match.get("league"),
+            match.get("gender", "male"), match.get("venue"), toss_choice,
+        )
+        if not prediction:
+            continue
+        match["toss_winner"] = toss_winner
+        match["toss_choice"] = toss_choice
+        match["toss_source"] = "CricketData"
+        match["toss_provider_match_id"] = provider_id
+        match["toss_checked_at"] = now.isoformat()
+        match["post_toss_prediction"] = prediction
+        match["post_toss_model_version"] = POST_TOSS_MODEL_VERSION
+        attached += 1
+
+    print(f"Post-toss inference: {attached} predictions attached; {queried} match_info queries made.")
+    return attached
+
 
 
 def main():
+    previous_data = _load_previous_live_data()
+    previous_matches = {
+        (safe_text(item.get("api_source")), safe_text(item.get("source_match_id"))): item
+        for item in safe_list(previous_data.get("matches"))
+        if safe_dict(item).get("source_match_id")
+    }
+    toss_catalog, toss_catalog_checked_at = _get_cricketdata_match_catalog(previous_data)
     all_matches = []
-    diagnose_cricketdata_toss_once()
     successful_sources = []
 
     # Highlightly is primary. CricketData is queried only if Highlightly fails
@@ -936,6 +1265,9 @@ def main():
 
     # Matchstat is not enabled: all tested endpoints returned HTTP 404.
 
+    # Add the independent post-toss model only when CricketData confirms the exact fixture's toss.
+    attach_post_toss_predictions(all_matches, previous_matches, toss_catalog)
+
     # 3. DEDUPLICATION & SORTING
     final_matches = deduplicate_matches(all_matches)
     final_matches.sort(key=lambda x: x.get("start_time_iso") or "")
@@ -947,6 +1279,9 @@ def main():
         "total_matches": len(final_matches),
         "data_source_api": used_api,
         "prediction_engine": ACTIVE_PRE_MATCH_MODEL,
+        "post_toss_prediction_engine": POST_TOSS_MODEL_VERSION,
+        "cricketdata_toss_catalog": toss_catalog,
+        "cricketdata_toss_catalog_checked_at": toss_catalog_checked_at,
         "venue_model_active": VENUE_MODEL_ACTIVE,
         "matches": final_matches
     }

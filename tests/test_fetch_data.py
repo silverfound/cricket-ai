@@ -119,3 +119,46 @@ def test_t20_international_prediction_can_use_neutral_league_bucket():
     )
     assert encoded == int(league_encoder.transform(["Unknown League"])[0])
 
+
+
+def test_post_toss_logistic_candidate_returns_probability_in_range():
+    features = [
+        0.60, 0.40, 0.55, 0.50, 0.65, 0.45, 0.0, 0.0, 1.0,
+    ]
+    probability = fetch_data.post_toss_model_probability(features)
+    assert probability is not None
+    assert 0.0 < probability < 1.0
+
+
+def test_post_toss_prediction_builds_batting_first_and_chase_percentages():
+    prediction = fetch_data.get_post_toss_prediction(
+        "Team Alpha", "Team Beta", "T20", "Example League",
+        "male", "Unknown Ground", "bat",
+    )
+    assert prediction is not None
+    assert prediction.startswith("AI Pick: ")
+    assert "Team Alpha:" in prediction
+    assert "Team Beta:" in prediction
+    percentages = [
+        float(part.rsplit(":", 1)[1].strip().rstrip("%"))
+        for part in prediction.split("|")[1:]
+    ]
+    assert len(percentages) == 2
+    assert abs(sum(percentages) - 100.0) <= 0.2
+
+
+def test_cricketdata_catalog_matches_fixture_by_team_pair_and_start_time():
+    fixture = {
+        "home": "India", "away": "New Zealand",
+        "start_time_iso": "2026-11-04T02:00:00Z",
+    }
+    catalog = [{
+        "id": "cricketdata-123",
+        "teams": ["New Zealand", "India"],
+        "dateTimeGMT": "2026-11-04T02:00:00",
+    }]
+    found = fetch_data._catalog_match_for_fixture(fixture, catalog)
+    assert found is not None
+    assert found["id"] == "cricketdata-123"
+
+

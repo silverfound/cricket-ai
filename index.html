@@ -50,6 +50,9 @@
         .pre-prob-value { flex-shrink: 0; font-size: 20px; font-weight: 900; color: #e2e8f0; }
         .pre-prob-row.is-winner { border-color: #16c784; background: rgba(6, 78, 59, .32); }
         .pre-prob-row.is-winner .pre-prob-value { color: #4ade80; }
+        .ai-post-toss { display: block; flex-direction: column; background: linear-gradient(180deg, rgba(5, 46, 35, 0.98), rgba(8, 30, 34, 0.98)); color: var(--green); border-top: 1px solid #16e878; padding: 16px 14px 18px; }
+        .post-toss-title { text-align: center; font-size: 18px; font-weight: 800; color: #22e879; margin-bottom: 12px; }
+        .post-toss-winner { display: flex; justify-content: center; align-items: center; padding: 11px 12px; margin-bottom: 12px; border-radius: 12px; background: linear-gradient(100deg, #064e3b, #14532d); border: 1px solid #22c55e; color: #facc15; font-size: 16px; font-weight: 800; text-align: center; }
         .ai-badge { padding: 4px 10px; border-radius: 20px; font-size: 14px; color: #000; }
         .badge-gold { background: var(--gold); }
         .badge-blue { background: var(--accent); }
@@ -200,6 +203,22 @@
                     predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Prediction unavailable for this team</div>`;
                 }
 
+                let postTossHTML = "";
+                if (match.post_toss_prediction) {
+                    const postTossParts = String(match.post_toss_prediction).split("|").map(part => part.trim());
+                    const postTossWinner = (postTossParts[0] || "").replace(/^AI Pick:\s*/i, "").trim();
+                    const postTossRows = postTossParts.slice(1).map(part => {
+                        const separator = part.lastIndexOf(":");
+                        if (separator < 0) return null;
+                        const teamName = part.slice(0, separator).trim();
+                        const percentage = part.slice(separator + 1).trim();
+                        if (!teamName || !percentage) return null;
+                        const isWinner = teamName.toLowerCase() === postTossWinner.toLowerCase();
+                        return '<div class="pre-prob-row ' + (isWinner ? "is-winner" : "") + '"><span class="pre-prob-name">' + teamName + '</span><span class="pre-prob-value">' + percentage + '</span></div>';
+                    }).filter(Boolean).join("");
+                    postTossHTML = '<div class="ai-box ai-post-toss"><div class="post-toss-title">🪙 Post-Toss AI Win Chances</div><div class="post-toss-winner">🏆 Winner: ' + postTossWinner + '</div>' + postTossRows + '</div>';
+                }
+
                 const card = document.createElement('div');
                 card.className = 'match-card';
                 card.style.display = 'block'; 
@@ -225,7 +244,7 @@
                         '</div>' +
                     '</div>' +
                     '<div class="card-bottom"><div class="status">' + (match.status || "Status Unknown") + '</div></div>' +
-                    predictionHTML;
+                    predictionHTML + postTossHTML;
                 
                 matchesContainer.appendChild(card);
             });
