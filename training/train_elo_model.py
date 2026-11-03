@@ -39,7 +39,6 @@ def add_toss_features(df):
     decision = df["toss_decision"].fillna("").astype(str).str.lower()
     winner = df["toss_winner"].fillna("").astype(str)
     team1, team2 = df["team1"].astype(str), df["team2"].astype(str)
-    # True when team1 is the side batting first.
     df["toss_won_by_first_batting"] = (
         ((winner == team1) & (decision == "bat")) |
         ((winner == team2) & (decision == "field"))

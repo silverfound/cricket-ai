@@ -83,14 +83,6 @@
         const matchesContainer = document.getElementById('matches-container');
         const refreshBtn = document.getElementById('refresh-btn');
 
-        // Escape API-provided text before inserting it into HTML.
-        function escapeHTML(value) {
-            return String(value ?? "").replace(/[&<>"']/g, char => ({
-                "&": "&amp;", "<": "&lt;", ">": "&gt;",
-                '"': "&quot;", "'": "&#39;"
-            })[char]);
-        }
-
         function manualRefresh() {
             if (isFetching) return; 
             loadingText.style.display = 'block';
@@ -109,16 +101,12 @@
                 if (!response.ok) throw new Error("File not found");
                 const data = await response.json();
                 
-                // Render the UTC timestamp in the device/browser's own local timezone.
-const updatedAt = new Date(data.last_updated);
-if (Number.isNaN(updatedAt.getTime())) throw new Error("Invalid last-updated timestamp");
-const localTime = updatedAt.toLocaleString(undefined, {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-});
+                // UTC Time ko aapke phone ke local time mein convert karna
+const utcDate = new Date(data.last_updated.replace(" ", "T") + "Z");
+const localTime = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 document.getElementById('last-updated').innerText = "Last Updated: " + localTime;
-                document.getElementById('api-source').innerText = "⚡ Powered by: " + (data.data_source_api || "Unknown API");
-                allMatches = Array.isArray(data.matches) ? data.matches : []; 
+                document.getElementById('api-source').innerText = (data.venue_model_active ? "✅ Venue-Aware AI ACTIVE" : "⚠️ Baseline AI") + " | ⚡ Powered by: " + (data.data_source_api || "Unknown API");
+                allMatches = data.matches; 
                 
                 loadingText.style.display = 'none';
                 errorText.style.display = 'none';
@@ -171,14 +159,14 @@ document.getElementById('last-updated').innerText = "Last Updated: " + localTime
                 
                 if (match.match_state === "live") {
                     if (match.win_probability !== null && match.win_probability !== undefined) {
-                        predictionHTML = `<div class="ai-box ai-win">🤖 AI Win Probability: <span class="ai-badge badge-gold">${escapeHTML(match.win_probability)}%</span></div>`;
+                        predictionHTML = `<div class="ai-box ai-win">🤖 AI Win Probability: <span class="ai-badge badge-gold">${match.win_probability}%</span></div>`;
                     } else if (match.projected_score) {
-                        predictionHTML = `<div class="ai-box ai-score">🤖 AI Projected Score: <span class="ai-badge badge-blue">${escapeHTML(match.projected_score)}</span></div>`;
+                        predictionHTML = `<div class="ai-box ai-score">🤖 AI Projected Score: <span class="ai-badge badge-blue">${match.projected_score}</span></div>`;
                     } else {
                         predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Analyzing...</div>`;
                     }
                 } else if (match.match_state === "upcoming" && match.pre_match_winner) {
-                    predictionHTML = `<div class="ai-box ai-pre">🤖 AI Match Winner: <span class="ai-badge badge-green">${escapeHTML(match.pre_match_winner)}</span></div>`;
+                    predictionHTML = `<div class="ai-box ai-pre">🤖 AI Match Winner: <span class="ai-badge badge-green">${match.pre_match_winner}</span></div>`;
                 } else if (match.match_state === "upcoming") {
                     predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Prediction unavailable for this team</div>`;
                 }
@@ -188,26 +176,26 @@ document.getElementById('last-updated').innerText = "Last Updated: " + localTime
                 card.style.display = 'block'; 
                 card.innerHTML = 
                     '<div class="card-top">' +
-                        '<span>' + escapeHTML(match.league || "Unknown") + '</span>' +
-                        '<span>' + escapeHTML(match.format || "Unknown") + ' | ' + localDate + ', ' + localTime + '</span>' +
+                        '<span>' + (match.league || "Unknown") + '</span>' +
+                        '<span>' + (match.format || "T20") + ' | ' + localDate + ', ' + localTime + '</span>' +
                     '</div>' +
                     '<div class="card-body">' +
                         '<div class="team-row">' +
                             '<div class="team-info">' +
-                                '<span class="team-name">' + escapeHTML(match.home || "Home") + '</span>' +
-                                '<span class="team-overs">' + escapeHTML(oversHomeText) + '</span>' +
+                                '<span class="team-name">' + (match.home || "Home") + '</span>' +
+                                '<span class="team-overs">' + oversHomeText + '</span>' +
                             '</div>' +
-                            '<div class="score-box"><div class="score">' + escapeHTML(scoreHome) + '</div></div>' +
+                            '<div class="score-box"><div class="score">' + scoreHome + '</div></div>' +
                         '</div>' +
                         '<div class="team-row">' +
                             '<div class="team-info">' +
-                                '<span class="team-name">' + escapeHTML(match.away || "Away") + '</span>' +
-                                '<span class="team-overs">' + escapeHTML(oversAwayText) + '</span>' +
+                                '<span class="team-name">' + (match.away || "Away") + '</span>' +
+                                '<span class="team-overs">' + oversAwayText + '</span>' +
                             '</div>' +
-                            '<div class="score-box"><div class="score">' + escapeHTML(scoreAway) + '</div></div>' +
+                            '<div class="score-box"><div class="score">' + scoreAway + '</div></div>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="card-bottom"><div class="status">' + escapeHTML(match.status || "Status Unknown") + '</div></div>' +
+                    '<div class="card-bottom"><div class="status">' + (match.status || "Status Unknown") + '</div></div>' +
                     predictionHTML;
                 
                 matchesContainer.appendChild(card);
