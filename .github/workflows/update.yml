@@ -12,6 +12,10 @@ on:
     - cron: '*/15 * * * *' # Every 15 minutes
   workflow_dispatch:
 
+concurrency:
+  group: cricket-fixture-refresh
+  cancel-in-progress: true
+
 jobs:
   update-data:
     runs-on: ubuntu-latest
@@ -49,5 +53,5 @@ jobs:
         git config --global user.email 'action@github.com'
         git add live_matches.json
         git commit -m "Auto update data" || echo "No changes to commit"
-        git pull --rebase origin main
+        git pull --rebase -X theirs origin main
         git push origin main
