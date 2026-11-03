@@ -86,10 +86,13 @@ def predict_venue_candidate(artifact, state, team1, team2, match_format, gender,
         if 1 not in classes:
             return None
         p1 = float(probability[classes.index(1)])
-        threshold = float(artifact.get("threshold", 0.5))
-        winner = team1 if p1 >= threshold else team2
-        confidence = p1 if winner == team1 else 1.0 - p1
-        return f"{winner} ({round(confidence * 100, 1)}%)"
+        p2 = 1.0 - p1
+        winner = team1 if p1 >= p2 else team2
+        return (
+            f"AI Pick: {winner} | "
+            f"{team1}: {round(p1 * 100, 1)}% | "
+            f"{team2}: {round(p2 * 100, 1)}%"
+        )
     except Exception as exc:
         print(f"Venue candidate prediction error: {exc}")
         return None
