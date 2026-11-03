@@ -316,8 +316,8 @@ def is_womens_competition(league_name):
 
 def extract_tour_host(league_name, home_team, away_team):
     """Resolve the host from common tour labels without depending on fixture order."""
+    label = safe_text(league_name).casefold()
     match = re.search(r"\b(?:in|tour of|visit to|hosted by)\s+(.+)$", label)
-    match = re.search(r"\b(?:in|tour of|visit to|hosted by)\\s+(.+)$", label)
     if not match:
         return ""
     host_text = re.sub(r"[^a-z]+", " ", match.group(1)).strip()
@@ -326,7 +326,6 @@ def extract_tour_host(league_name, home_team, away_team):
         if normalized and (host_text == normalized or host_text.startswith(normalized + " ")):
             return safe_text(team)
     return ""
-
 
 
 def safe_encode_team(team_name, encoder, gender=None):
