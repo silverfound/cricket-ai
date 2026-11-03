@@ -42,7 +42,14 @@
         .ai-box { text-align: center; padding: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; border-top: 1px solid var(--border); }
         .ai-win { background: rgba(251, 191, 36, 0.1); color: var(--gold); border-top-color: var(--gold); }
         .ai-score { background: rgba(56, 189, 248, 0.1); color: var(--accent); border-top-color: var(--accent); }
-        .ai-pre { background: rgba(34, 197, 94, 0.1); color: var(--green); border-top-color: var(--green); }
+        .ai-pre { background: linear-gradient(180deg, rgba(5, 46, 35, 0.98), rgba(8, 30, 34, 0.98)); color: var(--green); border-top: 1px solid #16e878; padding: 16px 14px 18px; display: block; }
+        .pre-ai-title { text-align: center; font-size: 18px; font-weight: 800; color: #22e879; margin-bottom: 12px; letter-spacing: .2px; }
+        .pre-winner { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 11px 12px; margin-bottom: 12px; border-radius: 12px; background: linear-gradient(100deg, #064e3b, #14532d); border: 1px solid #22c55e; color: #facc15; font-size: 16px; font-weight: 800; text-align: center; box-shadow: 0 0 12px rgba(34,197,94,.15); }
+        .pre-prob-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; margin-top: 7px; border-radius: 10px; background: rgba(15, 23, 42, .78); border: 1px solid #334e68; color: #f8fafc; }
+        .pre-prob-name { font-size: 15px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+        .pre-prob-value { flex-shrink: 0; font-size: 20px; font-weight: 900; color: #e2e8f0; }
+        .pre-prob-row.is-winner { border-color: #16c784; background: rgba(6, 78, 59, .32); }
+        .pre-prob-row.is-winner .pre-prob-value { color: #4ade80; }
         .ai-badge { padding: 4px 10px; border-radius: 20px; font-size: 14px; color: #000; }
         .badge-gold { background: var(--gold); }
         .badge-blue { background: var(--accent); }
@@ -175,7 +182,20 @@
                         predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Analyzing...</div>`;
                     }
                 } else if (match.match_state === "upcoming" && match.pre_match_winner) {
-                    predictionHTML = `<div class="ai-box ai-pre" style="flex-wrap: wrap;">🤖 AI Win Chances: <span class="ai-badge badge-green">${match.pre_match_winner}</span></div>`;
+                    // Format the existing model string into separate readable rows:
+                    // "AI Pick: Winner | Team A: 58.0% | Team B: 42.0%"
+                    const predictionParts = String(match.pre_match_winner).split("|").map(part => part.trim());
+                    const winnerText = (predictionParts[0] || "").replace(/^AI Pick:\\s*/i, "").trim();
+                    const probabilityRows = predictionParts.slice(1).map(part => {
+                        const separator = part.lastIndexOf(":");
+                        if (separator < 0) return null;
+                        const teamName = part.slice(0, separator).trim();
+                        const percentage = part.slice(separator + 1).trim();
+                        if (!teamName || !percentage) return null;
+                        const isWinner = teamName.toLowerCase() === winnerText.toLowerCase();
+                        return `<div class="pre-prob-row ${isWinner ? "is-winner" : ""}"><span class="pre-prob-name">${teamName}</span><span class="pre-prob-value">${percentage}</span></div>`;
+                    }).filter(Boolean).join("");
+                    predictionHTML = `<div class="ai-box ai-pre"><div class="pre-ai-title">🤖 AI Win Chances</div><div class="pre-winner">🏆 Winner: ${winnerText}</div>${probabilityRows}</div>`;
                 } else if (match.match_state === "upcoming") {
                     predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Prediction unavailable for this team</div>`;
                 }
