@@ -174,7 +174,7 @@
                         predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Analyzing...</div>`;
                     }
                 } else if (match.match_state === "upcoming" && match.pre_match_winner) {
-                    predictionHTML = `<div class="ai-box ai-pre">🤖 AI Match Winner: <span class="ai-badge badge-green">${match.pre_match_winner}</span></div>`;
+                    predictionHTML = `<div class="ai-box ai-pre" style="flex-wrap: wrap;">🤖 AI Win Chances: <span class="ai-badge badge-green">${match.pre_match_winner}</span></div>`;
                 } else if (match.match_state === "upcoming") {
                     predictionHTML = `<div class="ai-box" style="color: #94a3b8; background: rgba(255,255,255,0.05);">🤖 AI: Prediction unavailable for this team</div>`;
                 }
