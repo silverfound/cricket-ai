@@ -1,6 +1,12 @@
 name: Update Live Data
 
 on:
+  push:
+    paths:
+      - '.github/workflows/update.yml'
+      - 'venue_model.py'
+      - 'models/venue_aware_candidate.joblib'
+      - 'data/venue_model_state.json'
   schedule:
     - cron: '0 * * * *' # Har 1 ghante mein chalega (API limit safe rakhne ke liye)
   workflow_dispatch:
