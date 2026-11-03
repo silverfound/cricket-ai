@@ -40,3 +40,9 @@ def test_missing_venue_candidate_artifacts_fail_closed(tmp_path):
 
 def test_prediction_fails_closed_without_venue():
     assert predict_venue_candidate({}, sample_state(), "Alpha", "Beta", "T20", "male", "League", None) is None
+
+
+def test_reversed_h2h_is_inverted_for_team1():
+    state = sample_state()
+    row = build_candidate_row("Beta", "Alpha", "T20", "male", "League", "Ground A", state)
+    assert row["h2h_team1_win_rate"] == (2 + 0.5) / (5 + 1)
