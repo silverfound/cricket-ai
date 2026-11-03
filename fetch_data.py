@@ -639,6 +639,7 @@ def fetch_sportscore():
     api_key = os.environ.get("SPORTSCORE_API_KEY")
     headers = {"X-Api-Key": api_key} if api_key else {}
     all_matches = []
+    request_succeeded = False
     for match_date in (today, tomorrow):
         try:
             response = requests.get(
@@ -651,9 +652,12 @@ def fetch_sportscore():
                 print(f"SportScore API error for {match_date}: HTTP {response.status_code} - {response.text[:300]}")
                 continue
             payload = response.json()
+            request_succeeded = True
             all_matches.extend(safe_list(safe_dict(payload).get("matches")))
         except Exception as exc:
             print(f"SportScore request failed for {match_date}: {exc}")
+    if not request_succeeded:
+        return None, None
     return {"matches": all_matches}, "Sportscore"
 
 # =========================================================
@@ -880,8 +884,7 @@ def main():
     if data is not None:
         raw_matches = standardize_data(data, source)
         all_matches = [m for m in raw_matches if m.get("match_state") == "upcoming" and is_ai_supported(m)]
-        if all_matches:
-            successful_sources.append(source)
+        successful_sources.append(source)
         print(f"SportScore returned {len(raw_matches)} fixtures; {len(all_matches)} pass the existing AI filters.")
 
     # 3. DEDUPLICATION & SORTING
