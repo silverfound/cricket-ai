@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - integrate/final-prematch-model
+      - feature/venue-model-inference
   pull_request:
     branches:
       - main
+      - feature/venue-context-pre-toss
   workflow_dispatch:
 
 permissions:
@@ -31,4 +33,4 @@ jobs:
       - name: Run integration tests
         env:
           PYTHONPATH: .
-        run: pytest -q -s tests/test_prematch_integration.py
+        run: pytest -q -s tests/test_prematch_integration.py tests/test_venue_model_inference.py tests/test_venue_features.py
