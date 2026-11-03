@@ -653,7 +653,17 @@ def fetch_sportscore():
                 continue
             payload = response.json()
             request_succeeded = True
-            all_matches.extend(safe_list(safe_dict(payload).get("matches")))
+            day_matches = safe_list(safe_dict(payload).get("matches"))
+            print(f"SportScore {match_date}: {len(day_matches)} upcoming fixtures")
+            for fixture in day_matches:
+                fixture = safe_dict(fixture)
+                print(
+                    "SportScore fixture:",
+                    safe_text(fixture.get("competition")),
+                    "|", safe_text(fixture.get("home")), "vs", safe_text(fixture.get("away")),
+                    "|", safe_text(fixture.get("time"))
+                )
+            all_matches.extend(day_matches)
         except Exception as exc:
             print(f"SportScore request failed for {match_date}: {exc}")
     if not request_succeeded:
