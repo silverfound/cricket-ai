@@ -104,7 +104,7 @@
                 // Parse ISO timestamps with their existing timezone; only append UTC
                 // for legacy timestamps that do not contain an offset.
                 const rawUpdated = String(data.last_updated || "").trim();
-                const hasTimezone = /(?:Z|[+-]\\d{2}:?\\d{2})$/i.test(rawUpdated);
+                const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(rawUpdated);
                 const normalizedUpdated = rawUpdated.includes("T") ? rawUpdated : rawUpdated.replace(" ", "T");
                 const updatedDate = new Date(normalizedUpdated + (hasTimezone ? "" : "Z"));
                 const updatedLabel = Number.isNaN(updatedDate.getTime())
