@@ -7,6 +7,9 @@ import pandas as pd
 
 from datetime import datetime, timedelta, timezone
 from prediction_audit import log_pre_match_prediction
+from venue_model import load_venue_candidate, predict_venue_candidate
+
+venue_candidate_artifact, venue_candidate_state = load_venue_candidate()
 
 # =========================================================
 # CONFIGURATION
@@ -253,7 +256,15 @@ def safe_encode_team(team_name, encoder, gender=None):
 # PREDICTION FUNCTIONS
 # =========================================================
 
-def get_pre_match_prediction(home_team, away_team, match_format, league_name, gender="male"):
+def get_pre_match_prediction(home_team, away_team, match_format, league_name, gender="male", venue=None):
+    # Prefer the venue-aware candidate only when its separately versioned artifacts
+    # are installed. Otherwise retain the validated production baseline unchanged.
+    venue_prediction = predict_venue_candidate(
+        venue_candidate_artifact, venue_candidate_state, home_team, away_team,
+        match_format, gender, league_name, venue
+    )
+    if venue_prediction:
+        return venue_prediction
     if pre_match_model is None or team_league_encoders is None:
         return None
     try:
@@ -543,7 +554,7 @@ def standardize_data(data, source):
             match_gender = infer_match_gender(m, league, home_team, away_team)
             venue_name = extract_venue(m)
             if match_state == "upcoming" and prediction_supported_format:
-                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender)
+                pre_match_winner = get_pre_match_prediction(home_team, away_team, fmt, league, match_gender, venue_name)
                 log_pre_match_prediction({
                     "source": "Highlightly",
                     "source_match_id": safe_text(m.get("id") or m.get("matchId")),
