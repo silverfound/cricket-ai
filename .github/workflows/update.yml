@@ -24,6 +24,8 @@ jobs:
     - name: Install dependencies
       run: python -m pip install --upgrade pip && python -m pip install requests pandas scikit-learn xgboost joblib
 
+    - name: Verify venue-aware model artifact
+      run: python -c "from venue_model import load_venue_candidate; a,s=load_venue_candidate(); assert a is not None and s is not None, 'Venue-aware candidate failed to load'; print('VENUE MODEL ACTIVE: candidate artifact and state loaded')"
     - name: Fetch Data
       env:
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
