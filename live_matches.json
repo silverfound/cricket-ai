@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-04T07:43:57.298420+00:00",
+    "last_updated": "2026-11-04T08:39:39.787008+00:00",
     "total_matches": 9,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -300,7 +300,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-04T07:43:54.272342+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-04T08:39:37.258390+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -347,18 +347,18 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-04T08:10:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Hobart Hurricanes Women",
             "away": "Melbourne Renegades Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Melbourne Renegades Women | Hobart Hurricanes Women: 47.1% | Melbourne Renegades Women: 52.9%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54038497",
