@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-05T03:34:46.228774+00:00",
+    "last_updated": "2026-11-05T04:38:13.893187+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -300,7 +300,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-05T03:34:43.285688+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-05T04:38:11.059629+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -378,25 +378,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Perth Scorchers Women | Sydney Thunder Women: 47.5% | Perth Scorchers Women: 52.5%"
-        },
-        {
-            "source_match_id": "54316502",
-            "league": "CSA T20 Challenge",
-            "format": "T20",
-            "venue": "",
-            "start_time_iso": "2026-11-05T16:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "Easterns",
-            "away": "Dolphins",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
         },
         {
             "source_match_id": "54316467",
@@ -549,6 +530,25 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: United States of America Women | Rwanda Women: 47.7% | United States of America Women: 52.3%"
+        },
+        {
+            "source_match_id": "54316502",
+            "league": "CSA T20 Challenge",
+            "format": "T20",
+            "venue": "",
+            "start_time_iso": "2026-11-06T16:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Easterns",
+            "away": "Dolphins",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
         }
     ]
 }
