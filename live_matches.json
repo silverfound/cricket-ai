@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-05T15:46:03.249074+00:00",
+    "last_updated": "2026-11-05T16:54:36.747581+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-05T15:45:59.841641+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-05T16:54:34.815051+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -357,18 +357,18 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-05T16:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Warriors",
             "away": "Boland",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Warriors | Warriors: 54.4% | Boland: 45.6%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54545297",
