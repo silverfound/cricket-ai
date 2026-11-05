@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-05T09:47:18.057896+00:00",
+    "last_updated": "2026-11-05T10:50:27.669797+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -13,20 +13,6 @@
             ],
             "date": "2026-11-05",
             "dateTimeGMT": "2026-11-05T10:45:00",
-            "matchType": "t20",
-            "matchStarted": false,
-            "matchEnded": false,
-            "tossWinner": "",
-            "tossChoice": ""
-        },
-        {
-            "id": "a8e562f2-154c-4af1-84d1-9b346393678b",
-            "teams": [
-                "Janakpur Bolts",
-                "Lumbini Lions"
-            ],
-            "date": "2026-11-05",
-            "dateTimeGMT": "2026-11-05T06:45:00",
             "matchType": "t20",
             "matchStarted": true,
             "matchEnded": false,
@@ -300,7 +286,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-05T09:47:15.053122+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-05T10:50:24.834046+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -373,7 +359,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
