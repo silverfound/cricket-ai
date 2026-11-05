@@ -1,24 +1,10 @@
 {
-    "last_updated": "2026-11-05T13:54:35.409059+00:00",
+    "last_updated": "2026-11-05T14:46:23.669332+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
     "cricketdata_toss_catalog": [
-        {
-            "id": "22508d08-daf1-4a48-a83b-5d3084d2a7bc",
-            "teams": [
-                "Biratnagar Kings",
-                "Kathmandu Gorkhas"
-            ],
-            "date": "2026-11-05",
-            "dateTimeGMT": "2026-11-05T10:45:00",
-            "matchType": "t20",
-            "matchStarted": true,
-            "matchEnded": false,
-            "tossWinner": "",
-            "tossChoice": ""
-        },
         {
             "id": "6a250c41-5f65-4ac1-aef3-cce2eda491d6",
             "teams": [
@@ -286,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-05T13:54:33.089643+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-05T14:46:19.171362+00:00",
     "venue_model_active": true,
     "matches": [
         {
