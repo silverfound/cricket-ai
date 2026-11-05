@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-05T06:39:06.681416+00:00",
+    "last_updated": "2026-11-05T07:55:57.456891+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -28,7 +28,7 @@
             "date": "2026-11-05",
             "dateTimeGMT": "2026-11-05T06:45:00",
             "matchType": "t20",
-            "matchStarted": false,
+            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -300,7 +300,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-05T06:39:04.455504+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-05T07:55:55.187588+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -309,14 +309,14 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-05T04:40:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Adelaide Strikers Women",
             "away": "Brisbane Heat Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
