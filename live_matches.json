@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-06T15:27:04.054016+00:00",
+    "last_updated": "2026-11-06T16:15:16.925633+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-06T15:27:00.553679+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-06T16:15:14.124559+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -390,19 +390,19 @@
             "pre_match_winner": null
         },
         {
-            "source_match_id": "54316502",
-            "league": "CSA T20 Challenge",
+            "source_match_id": "54625307",
+            "league": "Women's Victoria T20 Series",
             "format": "T20",
             "venue": "",
-            "start_time_iso": "2026-11-06T16:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "Easterns",
-            "away": "Dolphins",
+            "start_time_iso": "2026-11-06T11:00:00.000Z",
+            "match_state": "finished",
+            "home": "Rwanda Women",
+            "away": "United States of America Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
