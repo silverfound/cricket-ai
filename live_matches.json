@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-06T08:04:37.730999+00:00",
+    "last_updated": "2026-11-06T09:00:30.201987+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-06T08:04:33.622821+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-06T09:00:27.069447+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -288,7 +288,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -357,18 +357,18 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-06T08:10:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Melbourne Stars Women",
             "away": "Sydney Sixers Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Sydney Sixers Women | Melbourne Stars Women: 40.4% | Sydney Sixers Women: 59.6%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54625307",
