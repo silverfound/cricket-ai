@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-06T05:53:51.129799+00:00",
-    "total_matches": 21,
+    "last_updated": "2026-11-06T06:53:23.067018+00:00",
+    "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-06T05:53:49.019972+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-06T06:53:20.162869+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -312,25 +312,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54625272",
-            "league": "Women's Victoria T20 Series",
-            "format": "T20",
-            "venue": "",
-            "start_time_iso": "2026-11-06T06:30:00.000Z",
-            "match_state": "upcoming",
-            "home": "Uganda Women",
-            "away": "Namibia Women",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: Namibia Women | Uganda Women: 46.7% | Namibia Women: 53.3%"
         },
         {
             "source_match_id": "54589292",
