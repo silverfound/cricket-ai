@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-06T11:41:32.214623+00:00",
+    "last_updated": "2026-11-06T12:34:17.849913+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-06T11:41:29.647128+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-06T12:34:12.930987+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -300,14 +300,14 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-06T05:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Pakistan Under-19s",
             "away": "United Arab Emirates Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -345,7 +345,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
