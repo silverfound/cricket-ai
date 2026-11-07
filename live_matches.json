@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-07T03:14:20.820631+00:00",
+    "last_updated": "2026-11-07T03:59:27.143762+00:00",
     "total_matches": 25,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T03:14:17.784615+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T03:59:23.141270+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -300,18 +300,18 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-07T03:30:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Western Australia",
             "away": "England",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: England | Western Australia: 47.1% | England: 52.9%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54038602",
