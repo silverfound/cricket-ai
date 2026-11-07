@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-07T17:46:53.430394+00:00",
-    "total_matches": 31,
+    "last_updated": "2026-11-07T18:25:43.712920+00:00",
+    "total_matches": 30,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T17:46:49.416088+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T18:25:41.256501+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -528,14 +528,14 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-07T16:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Arabian Aces",
             "away": "United Tigers",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -554,31 +554,12 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null,
             "toss_checked_at": "2026-11-07T14:46:59.560521+00:00"
-        },
-        {
-            "source_match_id": "54558562",
-            "league": "England Lions in West Indies",
-            "format": "ODI",
-            "venue": "",
-            "start_time_iso": "2026-11-07T18:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "West Indies A",
-            "away": "England Lions",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
         },
         {
             "source_match_id": "54439597",
