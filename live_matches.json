@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-07T14:10:58.916973+00:00",
-    "total_matches": 25,
+    "last_updated": "2026-11-07T14:47:01.130572+00:00",
+    "total_matches": 29,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T14:10:55.260273+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T14:46:56.564254+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -390,6 +390,25 @@
             "pre_match_winner": null
         },
         {
+            "source_match_id": "54393537",
+            "league": "CSA Women Pro50 Series",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-07T08:00:00.000Z",
+            "match_state": "finished",
+            "home": "Eastern Province Women",
+            "away": "Titans Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Finished",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
             "source_match_id": "54038637",
             "league": "Women's Big Bash League",
             "format": "T20",
@@ -414,14 +433,14 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-07T11:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Boland",
             "away": "South Western Districts",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -502,7 +521,7 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Western Province | Western Province: 51.6% | Lions: 48.4%",
-            "toss_checked_at": "2026-11-07T14:10:57.973627+00:00"
+            "toss_checked_at": "2026-11-07T14:46:59.560521+00:00"
         },
         {
             "source_match_id": "54558562",
@@ -733,6 +752,25 @@
             "pre_match_winner": "AI Pick: United States of America Women | Uganda Women: 47.6% | United States of America Women: 52.4%"
         },
         {
+            "source_match_id": "54643997",
+            "league": "Abu Dhabi T10",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-08T11:30:00.000Z",
+            "match_state": "upcoming",
+            "home": "Emirates Eagles",
+            "away": "Yas Lions",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
             "source_match_id": "54599862",
             "league": "CSA T20 Challenge",
             "format": "T20",
@@ -750,6 +788,44 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Titans | Titans: 61.2% | Dolphins: 38.8%"
+        },
+        {
+            "source_match_id": "54644032",
+            "league": "Abu Dhabi T10",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-08T13:45:00.000Z",
+            "match_state": "upcoming",
+            "home": "UAE Bulls",
+            "away": "United Tigers",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
+            "source_match_id": "54644067",
+            "league": "Abu Dhabi T10",
+            "format": "ODI",
+            "venue": "",
+            "start_time_iso": "2026-11-08T16:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Arabian Aces",
+            "away": "Royal Desert Champions",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
         }
     ]
 }
