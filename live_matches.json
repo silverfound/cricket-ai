@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-07T03:59:27.143762+00:00",
+    "last_updated": "2026-11-07T04:45:06.369098+00:00",
     "total_matches": 25,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T03:59:23.141270+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T04:45:01.249053+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -319,18 +319,18 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-07T04:40:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Melbourne Renegades Women",
             "away": "Adelaide Strikers Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Adelaide Strikers Women | Melbourne Renegades Women: 41.6% | Adelaide Strikers Women: 58.4%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54545367",
