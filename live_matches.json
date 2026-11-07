@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-07T11:12:07.779476+00:00",
+    "last_updated": "2026-11-07T11:47:06.462212+00:00",
     "total_matches": 21,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T11:12:02.681764+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T11:47:02.741588+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -376,14 +376,14 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-07T08:10:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Brisbane Heat Women",
             "away": "Hobart Hurricanes Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
