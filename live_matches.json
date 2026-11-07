@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-07T08:21:41.758568+00:00",
+    "last_updated": "2026-11-07T09:14:06.732660+00:00",
     "total_matches": 22,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T08:21:39.605868+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T09:14:03.377897+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -288,7 +288,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Match delayed",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -345,7 +345,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
