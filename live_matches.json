@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-07T17:15:22.968170+00:00",
+    "last_updated": "2026-11-07T17:46:53.430394+00:00",
     "total_matches": 31,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -65,7 +65,7 @@
             "id": "958aa945-930f-4e17-af8a-c8966226ec1e",
             "teams": [
                 "Uganda Women",
-                "United States Of America Women"
+                "United States of America Women"
             ],
             "date": "2026-11-08",
             "dateTimeGMT": "2026-11-08T11:00:00",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T17:15:18.043726+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T17:46:49.416088+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -535,7 +535,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -554,7 +554,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
