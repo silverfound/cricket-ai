@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-07T06:16:51.921429+00:00",
-    "total_matches": 25,
+    "last_updated": "2026-11-07T07:29:57.696849+00:00",
+    "total_matches": 24,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-07T06:16:48.717888+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-07T07:29:55.095429+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -307,7 +307,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -364,30 +364,11 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Drinks",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54625342",
-            "league": "Women's Victoria T20 Series",
-            "format": "T20",
-            "venue": "",
-            "start_time_iso": "2026-11-07T06:30:00.000Z",
-            "match_state": "upcoming",
-            "home": "Namibia Women",
-            "away": "United States of America Women",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: United States of America Women | Namibia Women: 47.8% | United States of America Women: 52.2%"
         },
         {
             "source_match_id": "54393572",
