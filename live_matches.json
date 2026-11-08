@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-08T10:23:42.091373+00:00",
-    "total_matches": 20,
+    "last_updated": "2026-11-08T11:08:12.244562+00:00",
+    "total_matches": 19,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -70,7 +70,7 @@
             "date": "2026-11-08",
             "dateTimeGMT": "2026-11-08T11:00:00",
             "matchType": "t20",
-            "matchStarted": false,
+            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T10:23:38.931907+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T11:08:06.722302+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -357,14 +357,14 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 2)",
             "start_time_iso": "2026-11-08T05:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Nepal Under-19s",
             "away": "United Arab Emirates Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -464,26 +464,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54625447",
-            "league": "Women's Victoria T20 Series",
-            "format": "T20",
-            "venue": "Entebbe Cricket Oval",
-            "start_time_iso": "2026-11-08T11:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "Uganda Women",
-            "away": "United States of America Women",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: United States of America Women | Uganda Women: 45.6% | United States of America Women: 54.4%",
-            "toss_checked_at": "2026-11-08T10:23:41.140154+00:00"
         },
         {
             "source_match_id": "54643997",
