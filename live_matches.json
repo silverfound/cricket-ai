@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T00:47:58.181319+00:00",
+    "last_updated": "2026-11-08T01:51:43.872725+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T00:47:55.618401+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T01:51:41.520892+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -281,14 +281,14 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-08T01:30:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Hong Kong Cricket Club",
             "away": "Pakistan Association of Hong Kong",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
