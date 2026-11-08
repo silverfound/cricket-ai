@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T12:21:34.782389+00:00",
+    "last_updated": "2026-11-08T13:21:02.580166+00:00",
     "total_matches": 19,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -258,7 +258,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T12:21:30.991583+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T13:20:59.128173+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -324,14 +324,14 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 1)",
             "start_time_iso": "2026-11-08T05:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "India Under-19s",
             "away": "Pakistan Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -407,7 +407,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -476,18 +476,18 @@
             "format": "T20",
             "venue": "SuperSport Park, Centurion",
             "start_time_iso": "2026-11-08T12:30:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Titans",
             "away": "Dolphins",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "Match delayed",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Titans | Titans: 67.5% | Dolphins: 32.5%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54644032",
