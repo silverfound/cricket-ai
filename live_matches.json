@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T04:26:28.462474+00:00",
+    "last_updated": "2026-11-08T05:17:13.094456+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T04:26:25.877114+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T05:17:09.640559+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -288,7 +288,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -326,7 +326,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -338,14 +338,14 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-08T05:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "India Under-19s",
             "away": "Pakistan Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -357,14 +357,14 @@
             "format": "ODI",
             "venue": "",
             "start_time_iso": "2026-11-08T05:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Nepal Under-19s",
             "away": "United Arab Emirates Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -406,7 +406,8 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Rwanda Women | Namibia Women: 46.2% | Rwanda Women: 53.8%"
+            "pre_match_winner": "AI Pick: Rwanda Women | Namibia Women: 46.2% | Rwanda Women: 53.8%",
+            "toss_checked_at": "2026-11-08T05:17:12.036255+00:00"
         },
         {
             "source_match_id": "54589362",
