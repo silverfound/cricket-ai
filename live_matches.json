@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T05:17:13.094456+00:00",
+    "last_updated": "2026-11-08T06:11:56.689891+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T05:17:09.640559+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T06:11:52.852023+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -288,7 +288,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -319,14 +319,14 @@
             "format": "T20",
             "venue": "",
             "start_time_iso": "2026-11-08T02:40:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Sydney Sixers Women",
             "away": "Sydney Thunder Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -407,7 +407,7 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Rwanda Women | Namibia Women: 46.2% | Rwanda Women: 53.8%",
-            "toss_checked_at": "2026-11-08T05:17:12.036255+00:00"
+            "toss_checked_at": "2026-11-08T06:11:55.527924+00:00"
         },
         {
             "source_match_id": "54589362",
