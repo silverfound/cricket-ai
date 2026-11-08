@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T14:45:44.606895+00:00",
+    "last_updated": "2026-11-08T15:23:50.077944+00:00",
     "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -258,7 +258,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T14:45:41.430732+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T15:23:47.742381+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -495,18 +495,18 @@
             "format": "T20",
             "venue": "SuperSport Park, Centurion",
             "start_time_iso": "2026-11-08T12:30:00.000Z",
-            "match_state": "live",
+            "match_state": "upcoming",
             "home": "Titans",
             "away": "Dolphins",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Match delayed",
+            "status": "Postponed",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": null
+            "pre_match_winner": "AI Pick: Titans | Titans: 67.5% | Dolphins: 32.5%"
         },
         {
             "source_match_id": "54644032",
@@ -521,7 +521,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
