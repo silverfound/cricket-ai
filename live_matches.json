@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-08T09:34:27.679353+00:00",
-    "total_matches": 19,
+    "last_updated": "2026-11-08T10:23:42.091373+00:00",
+    "total_matches": 20,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T09:34:24.670386+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T10:23:38.931907+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -390,6 +390,25 @@
             "pre_match_winner": null
         },
         {
+            "source_match_id": "54625412",
+            "league": "Women's Victoria T20 Series",
+            "format": "T20",
+            "venue": "Entebbe Cricket Oval",
+            "start_time_iso": "2026-11-08T06:30:00.000Z",
+            "match_state": "finished",
+            "home": "Namibia Women",
+            "away": "Rwanda Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Finished",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
             "source_match_id": "54589362",
             "league": "Pro50 Championship",
             "format": "ODI",
@@ -440,7 +459,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Innings break",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -464,7 +483,7 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: United States of America Women | Uganda Women: 45.6% | United States of America Women: 54.4%",
-            "toss_checked_at": "2026-11-08T09:34:26.728135+00:00"
+            "toss_checked_at": "2026-11-08T10:23:41.140154+00:00"
         },
         {
             "source_match_id": "54643997",
