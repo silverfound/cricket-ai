@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-08T17:09:50.754761+00:00",
-    "total_matches": 20,
+    "last_updated": "2026-11-08T17:41:23.492918+00:00",
+    "total_matches": 15,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -57,20 +57,6 @@
             "dateTimeGMT": "2026-11-10T06:30:00",
             "matchType": "t20",
             "matchStarted": false,
-            "matchEnded": false,
-            "tossWinner": "",
-            "tossChoice": ""
-        },
-        {
-            "id": "958aa945-930f-4e17-af8a-c8966226ec1e",
-            "teams": [
-                "Uganda Women",
-                "United States of America Women"
-            ],
-            "date": "2026-11-08",
-            "dateTimeGMT": "2026-11-08T11:00:00",
-            "matchType": "t20",
-            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -258,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T17:09:48.751551+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T17:41:21.325590+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -471,25 +457,6 @@
             "pre_match_winner": null
         },
         {
-            "source_match_id": "54643997",
-            "league": "Abu Dhabi T10",
-            "format": "ODI",
-            "venue": "Zayed Cricket Stadium, Abu Dhabi",
-            "start_time_iso": "2026-11-08T11:30:00.000Z",
-            "match_state": "finished",
-            "home": "Emirates Eagles",
-            "away": "Yas Lions",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Finished",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
-        {
             "source_match_id": "54599862",
             "league": "CSA T20 Challenge",
             "format": "T20",
@@ -507,44 +474,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Titans | Titans: 67.5% | Dolphins: 32.5%"
-        },
-        {
-            "source_match_id": "54644032",
-            "league": "Abu Dhabi T10",
-            "format": "ODI",
-            "venue": "Zayed Cricket Stadium, Abu Dhabi",
-            "start_time_iso": "2026-11-08T13:45:00.000Z",
-            "match_state": "finished",
-            "home": "UAE Bulls",
-            "away": "United Tigers",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Finished",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54644067",
-            "league": "Abu Dhabi T10",
-            "format": "ODI",
-            "venue": "Zayed Cricket Stadium, Abu Dhabi",
-            "start_time_iso": "2026-11-08T16:00:00.000Z",
-            "match_state": "live",
-            "home": "Arabian Aces",
-            "away": "Royal Desert Champions",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "In play",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": null
         },
         {
             "source_match_id": "54545507",
@@ -583,44 +512,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: Malaysia Under-19s | Bangladesh Under-19s: 47.9% | Malaysia Under-19s: 52.1%"
-        },
-        {
-            "source_match_id": "54644102",
-            "league": "Abu Dhabi T10",
-            "format": "ODI",
-            "venue": "Zayed Cricket Stadium, Abu Dhabi",
-            "start_time_iso": "2026-11-09T13:45:00.000Z",
-            "match_state": "upcoming",
-            "home": "Arabian Aces",
-            "away": "Emirates Eagles",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: Emirates Eagles | Arabian Aces: 48.2% | Emirates Eagles: 51.8%"
-        },
-        {
-            "source_match_id": "54644137",
-            "league": "Abu Dhabi T10",
-            "format": "ODI",
-            "venue": "Zayed Cricket Stadium, Abu Dhabi",
-            "start_time_iso": "2026-11-09T16:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "Royal Desert Champions",
-            "away": "United Tigers",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: United Tigers | Royal Desert Champions: 48.2% | United Tigers: 51.8%"
         },
         {
             "source_match_id": "54558597",
