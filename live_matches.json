@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T11:08:12.244562+00:00",
+    "last_updated": "2026-11-08T11:45:32.411485+00:00",
     "total_matches": 19,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -272,7 +272,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T11:08:06.722302+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-08T11:45:28.916640+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -421,7 +421,7 @@
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Innings break",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -452,14 +452,14 @@
             "format": "T20",
             "venue": "Willowmoore Park, Benoni",
             "start_time_iso": "2026-11-08T08:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Easterns",
             "away": "Warriors",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
@@ -471,18 +471,18 @@
             "format": "ODI",
             "venue": "Zayed Cricket Stadium, Abu Dhabi",
             "start_time_iso": "2026-11-08T11:30:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Emirates Eagles",
             "away": "Yas Lions",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Yas Lions | Emirates Eagles: 48.2% | Yas Lions: 51.8%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54599862",
