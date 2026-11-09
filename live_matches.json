@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-08T23:41:41.340913+00:00",
+    "last_updated": "2026-11-09T00:15:52.651166+00:00",
     "total_matches": 10,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-08T23:41:38.635170+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-09T00:15:49.839350+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -384,7 +384,7 @@
             "source_match_id": "54038742",
             "league": "Women's Big Bash League",
             "format": "T20",
-            "venue": "",
+            "venue": "Bellerive Oval, Hobart",
             "start_time_iso": "2026-11-10T08:10:00.000Z",
             "match_state": "upcoming",
             "home": "Hobart Hurricanes Women",
@@ -397,7 +397,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Adelaide Strikers Women | Hobart Hurricanes Women: 46.7% | Adelaide Strikers Women: 53.3%"
+            "pre_match_winner": "AI Pick: Adelaide Strikers Women | Hobart Hurricanes Women: 43.8% | Adelaide Strikers Women: 56.2%"
         },
         {
             "source_match_id": "54625517",
@@ -422,7 +422,7 @@
             "source_match_id": "54599897",
             "league": "CSA T20 Challenge",
             "format": "T20",
-            "venue": "",
+            "venue": "Newlands, Cape Town",
             "start_time_iso": "2026-11-10T16:00:00.000Z",
             "match_state": "upcoming",
             "home": "Western Province",
@@ -435,7 +435,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": null
+            "pre_match_winner": "AI Pick: Western Province | Western Province: 54.0% | South Western Districts: 46.0%"
         }
     ]
 }
