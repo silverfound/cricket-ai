@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-09T17:38:56.800084+00:00",
-    "total_matches": 10,
+    "last_updated": "2026-11-09T18:28:40.094392+00:00",
+    "total_matches": 9,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-09T17:38:54.596673+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-09T18:28:37.520540+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -284,25 +284,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54558597",
-            "league": "England Lions in West Indies",
-            "format": "ODI",
-            "venue": "Warner Park, Basseterre, St Kitts",
-            "start_time_iso": "2026-11-09T18:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "West Indies A",
-            "away": "England Lions",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: England Lions | West Indies A: 46.2% | England Lions: 53.8%"
         },
         {
             "source_match_id": "53880507",
