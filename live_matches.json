@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-09T16:43:34.556327+00:00",
+    "last_updated": "2026-11-09T17:38:56.800084+00:00",
     "total_matches": 10,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -107,7 +107,7 @@
             "id": "1f8b1266-3bbc-4b01-9269-62ec2db5b7c6",
             "teams": [
                 "Rwanda Women",
-                "United States Of America Women"
+                "United States of America Women"
             ],
             "date": "2026-11-10",
             "dateTimeGMT": "2026-11-10T06:30:00",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-09T16:43:32.488645+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-09T17:38:54.596673+00:00",
     "venue_model_active": true,
     "matches": [
         {
