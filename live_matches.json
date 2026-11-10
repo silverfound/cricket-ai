@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T03:38:02.742459+00:00",
+    "last_updated": "2026-11-10T04:30:56.208435+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T03:38:00.199509+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T04:30:52.386688+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -321,7 +321,8 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: United States of America Women | Rwanda Women: 45.6% | United States of America Women: 54.4%"
+            "pre_match_winner": "AI Pick: United States of America Women | Rwanda Women: 45.6% | United States of America Women: 54.4%",
+            "toss_checked_at": "2026-11-10T04:30:55.105656+00:00"
         },
         {
             "source_match_id": "54038742",
