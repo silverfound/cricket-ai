@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-09T23:28:25.653914+00:00",
+    "last_updated": "2026-11-10T00:02:08.053178+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-09T23:28:21.173852+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T00:02:03.235811+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -403,7 +403,7 @@
             "source_match_id": "54038777",
             "league": "Women's Big Bash League",
             "format": "T20",
-            "venue": "",
+            "venue": "Western Australia Cricket Association Ground, Perth",
             "start_time_iso": "2026-11-11T08:10:00.000Z",
             "match_state": "upcoming",
             "home": "Perth Scorchers Women",
@@ -416,7 +416,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Sydney Thunder Women | Perth Scorchers Women: 48.6% | Sydney Thunder Women: 51.4%"
+            "pre_match_winner": "AI Pick: Sydney Thunder Women | Perth Scorchers Women: 44.3% | Sydney Thunder Women: 55.7%"
         },
         {
             "source_match_id": "54625587",
@@ -479,7 +479,7 @@
             "source_match_id": "54599967",
             "league": "CSA T20 Challenge",
             "format": "T20",
-            "venue": "",
+            "venue": "SuperSport Park, Centurion",
             "start_time_iso": "2026-11-11T16:00:00.000Z",
             "match_state": "upcoming",
             "home": "Titans",
@@ -492,7 +492,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Titans | Titans: 61.3% | Warriors: 38.7%"
+            "pre_match_winner": "AI Pick: Titans | Titans: 61.6% | Warriors: 38.4%"
         }
     ]
 }
