@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T12:17:33.069210+00:00",
+    "last_updated": "2026-11-10T13:32:39.510189+00:00",
     "total_matches": 11,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -230,7 +230,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T12:17:30.326380+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T13:32:37.383058+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -277,14 +277,14 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 2)",
             "start_time_iso": "2026-11-10T05:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "India Under-19s",
             "away": "United Arab Emirates Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
