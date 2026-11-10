@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T14:32:17.895387+00:00",
+    "last_updated": "2026-11-10T15:25:33.623668+00:00",
     "total_matches": 11,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -85,20 +85,6 @@
             "dateTimeGMT": "2026-11-11T06:30:00",
             "matchType": "t20",
             "matchStarted": false,
-            "matchEnded": false,
-            "tossWinner": "",
-            "tossChoice": ""
-        },
-        {
-            "id": "37c4b752-cba7-474c-a413-45679a2f8927",
-            "teams": [
-                "Namibia Women",
-                "Uganda Women"
-            ],
-            "date": "2026-11-10",
-            "dateTimeGMT": "2026-11-10T11:00:00",
-            "matchType": "t20",
-            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -230,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T14:32:15.853715+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T15:25:31.001163+00:00",
     "venue_model_active": true,
     "matches": [
         {
