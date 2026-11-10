@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-10T10:38:48.004333+00:00",
-    "total_matches": 12,
+    "last_updated": "2026-11-10T11:29:33.422477+00:00",
+    "total_matches": 11,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -98,7 +98,7 @@
             "date": "2026-11-10",
             "dateTimeGMT": "2026-11-10T11:00:00",
             "matchType": "t20",
-            "matchStarted": false,
+            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T10:38:43.885826+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T11:29:30.853952+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -310,38 +310,18 @@
             "format": "T20",
             "venue": "Bellerive Oval, Hobart",
             "start_time_iso": "2026-11-10T08:10:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Hobart Hurricanes Women",
             "away": "Adelaide Strikers Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54625517",
-            "league": "Women's Victoria T20 Series",
-            "format": "T20",
-            "venue": "Entebbe Cricket Oval",
-            "start_time_iso": "2026-11-10T11:00:00.000Z",
-            "match_state": "upcoming",
-            "home": "Uganda Women",
-            "away": "Namibia Women",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: Namibia Women | Uganda Women: 45.6% | Namibia Women: 54.4%",
-            "toss_checked_at": "2026-11-10T10:38:46.704930+00:00"
         },
         {
             "source_match_id": "54599897",
