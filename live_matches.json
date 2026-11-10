@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T15:25:33.623668+00:00",
+    "last_updated": "2026-11-10T16:17:49.787384+00:00",
     "total_matches": 11,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T15:25:31.001163+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T16:17:47.214055+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -301,18 +301,18 @@
             "format": "T20",
             "venue": "Newlands, Cape Town",
             "start_time_iso": "2026-11-10T16:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Western Province",
             "away": "South Western Districts",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Western Province | Western Province: 54.0% | South Western Districts: 46.0%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54625552",
