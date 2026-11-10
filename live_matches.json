@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-10T17:16:17.195022+00:00",
-    "total_matches": 11,
+    "last_updated": "2026-11-10T18:08:58.656725+00:00",
+    "total_matches": 12,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -65,7 +65,7 @@
             "id": "e2f98e6f-8267-433a-a915-f4d4b3b73ad0",
             "teams": [
                 "Namibia Women",
-                "United States Of America Women"
+                "United States of America Women"
             ],
             "date": "2026-11-11",
             "dateTimeGMT": "2026-11-11T11:00:00",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T17:16:15.070468+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T18:08:55.778622+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -266,6 +266,25 @@
             "match_state": "finished",
             "home": "India Under-19s",
             "away": "United Arab Emirates Under-19s",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Finished",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
+            "source_match_id": "54625482",
+            "league": "Women's Victoria T20 Series",
+            "format": "T20",
+            "venue": "Entebbe Cricket Oval",
+            "start_time_iso": "2026-11-10T06:30:00.000Z",
+            "match_state": "finished",
+            "home": "Rwanda Women",
+            "away": "United States of America Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
