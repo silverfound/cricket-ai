@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T04:30:56.208435+00:00",
+    "last_updated": "2026-11-10T05:31:43.028787+00:00",
     "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T04:30:52.386688+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T05:31:38.464410+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -272,18 +272,18 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 1)",
             "start_time_iso": "2026-11-10T05:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Nepal Under-19s",
             "away": "Pakistan Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Pakistan Under-19s | Nepal Under-19s: 44.3% | Pakistan Under-19s: 55.7%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54545542",
@@ -291,18 +291,18 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 2)",
             "start_time_iso": "2026-11-10T05:00:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "India Under-19s",
             "away": "United Arab Emirates Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: United Arab Emirates Under-19s | India Under-19s: 47.9% | United Arab Emirates Under-19s: 52.1%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54625482",
@@ -322,7 +322,7 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: United States of America Women | Rwanda Women: 45.6% | United States of America Women: 54.4%",
-            "toss_checked_at": "2026-11-10T04:30:55.105656+00:00"
+            "toss_checked_at": "2026-11-10T05:31:41.656103+00:00"
         },
         {
             "source_match_id": "54038742",
