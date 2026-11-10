@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-10T11:29:33.422477+00:00",
+    "last_updated": "2026-11-10T12:17:33.069210+00:00",
     "total_matches": 11,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -97,20 +97,6 @@
             ],
             "date": "2026-11-10",
             "dateTimeGMT": "2026-11-10T11:00:00",
-            "matchType": "t20",
-            "matchStarted": true,
-            "matchEnded": false,
-            "tossWinner": "",
-            "tossChoice": ""
-        },
-        {
-            "id": "1f8b1266-3bbc-4b01-9269-62ec2db5b7c6",
-            "teams": [
-                "Rwanda Women",
-                "United States of America Women"
-            ],
-            "date": "2026-11-10",
-            "dateTimeGMT": "2026-11-10T06:30:00",
             "matchType": "t20",
             "matchStarted": true,
             "matchEnded": false,
@@ -244,7 +230,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T11:29:30.853952+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T12:17:30.326380+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -272,14 +258,14 @@
             "format": "ODI",
             "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 1)",
             "start_time_iso": "2026-11-10T05:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Nepal Under-19s",
             "away": "Pakistan Under-19s",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
