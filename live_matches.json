@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-10T05:31:43.028787+00:00",
-    "total_matches": 13,
+    "last_updated": "2026-11-10T06:34:45.083330+00:00",
+    "total_matches": 12,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -112,7 +112,7 @@
             "date": "2026-11-10",
             "dateTimeGMT": "2026-11-10T06:30:00",
             "matchType": "t20",
-            "matchStarted": false,
+            "matchStarted": true,
             "matchEnded": false,
             "tossWinner": "",
             "tossChoice": ""
@@ -244,7 +244,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T05:31:38.464410+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T06:34:42.498857+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -253,18 +253,18 @@
             "format": "ODI",
             "venue": "Seddon Park, Hamilton",
             "start_time_iso": "2026-11-10T02:00:00.000Z",
-            "match_state": "live",
+            "match_state": "upcoming",
             "home": "New Zealand",
             "away": "India",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Match delayed",
+            "status": "Postponed",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": null
+            "pre_match_winner": "AI Pick: India | New Zealand: 45.1% | India: 54.9%"
         },
         {
             "source_match_id": "54545577",
@@ -303,26 +303,6 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": null
-        },
-        {
-            "source_match_id": "54625482",
-            "league": "Women's Victoria T20 Series",
-            "format": "T20",
-            "venue": "Entebbe Cricket Oval",
-            "start_time_iso": "2026-11-10T06:30:00.000Z",
-            "match_state": "upcoming",
-            "home": "Rwanda Women",
-            "away": "United States of America Women",
-            "score_home": "-",
-            "overs_home": "",
-            "score_away": "-",
-            "overs_away": "",
-            "status": "Scheduled",
-            "api_source": "Highlightly",
-            "win_probability": null,
-            "projected_score": null,
-            "pre_match_winner": "AI Pick: United States of America Women | Rwanda Women: 45.6% | United States of America Women: 54.4%",
-            "toss_checked_at": "2026-11-10T05:31:41.656103+00:00"
         },
         {
             "source_match_id": "54038742",
