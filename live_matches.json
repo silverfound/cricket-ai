@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-10T18:08:58.656725+00:00",
-    "total_matches": 12,
+    "last_updated": "2026-11-10T18:57:45.308983+00:00",
+    "total_matches": 13,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T18:08:55.778622+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-10T18:57:43.382236+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -315,19 +315,38 @@
             "pre_match_winner": null
         },
         {
+            "source_match_id": "54625517",
+            "league": "Women's Victoria T20 Series",
+            "format": "T20",
+            "venue": "Entebbe Cricket Oval",
+            "start_time_iso": "2026-11-10T11:00:00.000Z",
+            "match_state": "finished",
+            "home": "Uganda Women",
+            "away": "Namibia Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Finished",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
+        {
             "source_match_id": "54599897",
             "league": "CSA T20 Challenge",
             "format": "T20",
             "venue": "Newlands, Cape Town",
             "start_time_iso": "2026-11-10T16:00:00.000Z",
-            "match_state": "live",
+            "match_state": "finished",
             "home": "Western Province",
             "away": "South Western Districts",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "In play",
+            "status": "Finished",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
