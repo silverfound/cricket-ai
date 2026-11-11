@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-11T09:34:58.564197+00:00",
-    "total_matches": 15,
+    "last_updated": "2026-11-11T10:39:29.133477+00:00",
+    "total_matches": 16,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -216,9 +216,28 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-11T09:34:54.090694+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-11T10:39:26.191088+00:00",
     "venue_model_active": true,
     "matches": [
+        {
+            "source_match_id": "54625552",
+            "league": "Women's Victoria T20 Series",
+            "format": "T20",
+            "venue": "Entebbe Cricket Oval",
+            "start_time_iso": "2026-11-11T06:30:00.000Z",
+            "match_state": "finished",
+            "home": "Uganda Women",
+            "away": "Rwanda Women",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Finished",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": null
+        },
         {
             "source_match_id": "54038777",
             "league": "Women's Big Bash League",
@@ -256,7 +275,7 @@
             "win_probability": null,
             "projected_score": null,
             "pre_match_winner": "AI Pick: United States of America Women | Namibia Women: 45.6% | United States of America Women: 54.4%",
-            "toss_checked_at": "2026-11-11T09:34:57.188589+00:00"
+            "toss_checked_at": "2026-11-11T10:39:28.253142+00:00"
         },
         {
             "source_match_id": "54599932",
