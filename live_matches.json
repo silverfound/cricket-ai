@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-11T08:38:29.429778+00:00",
+    "last_updated": "2026-11-11T09:34:58.564197+00:00",
     "total_matches": 15,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-11T08:38:27.268535+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-11T09:34:54.090694+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -255,7 +255,8 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: United States of America Women | Namibia Women: 45.6% | United States of America Women: 54.4%"
+            "pre_match_winner": "AI Pick: United States of America Women | Namibia Women: 45.6% | United States of America Women: 54.4%",
+            "toss_checked_at": "2026-11-11T09:34:57.188589+00:00"
         },
         {
             "source_match_id": "54599932",
