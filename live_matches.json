@@ -1,6 +1,6 @@
 {
-    "last_updated": "2026-11-10T23:42:23.444472+00:00",
-    "total_matches": 14,
+    "last_updated": "2026-11-11T00:16:07.740298+00:00",
+    "total_matches": 16,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
     "post_toss_prediction_engine": "post_toss_logistic_v1",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-10T23:42:20.818770+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-11T00:16:05.428418+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -337,7 +337,7 @@
             "source_match_id": "54038812",
             "league": "Women's Big Bash League",
             "format": "T20",
-            "venue": "",
+            "venue": "Junction Oval, Melbourne",
             "start_time_iso": "2026-11-12T04:40:00.000Z",
             "match_state": "upcoming",
             "home": "Melbourne Stars Women",
@@ -350,7 +350,45 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Brisbane Heat Women | Melbourne Stars Women: 40.8% | Brisbane Heat Women: 59.2%"
+            "pre_match_winner": "AI Pick: Brisbane Heat Women | Melbourne Stars Women: 43.3% | Brisbane Heat Women: 56.7%"
+        },
+        {
+            "source_match_id": "54545647",
+            "league": "Under-19s Asia Cup",
+            "format": "ODI",
+            "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 1)",
+            "start_time_iso": "2026-11-12T05:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Afghanistan Under-19s",
+            "away": "India Under-19s",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": "AI Pick: India Under-19s | Afghanistan Under-19s: 44.3% | India Under-19s: 55.7%"
+        },
+        {
+            "source_match_id": "54545612",
+            "league": "Under-19s Asia Cup",
+            "format": "ODI",
+            "venue": "Al Amerat Cricket Ground Oman Cricket (Ministry Turf 2)",
+            "start_time_iso": "2026-11-12T05:00:00.000Z",
+            "match_state": "upcoming",
+            "home": "Pakistan Under-19s",
+            "away": "Bangladesh Under-19s",
+            "score_home": "-",
+            "overs_home": "",
+            "score_away": "-",
+            "overs_away": "",
+            "status": "Scheduled",
+            "api_source": "Highlightly",
+            "win_probability": null,
+            "projected_score": null,
+            "pre_match_winner": "AI Pick: Bangladesh Under-19s | Pakistan Under-19s: 47.9% | Bangladesh Under-19s: 52.1%"
         },
         {
             "source_match_id": "54514182",
@@ -413,7 +451,7 @@
             "source_match_id": "54038847",
             "league": "Women's Big Bash League",
             "format": "T20",
-            "venue": "",
+            "venue": "Junction Oval, Melbourne",
             "start_time_iso": "2026-11-12T08:10:00.000Z",
             "match_state": "upcoming",
             "home": "Melbourne Renegades Women",
@@ -426,7 +464,7 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Sydney Sixers Women | Melbourne Renegades Women: 40.4% | Sydney Sixers Women: 59.6%"
+            "pre_match_winner": "AI Pick: Sydney Sixers Women | Melbourne Renegades Women: 43.3% | Sydney Sixers Women: 56.7%"
         },
         {
             "source_match_id": "54514252",
