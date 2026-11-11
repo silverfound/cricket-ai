@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-11T04:24:55.867944+00:00",
+    "last_updated": "2026-11-11T05:25:15.897621+00:00",
     "total_matches": 16,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-11T04:24:53.525561+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-11T05:25:11.910157+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -236,7 +236,8 @@
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Rwanda Women | Uganda Women: 45.6% | Rwanda Women: 54.4%"
+            "pre_match_winner": "AI Pick: Rwanda Women | Uganda Women: 45.6% | Rwanda Women: 54.4%",
+            "toss_checked_at": "2026-11-11T05:25:14.916126+00:00"
         },
         {
             "source_match_id": "54038777",
