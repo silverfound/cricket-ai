@@ -1,5 +1,5 @@
 {
-    "last_updated": "2026-11-11T07:43:28.128447+00:00",
+    "last_updated": "2026-11-11T08:38:29.429778+00:00",
     "total_matches": 15,
     "data_source_api": "Highlightly",
     "prediction_engine": "venue_aware_candidate",
@@ -216,7 +216,7 @@
             "tossChoice": ""
         }
     ],
-    "cricketdata_toss_catalog_checked_at": "2026-11-11T07:43:25.427619+00:00",
+    "cricketdata_toss_catalog_checked_at": "2026-11-11T08:38:27.268535+00:00",
     "venue_model_active": true,
     "matches": [
         {
@@ -225,18 +225,18 @@
             "format": "T20",
             "venue": "Western Australia Cricket Association Ground, Perth",
             "start_time_iso": "2026-11-11T08:10:00.000Z",
-            "match_state": "upcoming",
+            "match_state": "live",
             "home": "Perth Scorchers Women",
             "away": "Sydney Thunder Women",
             "score_home": "-",
             "overs_home": "",
             "score_away": "-",
             "overs_away": "",
-            "status": "Scheduled",
+            "status": "In play",
             "api_source": "Highlightly",
             "win_probability": null,
             "projected_score": null,
-            "pre_match_winner": "AI Pick: Sydney Thunder Women | Perth Scorchers Women: 44.3% | Sydney Thunder Women: 55.7%"
+            "pre_match_winner": null
         },
         {
             "source_match_id": "54625587",
